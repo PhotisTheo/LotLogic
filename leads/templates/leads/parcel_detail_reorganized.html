@@ -1,0 +1,548 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Parcel – {{ parcel.site_address|default:parcel.loc_id }}{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+{% endblock %}
+
+{% block content %}
+  <div class="page-header mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div>
+        <div class="text-uppercase text-muted small">MassGIS Parcel</div>
+        <h1 class="mb-1">{{ parcel.site_address|default:parcel.loc_id }}</h1>
+        <div class="text-muted">{{ parcel.site_city|default:parcel.town.name }}{% if parcel.site_zip %} · {{ parcel.site_zip }}{% endif %}</div>
+      </div>
+      <div class="text-md-end">
+        <div class="stat-pill mb-2">{{ parcel.property_category }}</div>
+        <span class="badge {% if parcel.absentee %}text-bg-warning text-dark{% else %}text-bg-success{% endif %}">
+          {% if parcel.absentee %}Absentee Owner{% else %}Owner Occupied{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'parcel_search' %}">⬅ Back to Search</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'saved_parcel_lists' %}">📁 Saved Lists</a>
+  </div>
+
+  {% if property_summary %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header fw-semibold">
+        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Property Summary
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ property_summary }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {# PROPERTY PREVIEW - Full Width at Top #}
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Property Preview</div>
+        <div class="card-body p-0">
+          {% if property_embed_url %}
+            <div class="ratio ratio-16x9">
+              <iframe src="{{ property_embed_url }}" width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy"></iframe>
+            </div>
+          {% elif google_maps and google_maps.lat and google_maps.lng %}
+            <div class="ratio ratio-16x9" id="parcel-map-embed"
+                 data-lat="{{ google_maps.lat }}"
+                 data-lng="{{ google_maps.lng }}">
+              <div class="d-flex align-items-center justify-content-center text-muted small">Loading map…</div>
+            </div>
+          {% else %}
+            <div class="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center text-muted small">
+              Map information not available.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# OWNER INFO & SKIP TRACE - Side by Side #}
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Owner & Mailing Information</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr>
+                <th class="text-muted" style="width: 45%;">Owner Name</th>
+                <td class="fw-semibold">{{ parcel.owner_name|default:"—" }}</td>
+              </tr>
+              {% if parcel.owner_name_2 %}
+              <tr>
+                <th class="text-muted">Co-Owner</th>
+                <td class="fw-semibold">{{ parcel.owner_name_2 }}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                <th class="text-muted">Mailing Street</th>
+                <td class="fw-semibold">{{ parcel.owner_street|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Mailing City</th>
+                <td class="fw-semibold">{{ parcel.owner_city|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Mailing State</th>
+                <td class="fw-semibold">{{ parcel.owner_state|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Mailing ZIP</th>
+                <td class="fw-semibold">{{ parcel.owner_zip|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Occupancy</th>
+                <td class="fw-semibold">
+                  {% if parcel.absentee %}
+                    <span class="badge text-bg-warning text-dark">Absentee Owner</span>
+                  {% else %}
+                    <span class="badge text-bg-success">Owner Occupied</span>
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Skip Trace</div>
+        <div class="card-body" id="parcel-skiptrace-card">
+          {% if skiptrace_allowed %}
+            {# Parcel is in a saved list - show skip trace button #}
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <button type="button"
+                      class="btn btn-outline-primary btn-sm"
+                      data-role="skiptrace-run"
+                      {% if not skiptrace_endpoint %}disabled{% endif %}>
+                {{ skiptrace_button_label }}
+              </button>
+              <div class="spinner-border spinner-border-sm text-primary d-none"
+                   data-role="skiptrace-spinner"></div>
+            </div>
+
+            <div class="small text-muted mb-3" data-role="skiptrace-status">
+              {{ skiptrace_status_message }}
+            </div>
+
+            {% if stripe_payment_required and skiptrace_pricing %}
+              <div class="alert alert-info small py-2 px-3 mb-3">
+                <strong>Cost:</strong> {{ skiptrace_cost_per_lookup_display }} per lookup
+              </div>
+            {% endif %}
+
+            <div data-role="skiptrace-results" class="{% if not skiptrace_initial %}d-none{% endif %}">
+              <table class="table table-sm mb-0">
+                <tbody data-role="skiptrace-results-body">
+                  {# Results populated by JavaScript #}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            {# Parcel is NOT in a saved list - show info message #}
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-info-circle"></i>
+              <span class="small">
+                Add this parcel to a saved list to enable skip trace capabilities.
+              </span>
+            </div>
+            <a class="btn btn-outline-primary btn-sm" href="{% url 'saved_parcel_lists' %}">
+              View Saved Lists
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# VALUATION & SALE HISTORY - Side by Side #}
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Valuation</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr>
+                <th class="text-muted" style="width: 45%;">Total Assessed Value</th>
+                <td class="fw-semibold">{% if parcel.total_value %}${{ parcel.total_value|floatformat:0 }}{% else %}—{% endif %}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Building Value</th>
+                <td class="fw-semibold">{% if parcel.building_value %}${{ parcel.building_value|floatformat:0 }}{% else %}—{% endif %}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Land Value</th>
+                <td class="fw-semibold">{% if parcel.land_value %}${{ parcel.land_value|floatformat:0 }}{% else %}—{% endif %}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Equity Percentage</th>
+                <td class="fw-semibold">{% if parcel.equity_percent %}{{ parcel.equity_percent|floatformat:1 }}%{% else %}—{% endif %}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Sale History</div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr>
+                <th class="text-muted" style="width: 45%;">Last Sale Date</th>
+                <td class="fw-semibold">{{ parcel.last_sale_date|default:"—" }}</td>
+              </tr>
+              <tr>
+                <th class="text-muted">Last Sale Price</th>
+                <td class="fw-semibold">{% if parcel.last_sale_price %}${{ parcel.last_sale_price|floatformat:0 }}{% else %}—{% endif %}</td>
+              </tr>
+              {% for section in sections %}
+                {% if section.title == "Sale History" %}
+                  {% for label, value in section.items %}
+                    <tr>
+                      <th class="text-muted">{{ label }}</th>
+                      <td class="fw-semibold">{{ value|default:"—" }}</td>
+                    </tr>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# FORECLOSURE STATUS & DEFAULT RISK - Side by Side #}
+  {% if attom_data %}
+  <div class="row g-4 mb-4">
+    {% if attom_data.pre_foreclosure or attom_data.foreclosure_stage %}
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+          <span>Foreclosure Status</span>
+          {% if attom_data.pre_foreclosure %}
+            <span class="badge text-bg-danger">In Foreclosure</span>
+          {% else %}
+            <span class="badge text-bg-success">No Foreclosure</span>
+          {% endif %}
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-sm mb-0">
+            <tbody>
+              {% if attom_data.foreclosure_stage %}
+                <tr>
+                  <th class="text-muted" style="width: 45%;">Stage</th>
+                  <td class="fw-semibold">{{ attom_data.foreclosure_stage }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_recording_date %}
+                <tr>
+                  <th class="text-muted">Recording Date</th>
+                  <td class="fw-semibold">{{ attom_data.foreclosure_recording_date }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_auction_date %}
+                <tr>
+                  <th class="text-muted">Auction Date</th>
+                  <td class="fw-semibold">{{ attom_data.foreclosure_auction_date }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_estimated_value %}
+                <tr>
+                  <th class="text-muted">Estimated Value</th>
+                  <td class="fw-semibold">${{ attom_data.foreclosure_estimated_value|floatformat:0 }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_default_amount %}
+                <tr>
+                  <th class="text-muted">Default Amount</th>
+                  <td class="fw-semibold">${{ attom_data.foreclosure_default_amount|floatformat:0 }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_judgment_amount %}
+                <tr>
+                  <th class="text-muted">Judgment Amount</th>
+                  <td class="fw-semibold">${{ attom_data.foreclosure_judgment_amount|floatformat:0 }}</td>
+                </tr>
+              {% endif %}
+              {% if attom_data.foreclosure_document_type %}
+                <tr>
+                  <th class="text-muted">Document Type</th>
+                  <td class="fw-semibold">{{ attom_data.foreclosure_document_type }}</td>
+                </tr>
+              {% endif %}
+              {% if not attom_data.foreclosure_stage and not attom_data.foreclosure_recording_date and not attom_data.foreclosure_auction_date and not attom_data.foreclosure_estimated_value and not attom_data.foreclosure_default_amount and not attom_data.foreclosure_judgment_amount %}
+                <tr>
+                  <td colspan="2" class="text-center text-muted py-3">No foreclosure activity detected</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if attom_data.default_risk_score is not None %}
+    <div class="col-12 {% if attom_data.pre_foreclosure or attom_data.foreclosure_stage %}col-lg-6{% endif %}">
+      <div class="card h-100">
+        <div class="card-header fw-semibold">Default Risk Score</div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            <div class="display-3 fw-bold {% if attom_data.default_risk_score >= 70 %}text-danger{% elif attom_data.default_risk_score >= 40 %}text-warning{% else %}text-success{% endif %}">
+              {{ attom_data.default_risk_score }}
+            </div>
+            <div class="text-muted small">Score 0-100</div>
+          </div>
+          <div class="progress" style="height: 25px;">
+            <div class="progress-bar {% if attom_data.default_risk_score >= 70 %}bg-danger{% elif attom_data.default_risk_score >= 40 %}bg-warning{% else %}bg-success{% endif %}"
+                 role="progressbar"
+                 style="width: {{ attom_data.default_risk_score }}%"
+                 aria-valuenow="{{ attom_data.default_risk_score }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+              {{ attom_data.default_risk_score }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {# LIENS & LEGAL ACTIONS - Simplified #}
+  {% if liens or legal_actions or lien_search_requested %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-search me-2"></i>Liens & Legal Actions</span>
+      <form method="post" action="{% url 'refresh_liens_legal_actions' parcel.town.town_id parcel.loc_id %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-primary">
+          {% if lien_search_requested and lien_search_queued %}
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>Refreshing...
+          {% else %}
+            Refresh Liens & Cases
+          {% endif %}
+        </button>
+      </form>
+    </div>
+    <div class="card-body">
+      {# Recorded Liens #}
+      <div class="mb-4">
+        <h6 class="fw-semibold mb-3">
+          <i class="bi bi-file-earmark-text me-2"></i>Recorded Liens
+          {% if liens %}<span class="badge bg-warning text-dark ms-2">{{ liens|length }}</span>{% endif %}
+        </h6>
+        {% if liens %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Holder</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lien in liens %}
+              <tr>
+                <td>{{ lien.type|default:"Unknown" }}</td>
+                <td>{{ lien.holder|default:"N/A" }}</td>
+                <td>{% if lien.amount %}${{ lien.amount|floatformat:0 }}{% else %}N/A{% endif %}</td>
+                <td><span class="badge {% if lien.status == 'Active' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ lien.status|default:"Unknown" }}</span></td>
+                <td>{{ lien.recording_date|default:"N/A" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0"><i class="bi bi-check-circle me-2"></i>No liens found</p>
+        {% endif %}
+      </div>
+
+      {# Legal Actions #}
+      <div>
+        <h6 class="fw-semibold mb-3">
+          <i class="bi bi-gavel me-2"></i>Legal Actions
+          {% if legal_actions %}<span class="badge bg-info ms-2">{{ legal_actions|length }}</span>{% endif %}
+        </h6>
+        {% if legal_actions %}
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Case Number</th>
+                <th>Status</th>
+                <th>Filed</th>
+                <th>Plaintiff</th>
+                <th>Defendant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for action in legal_actions %}
+              <tr>
+                <td>
+                  <span class="badge {% if action.action_type == 'foreclosure' %}bg-danger{% elif action.action_type == 'eviction' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ action.action_type|title }}
+                  </span>
+                </td>
+                <td><code class="small">{{ action.case_number }}</code></td>
+                <td><span class="badge bg-info">{{ action.status|default:"Unknown" }}</span></td>
+                <td>{{ action.filing_date|default:"N/A" }}</td>
+                <td class="small">{{ action.plaintiff|default:"N/A" }}</td>
+                <td class="small">{{ action.defendant|default:"N/A" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0"><i class="bi bi-check-circle me-2"></i>No legal actions found</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# REMAINING SECTIONS - All other property details #}
+  <div class="row g-4 mb-4">
+    {% for section in sections %}
+      {% if section.title != "Skip Trace" and section.title != "Sale History" %}
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
+          <div class="card-header fw-semibold">{{ section.title }}</div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <tbody>
+                {% for label, value in section.items %}
+                  <tr>
+                    <th class="text-muted" style="width: 45%;">{{ label }}</th>
+                    <td class="fw-semibold">{{ value|default:"—" }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {# PARCEL FOOTPRINT - Keep visible #}
+  {% if parcel_shape and parcel_shape.found and parcel_shape.svg_markup %}
+    <div class="row g-4 mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+            <span>Parcel Footprint</span>
+            {% if parcel_shape.source_hint %}<span class="badge text-bg-light">{{ parcel_shape.source_hint }}</span>{% endif %}
+          </div>
+          <div class="card-body">
+            <div class="ratio ratio-1x1 border rounded shadow-sm bg-white d-flex align-items-center justify-content-center mb-3" style="max-width: 500px; margin: 0 auto;">
+              {{ parcel_shape.svg_markup|safe }}
+            </div>
+            <div class="row g-2">
+              {% if parcel_shape.area %}
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Area</div>
+                  <div class="fw-semibold">{{ parcel_shape.area|floatformat:0 }}</div>
+                </div>
+              {% endif %}
+              {% if parcel_shape.width %}
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Width</div>
+                  <div class="fw-semibold">{{ parcel_shape.width|floatformat:1 }}</div>
+                </div>
+              {% endif %}
+              {% if parcel_shape.height %}
+                <div class="col-6 col-md-3">
+                  <div class="small text-muted">Height</div>
+                  <div class="fw-semibold">{{ parcel_shape.height|floatformat:1 }}</div>
+                </div>
+              {% endif %}
+              {% if parcel_shape.centroid %}
+                <div class="col-12 col-md-3">
+                  <div class="small text-muted">Centroid</div>
+                  <div class="fw-semibold">({{ parcel_shape.centroid.0|floatformat:3 }}, {{ parcel_shape.centroid.1|floatformat:3 }})</div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# MASSGIS ATTRIBUTES #}
+  <div class="card shadow-sm">
+    <div class="card-header fw-semibold">MassGIS Attributes</div>
+    <div class="table-responsive">
+      <table class="table table-striped table-sm mb-0">
+        <tbody>
+          {% for key, value in parcel.attributes.items %}
+            <tr>
+              <th class="text-uppercase small text-muted">{{ key }}</th>
+              <td>{{ value|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const mapEl = document.getElementById('parcel-map-embed');
+      if (mapEl) {
+        const lat = parseFloat(mapEl.dataset.lat);
+        const lng = parseFloat(mapEl.dataset.lng);
+        if (isNaN(lat) || isNaN(lng)) {
+          mapEl.innerHTML = '<div class="d-flex align-items-center justify-content-center text-muted small">Map unavailable for this location.</div>';
+        } else {
+          const map = L.map(mapEl).setView([lat, lng], 16);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+          L.marker([lat, lng]).addTo(map);
+        }
+      }
+
+      const skiptraceCard = document.getElementById('parcel-skiptrace-card');
+      if (skiptraceCard && window.LeadCRM && window.LeadCRM.skiptrace) {
+        try {
+          const config = JSON.parse('{{ skiptrace_config_json|escapejs }}');
+          window.LeadCRM.skiptrace.init(skiptraceCard, config);
+        } catch (error) {
+          console.error('Skip trace initialization error:', error);
+        }
+      }
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "leads/base.html" %}
+
+{% block title %}{{ action }} Legal Action{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12 col-lg-8 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+          <a href="{% url 'parcel_detail' town_id loc_id %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="bi bi-arrow-left"></i> Back to Parcel
+          </a>
+          <h1 class="mb-0">{{ action }} Legal Action</h1>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-gavel me-2"></i>Case Information
+          </div>
+          <div class="card-body">
+            <form method="post" action="">
+              {% csrf_token %}
+
+              {% if form.errors %}
+                <div class="alert alert-danger">
+                  <strong>Please correct the following errors:</strong>
+                  <ul class="mb-0">
+                    {% for field in form %}
+                      {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                      {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Case Details</h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.action_type.id_for_label }}" class="form-label">{{ form.action_type.label }}</label>
+                  {{ form.action_type }}
+                  {% if form.action_type.help_text %}
+                    <div class="form-text">{{ form.action_type.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
+                  {{ form.status }}
+                  {% if form.status.help_text %}
+                    <div class="form-text">{{ form.status.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.court.id_for_label }}" class="form-label">{{ form.court.label }}</label>
+                  {{ form.court }}
+                  {% if form.court.help_text %}
+                    <div class="form-text">{{ form.court.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.case_number.id_for_label }}" class="form-label">{{ form.case_number.label }}</label>
+                  {{ form.case_number }}
+                  {% if form.case_number.help_text %}
+                    <div class="form-text">{{ form.case_number.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12">
+                  <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                  {{ form.description }}
+                  {% if form.description.help_text %}
+                    <div class="form-text">{{ form.description.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Parties</h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.plaintiff.id_for_label }}" class="form-label">{{ form.plaintiff.label }}</label>
+                  {{ form.plaintiff }}
+                  {% if form.plaintiff.help_text %}
+                    <div class="form-text">{{ form.plaintiff.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.defendant.id_for_label }}" class="form-label">{{ form.defendant.label }}</label>
+                  {{ form.defendant }}
+                  {% if form.defendant.help_text %}
+                    <div class="form-text">{{ form.defendant.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Important Dates</h6>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <label for="{{ form.filing_date.id_for_label }}" class="form-label">{{ form.filing_date.label }}</label>
+                  {{ form.filing_date }}
+                  {% if form.filing_date.help_text %}
+                    <div class="form-text">{{ form.filing_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <label for="{{ form.hearing_date.id_for_label }}" class="form-label">{{ form.hearing_date.label }}</label>
+                  {{ form.hearing_date }}
+                  {% if form.hearing_date.help_text %}
+                    <div class="form-text">{{ form.hearing_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <label for="{{ form.judgment_date.id_for_label }}" class="form-label">{{ form.judgment_date.label }}</label>
+                  {{ form.judgment_date }}
+                  {% if form.judgment_date.help_text %}
+                    <div class="form-text">{{ form.judgment_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                  <label for="{{ form.closed_date.id_for_label }}" class="form-label">{{ form.closed_date.label }}</label>
+                  {{ form.closed_date }}
+                  {% if form.closed_date.help_text %}
+                    <div class="form-text">{{ form.closed_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Financial Information <span class="small">(Optional)</span></h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.amount_claimed.id_for_label }}" class="form-label">{{ form.amount_claimed.label }}</label>
+                  {{ form.amount_claimed }}
+                  {% if form.amount_claimed.help_text %}
+                    <div class="form-text">{{ form.amount_claimed.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.judgment_amount.id_for_label }}" class="form-label">{{ form.judgment_amount.label }}</label>
+                  {{ form.judgment_amount }}
+                  {% if form.judgment_amount.help_text %}
+                    <div class="form-text">{{ form.judgment_amount.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Source & Documentation</h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.source.id_for_label }}" class="form-label">{{ form.source.label }}</label>
+                  {{ form.source }}
+                  {% if form.source.help_text %}
+                    <div class="form-text">{{ form.source.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.source_url.id_for_label }}" class="form-label">{{ form.source_url.label }}</label>
+                  {{ form.source_url }}
+                  {% if form.source_url.help_text %}
+                    <div class="form-text">{{ form.source_url.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12">
+                  <label for="{{ form.pacer_case_id.id_for_label }}" class="form-label">{{ form.pacer_case_id.label }}</label>
+                  {{ form.pacer_case_id }}
+                  {% if form.pacer_case_id.help_text %}
+                    <div class="form-text">{{ form.pacer_case_id.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12">
+                  <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                  {{ form.notes }}
+                  {% if form.notes.help_text %}
+                    <div class="form-text">{{ form.notes.help_text }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check-circle me-1"></i>Save Legal Action
+                </button>
+                <a href="{% url 'parcel_detail' town_id loc_id %}" class="btn btn-outline-secondary">
+                  Cancel
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

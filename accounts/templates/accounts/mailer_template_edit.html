@@ -1,0 +1,73 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Edit Mailer Template · Lead CRM{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+  <div class="row mb-4 align-items-center">
+    <div class="col-lg-8">
+      <h1 class="h3 fw-semibold mb-2">Edit template</h1>
+      <p class="text-muted mb-0">
+        Update <strong>{{ template_obj.name }}</strong>. Changes apply immediately to new mailers.
+        Existing downloads are unaffected. Use placeholders to personalize each letter:
+        {% for placeholder, help_text in placeholder_hints %}
+          <span class="badge bg-light text-body border">{{ placeholder }}</span>{% if not forloop.last %} {% endif %}
+        {% endfor %}
+      </p>
+    </div>
+    <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
+      <a class="btn btn-outline-secondary" href="{% url 'accounts:mailer_templates' %}">Back to templates</a>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% for field in form %}
+              {% if field.name == "is_active" %}
+                <div class="form-check form-switch mb-4">
+                  {{ field }}
+                  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="mb-4">
+                  <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+                  {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Save changes</button>
+              <a class="btn btn-outline-secondary" href="{% url 'accounts:mailer_templates' %}">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

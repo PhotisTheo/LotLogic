@@ -1,0 +1,152 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Mailer Templates · Lead CRM{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+  <div class="row mb-4 align-items-center">
+    <div class="col-lg-8">
+      <h1 class="h3 fw-semibold mb-2">Mailer Templates</h1>
+      <p class="text-muted mb-0">
+        Create custom letters for your workspace. Templates appear alongside the defaults
+        when you generate mailers or bulk downloads. Use the placeholders below to personalize
+        each letter automatically.
+      </p>
+    </div>
+    <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
+      <a class="btn btn-outline-secondary" href="{% url 'accounts:profile' %}">Back to profile</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-4">
+          <h2 class="h5 fw-semibold mb-3">New template</h2>
+          <p class="small text-muted">
+            Placeholders available:
+            {% for placeholder, help_text in placeholder_hints %}
+              <span class="badge bg-light text-body border">{{ placeholder }}</span>{% if not forloop.last %} {% endif %}
+            {% endfor %}
+          </p>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if create_form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in create_form.non_field_errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% for field in create_form %}
+              {% if field.name == "is_active" %}
+                <div class="form-check form-switch mb-3">
+                  {{ field }}
+                  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="mb-3">
+                  <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+                  {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Save template</button>
+              <button type="reset" class="btn btn-outline-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-semibold mb-0">Workspace templates</h2>
+            <span class="badge bg-primary-subtle text-primary-emphasis">
+              {{ templates|length }} total
+            </span>
+          </div>
+          {% if templates %}
+            <div class="list-group list-group-flush">
+              {% for template in templates %}
+                <div class="list-group-item px-0">
+                  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+                    <div>
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <h3 class="h6 fw-semibold mb-0">{{ template.name }}</h3>
+                        {% if not template.is_active %}
+                          <span class="badge bg-warning-subtle text-warning-emphasis">Inactive</span>
+                        {% endif %}
+                      </div>
+                      <p class="small text-muted mb-2">
+                        {{ template.summary|default:"No summary provided yet." }}
+                      </p>
+                      <div class="small text-muted mb-2">
+                        Sector: {{ template.get_sector_display }} · Updated {{ template.updated_at|date:"M j, Y" }}
+                      </div>
+                      {% if template.prompt_text %}
+                        <div class="small text-muted mb-2">
+                          <span class="fw-semibold">AI prompt:</span>
+                          {{ template.prompt_text|truncatechars:160 }}
+                        </div>
+                      {% endif %}
+                      {% if template.value_props %}
+                        <div class="small text-muted">
+                          <span class="fw-semibold">{{ template.value_props_title|default:"Bullet points" }}:</span>
+                          {{ template.value_props|join:", " }}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="d-flex flex-column align-items-stretch gap-2">
+                      <a
+                        class="btn btn-sm btn-outline-primary"
+                        href="{% url 'accounts:mailer_template_edit' template.pk %}"
+                      >
+                        Edit
+                      </a>
+                      <form
+                        method="post"
+                        action="{% url 'accounts:mailer_template_delete' template.pk %}"
+                        onsubmit="return confirm('Delete {{ template.name }}? This cannot be undone.');"
+                      >
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          Delete
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="alert alert-info mb-0">
+              <div class="fw-semibold mb-1">No custom templates yet.</div>
+              <p class="mb-0 small">
+                Create your first template on the left. Saved templates are shared across your workspace.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

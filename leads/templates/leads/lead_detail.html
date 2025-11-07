@@ -1,0 +1,307 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Lead – {{ lead.site_address|default:"Lead" }}{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-XodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+{% endblock %}
+
+{% block content %}
+  <div class="page-header mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div>
+        <div class="text-uppercase text-muted small">Lead Detail</div>
+        <h1 class="mb-1">
+          {{ lead.site_address|default:"Lead" }}
+        </h1>
+        <div class="text-muted">
+          {{ lead.site_city|default:"" }}{% if lead.site_zip %} · {{ lead.site_zip }}{% endif %}
+        </div>
+      </div>
+      <div class="text-md-end">
+        {% if lead.status %}
+          <div class="stat-pill mb-2">Status: {{ lead.status }}</div>
+        {% endif %}
+        {% if lead.created_at %}
+          <div class="text-muted small">Created {{ lead.created_at|date:"M j, Y" }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'parcel_search' %}" class="btn btn-outline-secondary btn-sm">🔍 Parcel Search</a>
+    <a href="{% url 'crm_overview' %}" class="btn btn-outline-secondary btn-sm">📋 CRM</a>
+    <a href="{% url 'lead_upload' %}" class="btn btn-success btn-sm ms-lg-auto">📤 Upload Leads</a>
+  </div>
+
+  <div class="row g-4 mb-4">
+    {% for section in sections %}
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
+          <div class="card-header fw-semibold">{{ section.title }}</div>
+          {% if section.title == "Skip Trace" %}
+            <div class="card-body" id="lead-skiptrace-card">
+              {% if skiptrace_cost_per_lookup_display %}
+                <div class="alert alert-info py-2 px-3 small" data-role="skiptrace-pricing-note">
+                  Each skip trace costs <strong>{{ skiptrace_cost_per_lookup_display }}</strong>.
+                </div>
+              {% endif %}
+              <div class="text-muted small mb-3" data-role="skiptrace-status">{{ skiptrace_status_message }}</div>
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  data-role="skiptrace-run"
+                  data-endpoint="{{ skiptrace_endpoint|default_if_none:'' }}"
+                  {% if not skiptrace_allowed or not skiptrace_endpoint %}disabled{% endif %}
+                >
+                  {{ skiptrace_button_label }}
+                </button>
+                <div class="spinner-border spinner-border-sm text-primary d-none" data-role="skiptrace-spinner" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div class="{% if skiptrace_initial %}{% else %}d-none {% endif %}" data-role="skiptrace-results">
+                <table class="table table-sm mb-0">
+                  <tbody data-role="skiptrace-results-body">
+                    {% if skiptrace_initial %}
+                      {% with payload=skiptrace_initial %}
+                        {% if payload.ownerName %}
+                          <tr>
+                            <th>Owner</th>
+                            <td>{{ payload.ownerName }}</td>
+                          </tr>
+                        {% endif %}
+                        {% if payload.email %}
+                          <tr>
+                            <th>Email</th>
+                            <td>{{ payload.email }}</td>
+                          </tr>
+                        {% endif %}
+                        {% if payload.phones %}
+                          {% for phone in payload.phones %}
+                            <tr>
+                              <th>Phone #{{ forloop.counter }}</th>
+                              <td>
+                                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                                  <span class="d-flex gap-2 align-items-center flex-wrap">
+                                    {% if phone.number %}
+                                      <span class="fw-semibold">{{ phone.number }}</span>
+                                    {% else %}
+                                      <span>—</span>
+                                    {% endif %}
+                                    {% if phone.type %}
+                                      <span class="badge text-bg-light">{{ phone.type|upper }}</span>
+                                    {% endif %}
+                                    {% if phone.score is not none %}
+                                      <span class="text-muted">Score {{ phone.score }}</span>
+                                    {% endif %}
+                                  </span>
+                                  <span class="ms-auto">
+                                    {% with phone.dnc|default_if_none:'' as raw_dnc %}
+                                      {% with raw_dnc|upper as dnc_status %}
+                                        {% if dnc_status == 'TRUE' or dnc_status == 'Y' or dnc_status == 'YES' or dnc_status == 'ON' %}
+                                          <span class="badge text-bg-danger">On DNC</span>
+                                        {% elif dnc_status == 'FALSE' or dnc_status == 'N' or dnc_status == 'NO' or dnc_status == 'OFF' %}
+                                          <span class="badge text-bg-success">OK to Call</span>
+                                        {% elif dnc_status %}
+                                          <span class="badge text-bg-warning text-dark">DNC: {{ phone.dnc }}</span>
+                                        {% else %}
+                                          <span class="badge text-bg-secondary">DNC Unknown</span>
+                                        {% endif %}
+                                      {% endwith %}
+                                    {% endwith %}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        {% endif %}
+                      {% endwith %}
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% else %}
+            <div class="card-body p-0">
+              <table class="table table-sm mb-0">
+                <tbody>
+                  {% for label, value in section.items %}
+                    <tr>
+                      <th class="text-muted" style="width: 45%;">{{ label }}</th>
+                      <td class="fw-semibold">{{ value }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if google_maps %}
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
+          <div class="card-header fw-semibold">Google Map</div>
+          <div class="card-body p-0">
+            <div class="ratio ratio-4x3">
+              {% if google_maps.lat and google_maps.lng %}
+                <iframe
+                  src="https://maps.google.com/maps?q={{ google_maps.lat }},{{ google_maps.lng }}&z=18&output=embed"
+                  width="100%"
+                  height="100%"
+                  style="border:0;"
+                  allowfullscreen
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              {% elif google_maps.address %}
+                <iframe
+                  src="https://maps.google.com/maps?q={{ google_maps.address|urlencode }}&output=embed"
+                  width="100%"
+                  height="100%"
+                  style="border:0;"
+                  allowfullscreen
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
+          <div class="card-header fw-semibold">Property Preview</div>
+          <div class="card-body p-0">
+            {% if property_embed_url %}
+              <div class="ratio ratio-4x3">
+                <iframe src="{{ property_embed_url }}" width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy"></iframe>
+              </div>
+            {% elif google_maps and google_maps.lat and google_maps.lng %}
+              <div class="ratio ratio-4x3" id="lead-map-embed"
+                   data-lat="{{ google_maps.lat }}"
+                   data-lng="{{ google_maps.lng }}">
+                <div class="d-flex align-items-center justify-content-center text-muted small">Loading map…</div>
+              </div>
+            {% else %}
+              <div class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center text-muted small">
+                Map information not available.
+              </div>
+            {% endif %}
+            {% if zillow_url %}
+              <div class="px-3 py-3 border-top text-center">
+                <a class="btn btn-sm btn-outline-primary" href="{{ zillow_url }}" target="_blank" rel="noopener">View on Zillow</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if parcel_shape %}
+    <div class="row g-4 mb-4">
+      {% if parcel_shape %}
+        <div class="col-12 col-lg-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+              <span>Parcel Footprint</span>
+              {% if parcel_shape.source_hint %}
+                <span class="badge text-bg-light">{{ parcel_shape.source_hint }}</span>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              {% if parcel_shape.found and parcel_shape.svg_markup %}
+                <div class="ratio ratio-1x1 border rounded shadow-sm bg-white d-flex align-items-center justify-content-center mb-3">
+                  {{ parcel_shape.svg_markup|safe }}
+                </div>
+                <div class="row g-2">
+                  {% if parcel_shape.area %}
+                    <div class="col-6">
+                      <div class="small text-muted">Area</div>
+                      <div class="fw-semibold">{{ parcel_shape.area|floatformat:0 }}</div>
+                    </div>
+                  {% endif %}
+                  {% if parcel_shape.width %}
+                    <div class="col-6">
+                      <div class="small text-muted">Width</div>
+                      <div class="fw-semibold">{{ parcel_shape.width|floatformat:1 }}</div>
+                    </div>
+                  {% endif %}
+                  {% if parcel_shape.height %}
+                    <div class="col-6">
+                      <div class="small text-muted">Height</div>
+                      <div class="fw-semibold">{{ parcel_shape.height|floatformat:1 }}</div>
+                    </div>
+                  {% endif %}
+                  {% if parcel_shape.centroid %}
+                    <div class="col-12">
+                      <div class="small text-muted">Centroid</div>
+                      <div class="fw-semibold">({{ parcel_shape.centroid.0|floatformat:3 }}, {{ parcel_shape.centroid.1|floatformat:3 }})</div>
+                    </div>
+                  {% endif %}
+                </div>
+              {% else %}
+                <p class="text-muted mb-0">{{ parcel_shape.message }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="card shadow-sm">
+    <div class="card-header fw-semibold">Full Data Dump</div>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered mb-0">
+        <tbody>
+          {% for item in table_data %}
+            {% if item.1 and item.1|stringformat:"s" != "0" and item.1|stringformat:"s" != "nan" and item.1|stringformat:"s" != "None" %}
+              <tr>
+                <th style="width: 240px;">{{ item.0 }}</th>
+                <td>{{ item.1 }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-vH6fKCyMfCV+3d2d+W8sELpAo0P5PLf4KJIp4jOSAmhpN6wXNjZJ8m+RaH59BILowKIiMWZ6I0s2v1srO6U2vA==" crossorigin=""></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const mapEl = document.getElementById('lead-map-embed');
+      if (mapEl) {
+        const lat = parseFloat(mapEl.dataset.lat);
+        const lng = parseFloat(mapEl.dataset.lng);
+        if (isNaN(lat) || isNaN(lng)) {
+          mapEl.innerHTML = '<div class="d-flex align-items-center justify-content-center text-muted small">Map unavailable for this location.</div>';
+        } else {
+          const map = L.map(mapEl).setView([lat, lng], 16);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+          L.marker([lat, lng]).addTo(map);
+        }
+      }
+
+      const skiptraceCard = document.getElementById('lead-skiptrace-card');
+      if (skiptraceCard && window.LeadCRM && window.LeadCRM.skiptrace) {
+        const config = JSON.parse('{{ skiptrace_config_json|escapejs }}');
+        window.LeadCRM.skiptrace.init(skiptraceCard, config);
+      }
+    });
+  </script>
+{% endblock %}
