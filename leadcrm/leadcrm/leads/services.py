@@ -64,6 +64,7 @@ def _env_int(key: str, default: int) -> int:
 APP_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = APP_DIR.parent.parent
 GISDATA_ROOT = PROJECT_ROOT / "gisdata"
+logger.info("GISDATA_ROOT set to: %s (exists: %s)", GISDATA_ROOT, GISDATA_ROOT.exists())
 STATIC_DATA_ROOT = APP_DIR / "data"
 STATIC_DATA_ROOT.mkdir(exist_ok=True)
 MASSGIS_DOWNLOAD_DIR = GISDATA_ROOT / "downloads"
@@ -2782,16 +2783,21 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
             boston_dataset_id = None
 
     base_dir = GISDATA_ROOT / slug
+    logger.info("Looking for MassGIS dataset %s at: %s", slug, base_dir)
     if not base_dir.exists():
         existing = _find_existing_dataset_dir(slug)
         if existing is not None:
+            logger.info("Found existing dataset dir: %s", existing)
             base_dir = existing
+        else:
+            logger.info("No existing dataset dir found for %s", slug)
 
     now = datetime.now(timezone.utc)
     index = _load_dataset_index()
     entry = index.get(slug)
 
     if base_dir.exists():
+        logger.info("Dataset dir exists: %s (entry: %s)", base_dir, entry)
         downloaded_at = _parse_iso_datetime(entry.get("downloaded_at")) if entry else None
         is_stale = True
         if downloaded_at is not None:
