@@ -81,6 +81,12 @@ MASSGIS_DIRECTORY_TIMEOUT_SECONDS = _env_int("MASSGIS_DIRECTORY_TIMEOUT", 10)
 USE_S3_FOR_GIS = os.getenv("USE_S3_FOR_GIS", "True").lower() in ("true", "1", "yes")
 S3_GIS_BUCKET = os.getenv("AWS_STORAGE_BUCKET_NAME", "")
 S3_GIS_PREFIX = "gisdata/"
+BOSTON_ASSESSMENT_S3_BUCKET = os.getenv("BOSTON_ASSESSMENT_S3_BUCKET") or S3_GIS_BUCKET
+BOSTON_ASSESSMENT_S3_KEY = os.getenv(
+    "BOSTON_ASSESSMENT_S3_KEY",
+    "gisdata/fy2025-property-assessment-data_12_30_2024.csv",
+)
+BOSTON_ASSESSMENT_S3_ENCODING = os.getenv("BOSTON_ASSESSMENT_S3_ENCODING", "utf-8-sig")
 MASSGIS_EXCEL_FILENAME = "MassGIS_Parcel_Download_Links.xlsx"
 MASSGIS_TOWNS_URL = "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/townssurvey_shp.zip"
 MASSGIS_TOWNS_DIR = GISDATA_ROOT / "townssurvey"
@@ -353,6 +359,39 @@ def _upload_to_s3(slug: str, local_zip_path: Path) -> bool:
     except Exception as exc:
         logger.warning("Failed to upload %s to S3: %s", slug, exc)
         return False
+
+
+def _download_boston_assessment_csv_from_s3() -> Optional[io.StringIO]:
+    """Return a text stream for the Boston assessment CSV stored in S3."""
+    bucket = BOSTON_ASSESSMENT_S3_BUCKET or S3_GIS_BUCKET
+    key = BOSTON_ASSESSMENT_S3_KEY
+    if not bucket or not key:
+        return None
+
+    s3 = _get_s3_client()
+    if not s3:
+        return None
+
+    try:
+        logger.info("Downloading Boston assessment CSV from S3: s3://%s/%s", bucket, key)
+        response = s3.get_object(Bucket=bucket, Key=key)
+        body = response.get("Body")
+        if body is None:
+            logger.warning("Boston assessment CSV response missing body (bucket=%s, key=%s)", bucket, key)
+            return None
+        payload = body.read()
+        if not isinstance(payload, (bytes, bytearray)):
+            payload = bytes(payload)
+        text = payload.decode(BOSTON_ASSESSMENT_S3_ENCODING or "utf-8-sig", errors="replace")
+        return io.StringIO(text)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "Unable to download Boston assessment CSV from S3 (bucket=%s, key=%s): %s",
+            bucket,
+            key,
+            exc,
+        )
+        return None
 
 
 def _is_s3_dataset_stale(last_modified: datetime) -> bool:
@@ -2958,14 +2997,10 @@ def _find_assess_dbf(dataset_dir: Path) -> Path:
     return candidates[0]
 
 
-@lru_cache(maxsize=32)
-def _load_assess_records(dataset_dir: str) -> List[Dict[str, object]]:
-    directory = Path(dataset_dir)
-
+def _load_assess_records_impl(directory: Path) -> List[Dict[str, object]]:
     if directory.name.upper() == "BOSTON_TAXPAR":
         records = _load_boston_assess_records(directory)
-        if records:
-            return records
+        return records or []
 
     if shapefile is None:
         raise MassGISDataError(
@@ -2987,7 +3022,32 @@ def _load_assess_records(dataset_dir: str) -> List[Dict[str, object]]:
     return records
 
 
+@lru_cache(maxsize=32)
+def _load_assess_records_cached(dataset_dir: str) -> List[Dict[str, object]]:
+    return _load_assess_records_impl(Path(dataset_dir))
+
+
+def _load_assess_records(dataset_dir: str) -> List[Dict[str, object]]:
+    directory = Path(dataset_dir)
+    if directory.name.upper() == "BOSTON_TAXPAR":
+        return _load_assess_records_impl(directory)
+    return _load_assess_records_cached(str(directory))
+
+
 def _load_boston_assess_records(dataset_dir: Path) -> Optional[List[Dict[str, object]]]:
+    stream = _download_boston_assessment_csv_from_s3()
+    if stream is not None:
+        try:
+            records = _parse_boston_assessment_records(csv.DictReader(stream))
+            logger.info(
+                "Loaded %s Boston assessment records from S3 key %s",
+                len(records),
+                BOSTON_ASSESSMENT_S3_KEY,
+            )
+            return records
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Unable to parse Boston assessment CSV downloaded from S3: %s", exc)
+
     csv_candidates = [
         dataset_dir / "BOSTONAssess_FY25.csv",
         dataset_dir / "BOSTONAssess.csv",
@@ -2998,77 +3058,82 @@ def _load_boston_assess_records(dataset_dir: Path) -> Optional[List[Dict[str, ob
         logger.info("Boston assessment CSV not found in %s", dataset_dir)
         return None
 
-    records: List[Dict[str, object]] = []
     try:
         with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
-            reader = csv.DictReader(handle)
-            for row in reader:
-                if not row:
-                    continue
-                pid = _clean_string(
-                    row.get("MAP_PAR_ID")
-                    or row.get("PID")
-                    or row.get("GIS_ID")
-                )
-                if not pid:
-                    continue
-                loc_id = _clean_string(
-                    row.get("LOC_ID")
-                    or row.get("GIS_ID")
-                    or row.get("CM_ID")
-                    or pid
-                )
-                site_addr = _compose_boston_site_address(row) or _clean_string(row.get("ADDR")) or None
-                mail_street = _clean_string(row.get("MAIL_STREET_ADDRESS"))
-
-                record = {
-                    "MAP_PAR_ID": pid,
-                    "PID": pid,
-                    "GIS_ID": _clean_string(row.get("GIS_ID")) or pid,
-                    "LOC_ID": loc_id,
-                    "UNIT_NUM": _clean_string(row.get("UNIT_NUM")),
-                    "SITE_ADDR": site_addr,
-                    "LOC_ADDR": site_addr or _clean_string(row.get("ST_NAME")),
-                    "SITE_CITY": _clean_string(row.get("CITY")) or "BOSTON",
-                    "SITE_ZIP": _clean_zip(row.get("ZIP_CODE")),
-                    "CITY": _clean_string(row.get("CITY")) or "BOSTON",
-                    "ZIP": _clean_zip(row.get("ZIP_CODE")),
-                    "OWNER1": _clean_string(row.get("OWNER")) or _clean_string(row.get("MAIL_ADDRESSEE")),
-                    "OWNER": _clean_string(row.get("OWNER")),
-                    "OWNER_NAME": _clean_string(row.get("OWNER")),
-                    "MAIL_ADDRESSEE": _clean_string(row.get("MAIL_ADDRESSEE")),
-                    "MAIL_ADDRESS": mail_street,
-                    "MAIL_CITY": _clean_string(row.get("MAIL_CITY")),
-                    "MAIL_STATE": _clean_string(row.get("MAIL_STATE")),
-                    "MAIL_ZIP": _clean_zip(row.get("MAIL_ZIP_CODE")),
-                    "OWN_ADDR": mail_street,
-                    "OWN_CITY": _clean_string(row.get("MAIL_CITY")),
-                    "OWN_STATE": _clean_string(row.get("MAIL_STATE")),
-                    "OWN_ZIP": _clean_zip(row.get("MAIL_ZIP_CODE")),
-                    "USE_CODE": _clean_string(row.get("LUC") or row.get("LU")),
-                    "USE_DESC": _clean_string(row.get("LU_DESC")) or _clean_string(row.get("LU")),
-                    "TOTAL_VAL": _parse_float_value(row.get("TOTAL_VALUE")),
-                    "TOTAL_VALUE": _parse_float_value(row.get("TOTAL_VALUE")),
-                    "LAND_VAL": _parse_float_value(row.get("LAND_VALUE")),
-                    "LAND_VALUE": _parse_float_value(row.get("LAND_VALUE")),
-                    "BLDG_VAL": _parse_float_value(row.get("BLDG_VALUE")),
-                    "BLDG_VALUE": _parse_float_value(row.get("BLDG_VALUE")),
-                    "LOT_SIZE": _parse_float_value(row.get("LAND_SF")),
-                    "LAND_SF": _parse_float_value(row.get("LAND_SF")),
-                    "LOT_UNITS": "sqft",
-                    "UNITS": _clean_string(row.get("RES_UNITS")) or _clean_string(row.get("NUM_BLDGS")),
-                    "YEAR_BUILT": _clean_string(row.get("YR_BUILT")),
-                    "YR_REMODEL": _clean_string(row.get("YR_REMODEL")),
-                    "STYLE": _clean_string(row.get("BLDG_TYPE")),
-                    "LUC": _clean_string(row.get("LUC")),
-                    "LU": _clean_string(row.get("LU")),
-                }
-                records.append(record)
+            records = _parse_boston_assessment_records(csv.DictReader(handle))
     except Exception as exc:  # noqa: BLE001
         logger.warning("Unable to load Boston assessment CSV at %s: %s", csv_path, exc)
         return None
 
     logger.info("Loaded %s Boston assessment records from %s", len(records), csv_path.name)
+    return records
+
+
+def _parse_boston_assessment_records(reader: csv.DictReader) -> List[Dict[str, object]]:
+    records: List[Dict[str, object]] = []
+    for row in reader:
+        if not row:
+            continue
+        pid = _clean_string(
+            row.get("MAP_PAR_ID")
+            or row.get("PID")
+            or row.get("GIS_ID")
+        )
+        if not pid:
+            continue
+        loc_id = _clean_string(
+            row.get("LOC_ID")
+            or row.get("GIS_ID")
+            or row.get("CM_ID")
+            or pid
+        )
+        site_addr = _compose_boston_site_address(row) or _clean_string(row.get("ADDR")) or None
+        mail_street = _clean_string(row.get("MAIL_STREET_ADDRESS"))
+
+        record = {
+            "MAP_PAR_ID": pid,
+            "PID": pid,
+            "GIS_ID": _clean_string(row.get("GIS_ID")) or pid,
+            "LOC_ID": loc_id,
+            "UNIT_NUM": _clean_string(row.get("UNIT_NUM")),
+            "SITE_ADDR": site_addr,
+            "LOC_ADDR": site_addr or _clean_string(row.get("ST_NAME")),
+            "SITE_CITY": _clean_string(row.get("CITY")) or "BOSTON",
+            "SITE_ZIP": _clean_zip(row.get("ZIP_CODE")),
+            "CITY": _clean_string(row.get("CITY")) or "BOSTON",
+            "ZIP": _clean_zip(row.get("ZIP_CODE")),
+            "OWNER1": _clean_string(row.get("OWNER")) or _clean_string(row.get("MAIL_ADDRESSEE")),
+            "OWNER": _clean_string(row.get("OWNER")),
+            "OWNER_NAME": _clean_string(row.get("OWNER")),
+            "MAIL_ADDRESSEE": _clean_string(row.get("MAIL_ADDRESSEE")),
+            "MAIL_ADDRESS": mail_street,
+            "MAIL_CITY": _clean_string(row.get("MAIL_CITY")),
+            "MAIL_STATE": _clean_string(row.get("MAIL_STATE")),
+            "MAIL_ZIP": _clean_zip(row.get("MAIL_ZIP_CODE")),
+            "OWN_ADDR": mail_street,
+            "OWN_CITY": _clean_string(row.get("MAIL_CITY")),
+            "OWN_STATE": _clean_string(row.get("MAIL_STATE")),
+            "OWN_ZIP": _clean_zip(row.get("MAIL_ZIP_CODE")),
+            "USE_CODE": _clean_string(row.get("LUC") or row.get("LU")),
+            "USE_DESC": _clean_string(row.get("LU_DESC")) or _clean_string(row.get("LU")),
+            "TOTAL_VAL": _parse_float_value(row.get("TOTAL_VALUE")),
+            "TOTAL_VALUE": _parse_float_value(row.get("TOTAL_VALUE")),
+            "LAND_VAL": _parse_float_value(row.get("LAND_VALUE")),
+            "LAND_VALUE": _parse_float_value(row.get("LAND_VALUE")),
+            "BLDG_VAL": _parse_float_value(row.get("BLDG_VALUE")),
+            "BLDG_VALUE": _parse_float_value(row.get("BLDG_VALUE")),
+            "LOT_SIZE": _parse_float_value(row.get("LAND_SF")),
+            "LAND_SF": _parse_float_value(row.get("LAND_SF")),
+            "LOT_UNITS": "sqft",
+            "UNITS": _clean_string(row.get("RES_UNITS")) or _clean_string(row.get("NUM_BLDGS")),
+            "YEAR_BUILT": _clean_string(row.get("YR_BUILT")),
+            "YR_REMODEL": _clean_string(row.get("YR_REMODEL")),
+            "STYLE": _clean_string(row.get("BLDG_TYPE")),
+            "LUC": _clean_string(row.get("LUC")),
+            "LU": _clean_string(row.get("LU")),
+        }
+        records.append(record)
+
     return records
 
 
