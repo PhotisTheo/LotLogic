@@ -2943,6 +2943,12 @@ def _find_taxpar_shapefile(dataset_dir: Path) -> Path:
 
 
 def _find_assess_dbf(dataset_dir: Path) -> Path:
+    # For Boston, the TaxPar DBF contains the assessment data
+    if dataset_dir.name.upper() == "BOSTON_TAXPAR":
+        taxpar_candidates = sorted(dataset_dir.glob("*TaxPar*.dbf"))
+        if taxpar_candidates:
+            return taxpar_candidates[0]
+
     candidates = sorted(dataset_dir.glob("*Assess*.dbf"))
     if not candidates:
         raise MassGISDataError(
