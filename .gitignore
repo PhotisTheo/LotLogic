@@ -7,3 +7,4 @@ leads/.DS_Store
 photos/.DS_Store
 venv/
 *.pyc
+gisdata/
