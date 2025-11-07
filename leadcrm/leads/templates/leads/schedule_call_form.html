@@ -1,0 +1,88 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Schedule a Call{% endblock %}
+
+{% block header %}
+<header class="bg-dark text-light py-3">
+  <div class="container">
+    <strong>Schedule a Call</strong>
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+  <div class="page-header mb-4">
+    <h1 class="mb-1">Schedule a Call</h1>
+    <p class="text-muted mb-0">We'll prepare a quick conversation about {{ full_address|default:"this property" }}.</p>
+  </div>
+
+  {% if submitted %}
+    <div class="alert alert-success">Thanks! We'll be in touch shortly.</div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 fw-semibold mb-3">Property Details</h2>
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Property</dt>
+            <dd class="col-sm-8">{{ full_address|default:"—" }}</dd>
+            <dt class="col-sm-4 text-muted">City</dt>
+            <dd class="col-sm-8">{{ property_city|default:"—" }}</dd>
+            <dt class="col-sm-4 text-muted">Owner</dt>
+            <dd class="col-sm-8">{{ recipient_name|default:"Neighbor" }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 fw-semibold mb-3">Tell Us How to Reach You</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if script_param %}
+              <input type="hidden" name="script" value="{{ script_param }}">
+            {% endif %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
+              {{ form.contact_phone }}
+              {% if form.contact_phone.errors %}
+                <div class="text-danger small mt-1">{{ form.contact_phone.errors|join:", " }}</div>
+              {% elif form.contact_phone.help_text %}
+                <div class="form-text">{{ form.contact_phone.help_text }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.preferred_call_time.id_for_label }}">{{ form.preferred_call_time.label }}</label>
+              {{ form.preferred_call_time }}
+              {% if form.preferred_call_time.errors %}
+                <div class="text-danger small mt-1">{{ form.preferred_call_time.errors|join:", " }}</div>
+              {% elif form.preferred_call_time.help_text %}
+                <div class="form-text">{{ form.preferred_call_time.help_text }}</div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+              {{ form.notes }}
+              {% if form.notes.errors %}
+                <div class="text-danger small mt-1">{{ form.notes.errors|join:", " }}</div>
+              {% elif form.notes.help_text %}
+                <div class="form-text">{{ form.notes.help_text }}</div>
+              {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block external_footer %}{% endblock %}

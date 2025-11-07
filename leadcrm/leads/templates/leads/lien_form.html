@@ -1,0 +1,177 @@
+{% extends "leads/base.html" %}
+
+{% block title %}{{ action }} Lien Record{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12 col-lg-8 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+          <a href="{% url 'parcel_detail' town_id loc_id %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="bi bi-arrow-left"></i> Back to Parcel
+          </a>
+          <h1 class="mb-0">{{ action }} Lien Record</h1>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-file-earmark-text me-2"></i>Lien Information
+          </div>
+          <div class="card-body">
+            <form method="post" action="">
+              {% csrf_token %}
+
+              {% if form.errors %}
+                <div class="alert alert-danger">
+                  <strong>Please correct the following errors:</strong>
+                  <ul class="mb-0">
+                    {% for field in form %}
+                      {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                      {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Lien Details</h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.lien_type.id_for_label }}" class="form-label">{{ form.lien_type.label }}</label>
+                  {{ form.lien_type }}
+                  {% if form.lien_type.help_text %}
+                    <div class="form-text">{{ form.lien_type.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
+                  {{ form.status }}
+                  {% if form.status.help_text %}
+                    <div class="form-text">{{ form.status.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-8">
+                  <label for="{{ form.lien_holder.id_for_label }}" class="form-label">{{ form.lien_holder.label }}</label>
+                  {{ form.lien_holder }}
+                  {% if form.lien_holder.help_text %}
+                    <div class="form-text">{{ form.lien_holder.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                  <label for="{{ form.amount.id_for_label }}" class="form-label">{{ form.amount.label }}</label>
+                  {{ form.amount }}
+                  {% if form.amount.help_text %}
+                    <div class="form-text">{{ form.amount.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Recording Information</h6>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="{{ form.recording_date.id_for_label }}" class="form-label">{{ form.recording_date.label }}</label>
+                  {{ form.recording_date }}
+                  {% if form.recording_date.help_text %}
+                    <div class="form-text">{{ form.recording_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-3">
+                  <label for="{{ form.book_number.id_for_label }}" class="form-label">{{ form.book_number.label }}</label>
+                  {{ form.book_number }}
+                </div>
+
+                <div class="col-md-3">
+                  <label for="{{ form.page_number.id_for_label }}" class="form-label">{{ form.page_number.label }}</label>
+                  {{ form.page_number }}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.instrument_number.id_for_label }}" class="form-label">{{ form.instrument_number.label }}</label>
+                  {{ form.instrument_number }}
+                  {% if form.instrument_number.help_text %}
+                    <div class="form-text">{{ form.instrument_number.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Release Information <span class="small">(Optional)</span></h6>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="{{ form.release_date.id_for_label }}" class="form-label">{{ form.release_date.label }}</label>
+                  {{ form.release_date }}
+                  {% if form.release_date.help_text %}
+                    <div class="form-text">{{ form.release_date.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-3">
+                  <label for="{{ form.release_book_number.id_for_label }}" class="form-label">{{ form.release_book_number.label }}</label>
+                  {{ form.release_book_number }}
+                </div>
+
+                <div class="col-md-3">
+                  <label for="{{ form.release_page_number.id_for_label }}" class="form-label">{{ form.release_page_number.label }}</label>
+                  {{ form.release_page_number }}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.release_instrument_number.id_for_label }}" class="form-label">{{ form.release_instrument_number.label }}</label>
+                  {{ form.release_instrument_number }}
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="text-muted border-bottom pb-2 mb-3">Source & Documentation</h6>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.source.id_for_label }}" class="form-label">{{ form.source.label }}</label>
+                  {{ form.source }}
+                  {% if form.source.help_text %}
+                    <div class="form-text">{{ form.source.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.source_url.id_for_label }}" class="form-label">{{ form.source_url.label }}</label>
+                  {{ form.source_url }}
+                  {% if form.source_url.help_text %}
+                    <div class="form-text">{{ form.source_url.help_text }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-12">
+                  <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                  {{ form.notes }}
+                  {% if form.notes.help_text %}
+                    <div class="form-text">{{ form.notes.help_text }}</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check-circle me-1"></i>Save Lien Record
+                </button>
+                <a href="{% url 'parcel_detail' town_id loc_id %}" class="btn btn-outline-secondary">
+                  Cancel
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

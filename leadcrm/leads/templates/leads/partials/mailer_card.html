@@ -1,0 +1,76 @@
+{% if mailer %}
+  <div class="{{ column_class|default:'col-12' }}">
+    <div
+      class="card h-100"
+      id="parcel-mailer-card"
+      data-script-map="{{ mailer.script_map_json|default:'{}'|escapejs }}"
+      data-default-script="{{ mailer.prompt_selected|default:'' }}"
+      data-download-base="{{ mailer.download_base|default:'' }}"
+    >
+      <div class="card-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div class="d-flex flex-column">
+          <span class="fw-semibold">Mailer Scripts</span>
+          <span class="small text-muted" data-role="mailer-summary">
+            {{ mailer.summary|default:"Select a template to preview a script." }}
+          </span>
+        </div>
+        {% if mailer.prompt_options %}
+          <div class="d-flex align-items-center gap-2">
+            <label class="mb-0 small text-muted" for="mailer-script-select">Template</label>
+            <select
+              class="form-select form-select-sm"
+              id="mailer-script-select"
+              data-role="mailer-script-select"
+            >
+              {% for option in mailer.prompt_options %}
+                <option value="{{ option.id }}" {% if option.id == mailer.prompt_selected %}selected{% endif %}>
+                  {{ option.label }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+          <a
+            class="btn btn-sm btn-outline-primary{% if not mailer.pdf_url %} disabled{% endif %}"
+            data-role="mailer-download"
+            href="{% if mailer.pdf_url %}{{ mailer.pdf_url }}{% else %}#{% endif %}"
+            target="_blank"
+            rel="noopener"
+            aria-disabled="{% if mailer.pdf_url %}false{% else %}true{% endif %}"
+            {% if not mailer.pdf_url %}tabindex="-1"{% endif %}
+          >
+            Download PDF
+          </a>
+        </div>
+        <style>
+          #parcel-mailer-card .mailer-preview {
+            width: 100%;
+            max-width: 520px;
+            height: 640px;
+            overflow: auto;
+          }
+          #parcel-mailer-card .mailer-preview-inner {
+            width: 816px;
+            height: 1056px;
+            transform: scale(0.6);
+            transform-origin: top left;
+          }
+        </style>
+        <div class="mailer-preview">
+          <div class="mailer-preview-inner">
+            <div id="parcel-mailer-content" data-role="mailer-root">
+              {% if mailer.preview_html %}
+                {{ mailer.preview_html|safe }}
+              {% else %}
+                {% include "leads/partials/_mailer_letter.html" %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

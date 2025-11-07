@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LotLogic{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      background-color: #f6f8fb;
+    }
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1 0 auto;
+    }
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .page-header h1,
+    .page-header h2 {
+      font-weight: 600;
+    }
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+    table thead th {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.76rem;
+    }
+    .stat-pill {
+      background: #eef2ff;
+      color: #3730a3;
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .stripe-card-element {
+      padding: 0.625rem 0.75rem;
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+      background-color: #ffffff;
+    }
+    .stripe-card-element.StripeElement--focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+      transition: box-shadow 0.2s ease;
+    }
+    .stripe-card-element.StripeElement--invalid {
+      border-color: #dc3545;
+    }
+  </style>
+  <script src="https://js.stripe.com/v3/"></script>
+  {% block extra_css %}{% endblock %}
+</head>
+<body data-stripe-publishable-key="{{ stripe_publishable_key|default:'' }}">
+  <div class="app-shell">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'parcel_search' %}">LotLogic</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#appNav" aria-controls="appNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="appNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link{% if request.resolver_match.url_name == 'parcel_search' %} active{% endif %}" href="{% url 'parcel_search' %}">Parcel Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if request.resolver_match.url_name == 'saved_parcel_lists' %} active{% endif %}" href="{% url 'saved_parcel_lists' %}">Saved Lists</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if request.resolver_match.url_name == 'crm_overview' or request.resolver_match.url_name == 'crm_city_requests' %} active{% endif %}" href="{% url 'crm_overview' %}">CRM</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link{% if request.resolver_match.url_name == 'profile' %} active{% endif %}" href="{% url 'accounts:profile' %}">Hi, {{ request.user.username }}</a>
+              </li>
+              <li class="nav-item">
+                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link btn btn-link px-0 text-decoration-none">Log Out</button>
+                </form>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}" href="{% url 'accounts:login' %}">Log In</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link{% if request.resolver_match.url_name == 'signup' %} active{% endif %}" href="{% url 'accounts:signup' %}">Sign Up</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      {% if messages %}
+        <div class="mb-3">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} shadow-sm">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-light py-3 mt-auto">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center">
+        <span class="small">&copy; {% now "Y" %} Lead CRM</span>
+        <span class="small text-muted">Data sources: MassGIS, FEMA</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal fade" id="skiptraceConfirmModal" tabindex="-1" aria-labelledby="skiptraceConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-semibold" id="skiptraceConfirmModalLabel">Confirm Skip Trace</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2" data-role="skiptrace-confirm-summary">This skip trace will run against one property.</p>
+          <div class="mb-3 d-none" data-role="skiptrace-card-wrapper">
+            <label class="form-label small mb-1" for="skiptrace-card-element">Card Details</label>
+            <div id="skiptrace-card-element" class="stripe-card-element"></div>
+            <div id="skiptrace-card-error" class="text-danger small mt-2 d-none"></div>
+          </div>
+          <div class="alert alert-warning py-2 mb-2">
+            <div class="fw-semibold small text-uppercase text-muted mb-1">Estimated Charge</div>
+            <div class="fs-5 mb-0" data-role="skiptrace-confirm-total">$0.00</div>
+            <div class="small text-muted d-none" data-role="skiptrace-confirm-breakdown"></div>
+          </div>
+          <p class="text-muted small mb-1">Charges apply per run, including refreshes.</p>
+          <p class="text-muted small mb-0">Single skip traces include Stripe processing fees; bulk skip tracing is more economical.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-role="skiptrace-confirm-action">Confirm &amp; Charge</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    (function (global) {
+      const documentBody = document.body || document.querySelector('body');
+
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+          return parts.pop().split(';').shift();
+        }
+        return null;
+      }
+
+      function escapeHtml(text) {
+        const span = document.createElement('span');
+        span.textContent = text ?? '';
+        return span.innerHTML;
+      }
+
+      function formatTimestamp(value) {
+        if (!value) {
+          return null;
+        }
+        try {
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) {
+            return null;
+          }
+          return new Intl.DateTimeFormat(undefined, {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }).format(date);
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function formatDncBadge(value) {
+        if (value === null || value === undefined) {
+          return '<span class="badge text-bg-secondary ms-2">DNC Unknown</span>';
+        }
+        const normalized = String(value).trim().toUpperCase();
+        if (!normalized) {
+          return '<span class="badge text-bg-secondary ms-2">DNC Unknown</span>';
+        }
+        if (['TRUE', 'Y', 'YES', 'ON'].includes(normalized)) {
+          return '<span class="badge text-bg-danger ms-2">On DNC</span>';
+        }
+        if (['FALSE', 'N', 'NO', 'OFF'].includes(normalized)) {
+          return '<span class="badge text-bg-success ms-2">OK to Call</span>';
+        }
+        return `<span class="badge text-bg-warning text-dark ms-2">DNC: ${escapeHtml(String(value))}</span>`;
+      }
+
+      function renderResults(resultsBody, payload) {
+        if (!resultsBody) {
+          return;
+        }
+        const rows = [];
+        if (payload && payload.ownerName) {
+          rows.push(`<tr><th>Owner</th><td>${escapeHtml(payload.ownerName)}</td></tr>`);
+        }
+        if (payload && payload.email) {
+          rows.push(`<tr><th>Email</th><td>${escapeHtml(payload.email)}</td></tr>`);
+        }
+        if (payload && Array.isArray(payload.phones)) {
+          payload.phones.forEach((phone, index) => {
+            if (!phone) {
+              return;
+            }
+            const label = `Phone #${index + 1}`;
+            const badge = formatDncBadge(phone.dnc);
+            rows.push(`<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(phone.number || '')} ${badge}</td></tr>`);
+          });
+        }
+        resultsBody.innerHTML =
+          rows.join('') || '<tr><td class="text-muted" colspan="2">No results yet.</td></tr>';
+      }
+
+      global.LeadCRM = global.LeadCRM || {};
+
+      // ------------------------------
+      // Stripe payment helper module.
+      // ------------------------------
+      const Payment = global.LeadCRM.payment || {};
+      let stripeInstance = null;
+      let stripeElements = null;
+      const mountedCards = new Map();
+      const defaultElementStyle = {
+        base: {
+          color: '#1f2937',
+          fontFamily:
+            '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          fontSize: '16px',
+          '::placeholder': {
+            color: '#94a3b8',
+          },
+        },
+        invalid: {
+          color: '#dc2626',
+        },
+      };
+
+      function getPublishableKey() {
+        if (!documentBody) {
+          return null;
+        }
+        return (
+          documentBody.dataset.stripePublishableKey ||
+          documentBody.getAttribute('data-stripe-publishable-key') ||
+          null
+        );
+      }
+
+      function ensureStripe() {
+        if (stripeInstance) {
+          return stripeInstance;
+        }
+        if (typeof global.Stripe === 'undefined') {
+          return null;
+        }
+        const publishableKey = getPublishableKey();
+        if (!publishableKey) {
+          return null;
+        }
+        stripeInstance = global.Stripe(publishableKey);
+        stripeElements = stripeInstance.elements();
+        return stripeInstance;
+      }
+
+      Payment.isReady = function () {
+        return !!ensureStripe();
+      };
+
+      Payment.mount = function (config) {
+        if (!config) {
+          return;
+        }
+        const stripe = ensureStripe();
+        if (!stripe) {
+          return;
+        }
+        const elementsInstance = stripeElements || stripe.elements();
+        const mountKey = config.cardElementId || config.cardNumberId;
+        if (!mountKey) {
+          return;
+        }
+        let entry = mountedCards.get(mountKey);
+        const mergedStyle = Object.assign({}, defaultElementStyle, config.elementStyle || {});
+
+        if (!entry) {
+          if (config.cardNumberId && config.cardExpiryId && config.cardCvcId) {
+            const numberTarget = document.getElementById(config.cardNumberId);
+            const expiryTarget = document.getElementById(config.cardExpiryId);
+            const cvcTarget = document.getElementById(config.cardCvcId);
+            if (numberTarget && expiryTarget && cvcTarget) {
+              const cardNumber = (elementsInstance || stripe.elements()).create('cardNumber', {
+                style: mergedStyle,
+                showIcon: true,
+              });
+              const cardExpiry = (elementsInstance || stripe.elements()).create('cardExpiry', {
+                style: mergedStyle,
+              });
+              const cardCvc = (elementsInstance || stripe.elements()).create('cardCvc', {
+                style: mergedStyle,
+              });
+
+              cardNumber.mount(numberTarget);
+              cardExpiry.mount(expiryTarget);
+              cardCvc.mount(cvcTarget);
+
+              entry = {
+                key: mountKey,
+                mode: 'split',
+                card: cardNumber,
+                cardNumber,
+                cardExpiry,
+                cardCvc,
+              };
+              mountedCards.set(mountKey, entry);
+
+              const handleStripeChange = (event) => {
+                Payment.setError(config, event.error ? event.error.message : '');
+              };
+              cardNumber.on('change', handleStripeChange);
+              cardExpiry.on('change', handleStripeChange);
+              cardCvc.on('change', handleStripeChange);
+            }
+          } else if (config.cardElementId) {
+            const target = document.getElementById(config.cardElementId);
+            if (target) {
+              const cardElement = (elementsInstance || stripe.elements()).create('card', {
+                hidePostalCode: true,
+                style: mergedStyle,
+              });
+              cardElement.mount(target);
+              entry = {
+                key: mountKey,
+                mode: 'card',
+                card: cardElement,
+              };
+              mountedCards.set(mountKey, entry);
+              cardElement.on('change', (event) => {
+                Payment.setError(config, event.error ? event.error.message : '');
+              });
+            }
+          }
+        }
+        if (entry) {
+          entry.config = config;
+        }
+      };
+
+      Payment.setError = function (config, message) {
+        if (!config || !config.cardErrorId) {
+          return;
+        }
+        const errorEl = document.getElementById(config.cardErrorId);
+        if (!errorEl) {
+          return;
+        }
+        if (message) {
+          errorEl.textContent = message;
+          errorEl.classList.remove('d-none');
+        } else {
+          errorEl.textContent = '';
+          errorEl.classList.add('d-none');
+        }
+      };
+
+      Payment.process = async function (config) {
+        const stripe = ensureStripe();
+        if (!stripe) {
+          Payment.setError(config, 'Payment could not be initialised.');
+          return false;
+        }
+        Payment.mount(config);
+        Payment.setError(config, '');
+
+        const mountKey = config.cardElementId || config.cardNumberId;
+        const entry = mountKey ? mountedCards.get(mountKey) : null;
+        if (!entry) {
+          Payment.setError(config, 'Card form is not ready.');
+          return false;
+        }
+
+        let clientSecret = config.intentClientSecret;
+        let serverState = config.intentServerState || null;
+        try {
+          if (!clientSecret) {
+            const payload = Object.assign({}, config.intentPayload || {});
+            const response = await fetch(config.createIntentEndpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
+              },
+              body: JSON.stringify(payload),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              const message = data && data.error ? data.error : 'Unable to initiate payment.';
+              Payment.setError(config, message);
+              return false;
+            }
+            serverState = data || {};
+            config.intentServerState = serverState;
+            clientSecret = serverState.clientSecret || serverState.client_secret;
+            if (!clientSecret) {
+              Payment.setError(config, 'Unable to retrieve payment token.');
+              return false;
+            }
+            config.intentClientSecret = clientSecret;
+          }
+
+          const paymentMethodData = {
+            card: entry.card,
+          };
+          if (config.cardholderFieldId) {
+            const cardholderField = document.getElementById(config.cardholderFieldId);
+            if (cardholderField && cardholderField.value) {
+              paymentMethodData.billing_details = paymentMethodData.billing_details || {};
+              paymentMethodData.billing_details.name = cardholderField.value;
+            }
+          }
+          if (config.billingPostalFieldId) {
+            const postalField = document.getElementById(config.billingPostalFieldId);
+            if (postalField && postalField.value) {
+              paymentMethodData.billing_details = paymentMethodData.billing_details || {};
+              paymentMethodData.billing_details.address =
+                paymentMethodData.billing_details.address || {};
+              paymentMethodData.billing_details.address.postal_code = postalField.value;
+            }
+          }
+
+          const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: paymentMethodData,
+          });
+          if (result.error) {
+            Payment.setError(config, result.error.message || 'Payment failed.');
+            return false;
+          }
+          Payment.setError(config, '');
+          config.intentClientSecret = null;
+          const paymentIntentId =
+            (result.paymentIntent && result.paymentIntent.id) ||
+            (serverState && (serverState.paymentIntentId || serverState.payment_intent_id)) ||
+            null;
+          const invoiceId =
+            (serverState && (serverState.invoiceId || serverState.invoice_id)) ||
+            (result.paymentIntent && result.paymentIntent.invoice) ||
+            null;
+          return {
+            paymentIntentId,
+            subscriptionId: serverState && (serverState.subscriptionId || serverState.subscription_id) || null,
+            customerId: serverState && (serverState.customerId || serverState.customer_id) || null,
+            invoiceId,
+          };
+        } catch (error) {
+          Payment.setError(config, (error && error.message) || 'Payment failed.');
+          return false;
+        }
+      };
+
+      global.LeadCRM.payment = Payment;
+
+      // ------------------------------
+      // Skip trace helper module.
+      // ------------------------------
+      const Skiptrace = global.LeadCRM.skiptrace || {};
+
+      Skiptrace.renderResults = renderResults;
+      Skiptrace.formatTimestamp = formatTimestamp;
+      Skiptrace.getCookie = getCookie;
+
+      let confirmModalInstance = null;
+      let confirmModalEl = null;
+      let confirmButtonEl = null;
+      let confirmSummaryEl = null;
+      let confirmTotalEl = null;
+      let confirmBreakdownEl = null;
+      let confirmCardWrapperEl = null;
+
+      function ensureConfirmModal() {
+        if (!confirmModalEl) {
+          confirmModalEl = document.getElementById('skiptraceConfirmModal');
+          if (!confirmModalEl) {
+            return null;
+          }
+          confirmButtonEl = confirmModalEl.querySelector('[data-role="skiptrace-confirm-action"]');
+          confirmSummaryEl = confirmModalEl.querySelector('[data-role="skiptrace-confirm-summary"]');
+          confirmTotalEl = confirmModalEl.querySelector('[data-role="skiptrace-confirm-total"]');
+          confirmBreakdownEl = confirmModalEl.querySelector('[data-role="skiptrace-confirm-breakdown"]');
+          confirmCardWrapperEl = confirmModalEl.querySelector('[data-role="skiptrace-card-wrapper"]');
+        }
+        if (!confirmModalEl) {
+          return null;
+        }
+        confirmModalInstance =
+          confirmModalInstance ||
+          (global.bootstrap ? global.bootstrap.Modal.getOrCreateInstance(confirmModalEl) : null);
+        if (!confirmModalInstance) {
+          return null;
+        }
+        return {
+          modal: confirmModalInstance,
+          modalEl: confirmModalEl,
+          confirmButton: confirmButtonEl,
+          summaryEl: confirmSummaryEl,
+          totalEl: confirmTotalEl,
+          breakdownEl: confirmBreakdownEl,
+          cardWrapper: confirmCardWrapperEl,
+        };
+      }
+
+      Skiptrace.confirmWithPayment = function (paymentConfig, pricing) {
+        const paymentModule = global.LeadCRM.payment;
+        const modalCtx = ensureConfirmModal();
+
+        if (!paymentModule || !paymentModule.isReady() || !modalCtx) {
+          if (paymentModule && paymentModule.isReady()) {
+            return paymentModule.process(paymentConfig);
+          }
+          return Promise.resolve(true);
+        }
+
+        return new Promise((resolve) => {
+          let completed = false;
+          const { modal, modalEl, confirmButton, summaryEl, totalEl, breakdownEl, cardWrapper } = modalCtx;
+
+          if (confirmButton) {
+            confirmButton.disabled = false;
+          }
+
+          if (summaryEl) {
+            if (pricing && pricing.count && pricing.count > 1) {
+              summaryEl.textContent = `This skip trace will run against ${pricing.count} properties.`;
+            } else {
+              summaryEl.textContent = 'This skip trace will run against one property.';
+            }
+          }
+
+          if (totalEl) {
+            totalEl.textContent = (pricing && pricing.totalCostDisplay) || '$0.00';
+          }
+
+          if (breakdownEl) {
+            const parts = [];
+            if (pricing && pricing.perLookupTotalDisplay) {
+              parts.push(`Per lookup: ${pricing.perLookupTotalDisplay}`);
+            }
+            if (pricing && pricing.processingFeeAmountDisplay) {
+              parts.push(`Processing fee: ${pricing.processingFeeAmountDisplay}`);
+            }
+            breakdownEl.textContent = parts.join(' · ');
+            breakdownEl.classList.toggle('d-none', parts.length === 0);
+          }
+
+          paymentModule.mount(paymentConfig);
+          paymentModule.setError(paymentConfig, '');
+
+          if (cardWrapper) {
+            cardWrapper.classList.remove('d-none');
+          }
+
+          function cleanup() {
+            if (confirmButton) {
+              confirmButton.removeEventListener('click', onConfirm);
+            }
+            modalEl.removeEventListener('hidden.bs.modal', onHide);
+          }
+
+          async function onConfirm() {
+            if (confirmButton) {
+              confirmButton.disabled = true;
+            }
+            const success = await paymentModule.process(paymentConfig);
+            if (!success) {
+              if (confirmButton) {
+                confirmButton.disabled = false;
+              }
+              return;
+            }
+            completed = true;
+            cleanup();
+            modal.hide();
+            resolve(true);
+          }
+
+          function onHide() {
+            cleanup();
+            if (!completed) {
+              resolve(false);
+            }
+          }
+
+          modalEl.addEventListener('hidden.bs.modal', onHide);
+          if (confirmButton) {
+            confirmButton.addEventListener('click', onConfirm);
+          }
+
+          modal.show();
+        });
+      };
+
+      Skiptrace.init = function (container, config) {
+        if (!container || !config) {
+          return;
+        }
+
+        const runButton = container.querySelector('[data-role="skiptrace-run"]');
+        const spinner = container.querySelector('[data-role="skiptrace-spinner"]');
+        const resultsWrapper = container.querySelector('[data-role="skiptrace-results"]');
+        const resultsBody = container.querySelector('[data-role="skiptrace-results-body"]');
+        const statusEl = container.querySelector('[data-role="skiptrace-status"]');
+
+        let hasExistingResults = !!config.initial;
+
+        function setStatus(message, tone) {
+          if (!statusEl) {
+            return;
+          }
+          statusEl.textContent = message || '';
+          statusEl.classList.remove('d-none', 'text-success', 'text-danger', 'text-muted');
+          if (!message) {
+            statusEl.classList.add('d-none');
+            return;
+          }
+          if (tone === 'error') {
+            statusEl.classList.add('text-danger');
+          } else if (tone === 'success') {
+            statusEl.classList.add('text-success');
+          } else {
+            statusEl.classList.add('text-muted');
+          }
+        }
+
+        if (config.statusMessage) {
+          setStatus(config.statusMessage, 'info');
+        }
+
+        if (config.initial && resultsWrapper && resultsBody) {
+          resultsWrapper.classList.remove('d-none');
+          Skiptrace.renderResults(resultsBody, config.initial);
+        }
+
+        async function executeSkiptrace(refreshRequested) {
+          if (!config.endpoint) {
+            return false;
+          }
+          if (spinner) {
+            spinner.classList.remove('d-none');
+          }
+          if (runButton) {
+            runButton.disabled = true;
+          }
+          setStatus('Running skip trace…', 'pending');
+
+          try {
+            const response = await fetch(config.endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
+              },
+              body: JSON.stringify({ refresh: !!refreshRequested }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              const message = data && data.error ? data.error : 'Skip trace failed. Please try again.';
+              setStatus(message, 'error');
+              return false;
+            }
+            if (resultsWrapper) {
+              resultsWrapper.classList.remove('d-none');
+            }
+            if (resultsBody) {
+              Skiptrace.renderResults(resultsBody, data);
+            }
+            const timestamp = Skiptrace.formatTimestamp(data.lastUpdated) || 'just now';
+            setStatus(`Last run ${timestamp}`, 'success');
+            return true;
+          } catch (error) {
+            setStatus('Skip trace could not be completed. Please try again.', 'error');
+            return false;
+          } finally {
+            if (spinner) {
+              spinner.classList.add('d-none');
+            }
+            if (runButton) {
+              runButton.disabled = false;
+            }
+          }
+        }
+
+        if (runButton) {
+          runButton.addEventListener('click', async () => {
+            if (!config.endpoint) {
+              return;
+            }
+
+            const paymentModule = global.LeadCRM.payment;
+            const basePaymentConfig = config.payment || null;
+            const paymentConfig = basePaymentConfig
+              ? Object.assign({}, basePaymentConfig, {
+                  intentPayload: Object.assign({}, basePaymentConfig.intentPayload || {}),
+                  intentClientSecret: null,
+                })
+              : null;
+
+            const refreshRequested = hasExistingResults;
+            if (paymentConfig) {
+              paymentConfig.intentPayload.refresh = refreshRequested;
+            }
+
+            const needsPayment =
+              paymentConfig &&
+              paymentConfig.enabled &&
+              paymentModule &&
+              typeof paymentModule.isReady === 'function' &&
+              paymentModule.isReady();
+
+            if (needsPayment) {
+              const paid = await Skiptrace.confirmWithPayment(paymentConfig, config.pricing || {});
+              if (!paid) {
+                setStatus('Payment was cancelled.', 'error');
+                return;
+              }
+            }
+
+            const success = await executeSkiptrace(refreshRequested);
+            if (success) {
+              hasExistingResults = true;
+            }
+          });
+        }
+      };
+
+      global.LeadCRM.skiptrace = Skiptrace;
+
+    })(typeof window !== 'undefined' ? window : this);
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

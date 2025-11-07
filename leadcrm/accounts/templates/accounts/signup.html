@@ -1,0 +1,730 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Start Your Subscription · Lead CRM{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .signup-hero {
+      background: radial-gradient(circle at top left, #eff6ff 0%, #dbeafe 45%, #f8fafc 100%);
+      border-radius: 24px;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .signup-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), transparent 60%);
+      pointer-events: none;
+    }
+    .signup-hero h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.03em;
+    }
+    .signup-hero p.lead {
+      font-size: 1.1rem;
+    }
+    .trust-badges {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #1f2937;
+    }
+    .plan-card {
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 20px;
+      padding: 2rem 1.75rem;
+      height: 100%;
+      background: #ffffff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 25px 45px -20px rgba(37, 99, 235, 0.35);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .plan-card.is-selected {
+      border-color: #2563eb;
+      box-shadow: 0 25px 45px -18px rgba(37, 99, 235, 0.45);
+    }
+    .plan-card-highlight {
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.02));
+    }
+    .plan-price {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+    .plan-features li::before {
+      content: "✔";
+      color: #1d4ed8;
+      margin-right: 0.5rem;
+    }
+    .billing-card {
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: #ffffff;
+      box-shadow: 0 20px 60px -30px rgba(15, 23, 42, 0.35);
+    }
+    .form-control-lg, .form-select-lg {
+      border-radius: 12px;
+    }
+    .badge-soft {
+      background: rgba(37, 99, 235, 0.12);
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+    .plan-select-btn {
+      border-radius: 999px;
+      padding-inline: 1.75rem;
+      font-weight: 600;
+    }
+    .plan-pill {
+      background: rgba(15, 23, 42, 0.05);
+      color: #1f2937;
+      font-size: 0.82rem;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+    }
+    .plan-card.is-selected .plan-pill {
+      background: rgba(37, 99, 235, 0.15);
+      color: #1d4ed8;
+    }
+    .plan-option {
+      position: relative;
+    }
+    .plan-card-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .plan-card-input:focus-visible + .plan-card {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      border-color: rgba(37, 99, 235, 0.4);
+    }
+    .plan-card-input:checked + .plan-card {
+      border-color: #2563eb;
+      box-shadow: 0 25px 45px -18px rgba(37, 99, 235, 0.45);
+    }
+    .plan-card-input:checked + .plan-card .plan-pill {
+      background: rgba(37, 99, 235, 0.15);
+      color: #1d4ed8;
+    }
+    .team-upsell {
+      background: rgba(37, 99, 235, 0.06);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+    }
+    .signup-divider {
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      margin: 2.5rem 0;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <section class="signup-hero mb-5 position-relative overflow-hidden">
+    <div class="row align-items-center">
+      <div class="col-lg-7 position-relative">
+        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-3">Lead CRM Subscriptions</span>
+        <h1 class="mb-3">Grow your deal flow with a CRM built for parcel intelligence.</h1>
+        <p class="lead text-secondary mb-4">Choose the workspace that fits your team, run skip traces with a click, and launch high-converting mailers—all from the same dashboard.</p>
+        <div class="trust-badges text-secondary-emphasis">
+          <span class="trust-badge">
+            <span aria-hidden="true">⚡</span>
+            Same-day onboarding
+          </span>
+          <span class="trust-badge">
+            <span aria-hidden="true">🔒</span>
+            Secure Stripe billing
+          </span>
+          <span class="trust-badge">
+            <span aria-hidden="true">🏘️</span>
+            Purpose-built for real estate teams
+          </span>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-4 mt-lg-0 position-relative">
+        <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+          <h2 class="h5 fw-semibold text-primary-emphasis">What’s inside Lead CRM</h2>
+          <ul class="list-unstyled mt-3 mb-0 text-secondary">
+            <li class="d-flex gap-2 align-items-start mb-2"><i class="fa-solid fa-check text-primary mt-1"></i><span>Unlimited parcel searches with MassGIS insights</span></li>
+            <li class="d-flex gap-2 align-items-start mb-2"><i class="fa-solid fa-check text-primary mt-1"></i><span>Instant mailer generation &amp; scheduling links with QR codes</span></li>
+            <li class="d-flex gap-2 align-items-start mb-2"><i class="fa-solid fa-check text-primary mt-1"></i><span>Pay-as-you-go skip tracing with shared billing controls</span></li>
+            <li class="d-flex gap-2 align-items-start"><i class="fa-solid fa-check text-primary mt-1"></i><span>CSV exports, saved lists, and CRM pipeline views</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if invite %}
+    <div class="alert alert-info border-0 shadow-sm mb-4">
+      <div class="fw-semibold mb-1">You're joining {{ invite.team_lead.get_full_name|default:invite.team_lead.username }}'s team.</div>
+      <div class="small text-muted">Your team lead manages billing. Just create your login and start collaborating.</div>
+    </div>
+  {% endif %}
+
+  {% if not invite %}
+    <section class="mb-5">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div>
+          <h2 class="h4 fw-semibold mb-1">Pick the workspace that fits today—upgrade anytime.</h2>
+          <p class="text-muted mb-0">All plans include skip tracing, mailer automation, and access to the latest parcel data.</p>
+        </div>
+      </div>
+
+      <div class="row g-4" id="plan-options">
+        {% for plan in plan_options %}
+          <div class="col-md-4">
+            <div class="plan-option" data-plan-option data-plan-id="{{ plan.id }}" data-account-type="{{ plan.account_type }}">
+              <input
+                type="radio"
+                class="plan-card-input"
+                name="{{ form.plan_id.html_name }}"
+                id="plan-option-{{ plan.id }}"
+                value="{{ plan.id }}"
+                data-plan-input
+                data-plan-id="{{ plan.id }}"
+                data-account-type="{{ plan.account_type }}"
+                {% if plan.id == selected_plan_id %}checked{% endif %}
+              >
+              <label
+                class="plan-card {% if plan.highlight %}plan-card-highlight{% endif %} {% if plan.id == selected_plan_id %}is-selected{% endif %}"
+                for="plan-option-{{ plan.id }}"
+                data-plan-card
+                data-plan-id="{{ plan.id }}"
+                data-account-type="{{ plan.account_type }}"
+                tabindex="0"
+              >
+                {% if plan.badge %}
+                  <span class="badge {{ plan.badge_style|default:'bg-primary' }} position-absolute top-0 translate-middle-y" style="left: 1.5rem;">{{ plan.badge }}</span>
+                {% endif %}
+                <div class="plan-pill mb-3">{{ plan.subtitle }}</div>
+                <h3 class="h4 fw-semibold mb-1">{{ plan.label }}</h3>
+                <div class="plan-price mb-3">{{ plan.price_display }}</div>
+                {% if plan.seat_limit %}
+                  <p class="text-muted small mb-3">Includes up to {{ plan.seat_limit }} {{ plan.seat_limit|pluralize:"seat,seats" }}.</p>
+                {% endif %}
+                <ul class="plan-features list-unstyled small mb-4">
+                  {% for feature in plan.features %}
+                    <li class="mb-2">{{ feature }}</li>
+                  {% endfor %}
+                </ul>
+                <span class="btn btn-outline-primary plan-select-btn w-100">{{ plan.cta }}</span>
+                {% if plan.upgrade_note %}
+                  <div class="team-upsell mt-3 text-muted small">{{ plan.upgrade_note }}</div>
+                {% endif %}
+              </label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if form.plan_id.errors %}
+        <div class="mt-2 text-danger small">
+          {% for error in form.plan_id.errors %}
+            <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="billing-card p-4 p-lg-5 mb-5">
+    <form
+      method="post"
+      novalidate
+      id="signup-form"
+      data-payment-intent-endpoint="{{ payment_intent_endpoint }}"
+      data-requires-payment="{{ requires_payment|yesno:'true,false' }}"
+      data-currency="{{ stripe_currency|default:'usd' }}"
+    >
+      {% csrf_token %}
+
+      {% if invite_token %}
+        <input type="hidden" name="invite_token" value="{{ invite_token }}">
+      {% endif %}
+
+      <input type="hidden" name="payment_intent_id" id="id_payment_intent_id" value="">
+      <input type="hidden" name="stripe_subscription_id" id="id_stripe_subscription_id" value="">
+      <input type="hidden" name="stripe_customer_id" id="id_stripe_customer_id" value="">
+      <input type="hidden" name="stripe_invoice_id" id="id_stripe_invoice_id" value="">
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% for error in form.non_field_errors %}
+            <div>{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="row g-4">
+        <!-- LEFT COLUMN: USER DETAILS -->
+        <div class="col-lg-6">
+          <h2 class="h5 fw-semibold mb-3">Your details</h2>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {% for error in form.username.errors %}
+              <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="{{ form.email.id_for_label }}">Work email</label>
+            {{ form.email }}
+            {% for error in form.email.errors %}
+              <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ form.password1.id_for_label }}">Password</label>
+              {{ form.password1 }}
+              {% for error in form.password1.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ form.password2.id_for_label }}">Confirm</label>
+              {{ form.password2 }}
+              {% for error in form.password2.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# plan/account_type go in the POST. If invite, show them. Otherwise hide account_type #}
+          {% if invite %}
+            {{ form.account_type }}
+            {{ form.plan_id }}
+          {% else %}
+            <div class="d-none">{{ form.account_type }}</div>
+            {{ form.plan_id }}
+          {% endif %}
+        </div>
+
+        <!-- RIGHT COLUMN: BILLING -->
+        <div class="col-lg-6">
+          {% if requires_payment %}
+            {% if not stripe_enabled %}
+              <div class="alert alert-warning">
+                Online payments are temporarily unavailable. Please contact support@leadcrm.io to complete your subscription.
+              </div>
+            {% endif %}
+
+            <h2 class="h5 fw-semibold mb-3">Secure billing</h2>
+            <p class="text-muted small mb-3">
+              Subscriptions renew monthly. Cancel anytime from your profile.
+            </p>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="signup-card-element">Card details</label>
+              <div id="signup-card-element" class="stripe-card-element"></div>
+              <div id="signup-card-errors" class="text-danger small mt-2 d-none"></div>
+            </div>
+
+            <div class="bg-light-subtle rounded-3 p-3 small text-muted">
+              <strong>Billing summary:</strong>
+              <div data-role="plan-summary"></div>
+              <div class="d-flex justify-content-between align-items-center mt-2 fw-semibold text-primary-emphasis {% if not requires_payment %}d-none{% endif %}" data-role="charge-row">
+                <span>Today's charge</span>
+                <span data-role="charge-amount">—</span>
+              </div>
+              <div class="mt-2">
+                <span aria-hidden="true">🔐</span>
+                Payments processed by Stripe. We never store your card number.
+              </div>
+            </div>
+          {% else %}
+            <div class="bg-light-subtle rounded-3 p-4">
+              <h2 class="h6 fw-semibold mb-2">Billing handled by your team lead</h2>
+              <p class="small text-muted mb-0">
+                Once you create a password you’ll be added to their shared workspace instantly.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="signup-divider"></div>
+
+      <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div class="text-muted small">
+          By continuing you agree to our subscription terms and monthly billing. You can cancel anytime from your account settings.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg px-5" data-role="submit-button">
+          {% if invite %}Join workspace{% else %}Start my subscription{% endif %}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <p class="text-center text-muted small">Have questions before signing up? Email <a href="mailto:support@leadcrm.io">support@leadcrm.io</a> and we’ll help you choose the right plan.</p>
+
+  {{ plan_catalog|json_script:"signup-plan-catalog" }}
+  {{ plan_groups|json_script:"signup-plan-groups" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  function initSignupPage() {
+    const form = document.getElementById('signup-form');
+    if (!form) {
+      return;
+    }
+
+    const planCatalogScript = document.getElementById('signup-plan-catalog');
+    const planGroupsScript = document.getElementById('signup-plan-groups');
+    const planCatalog = planCatalogScript
+      ? JSON.parse(planCatalogScript.textContent || '{}')
+      : {};
+    const planGroups = planGroupsScript
+      ? JSON.parse(planGroupsScript.textContent || '{}')
+      : {};
+    const requiresPayment = form.dataset.requiresPayment === 'true';
+    const paymentEndpoint = form.dataset.paymentIntentEndpoint || '';
+    const currencyCode = (form.dataset.currency || 'usd').toUpperCase();
+
+    const accountTypeField = document.getElementById('id_account_type');
+    const planInputs = Array.from(document.querySelectorAll('input[data-plan-input]'));
+    const planOptions = Array.from(document.querySelectorAll('[data-plan-option]'));
+    const planCards = Array.from(document.querySelectorAll('[data-plan-card]'));
+    const planSummary = form.querySelector('[data-role="plan-summary"]');
+    const chargeAmountEl = form.querySelector('[data-role="charge-amount"]');
+    const chargeRow = form.querySelector('[data-role="charge-row"]');
+    const submitButton = form.querySelector('[data-role="submit-button"]');
+    const submitButtonDefaultHtml = submitButton ? submitButton.innerHTML : '';
+    const paymentField = document.getElementById('id_payment_intent_id');
+    const subscriptionField = document.getElementById('id_stripe_subscription_id');
+    const customerField = document.getElementById('id_stripe_customer_id');
+    const invoiceField = document.getElementById('id_stripe_invoice_id');
+    const planHiddenField = document.getElementById('id_plan_id');
+
+    const cardElementId = 'signup-card-element';
+    const cardErrorId = 'signup-card-errors';
+
+    const stripeMountConfig = {
+      cardElementId,
+      cardErrorId,
+    };
+
+    function formatCurrencyFromCents(cents) {
+      const amount = Number(cents || 0) / 100;
+      try {
+        return new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency: currencyCode || 'USD',
+          minimumFractionDigits: 2,
+        }).format(amount);
+      } catch (error) {
+        return `$${amount.toFixed(2)}`;
+      }
+    }
+
+    const ACCOUNT_INDIVIDUAL = 'individual';
+
+    function resolvePlanIdFromInputs() {
+      const selectedInput = planInputs.find((input) => input.checked && input.value);
+      if (selectedInput) {
+        return selectedInput.value;
+      }
+      if (planHiddenField && planHiddenField.value) {
+        return planHiddenField.value;
+      }
+      const planIds = Object.keys(planCatalog || {});
+      return planIds.length ? planIds[0] : '';
+    }
+
+    function syncPlanSelection(planId) {
+      planInputs.forEach((input) => {
+        input.checked = input.value === planId;
+      });
+      planCards.forEach((card) => {
+        card.classList.toggle('is-selected', card.dataset.planId === planId);
+      });
+      planOptions.forEach((option) => {
+        option.classList.toggle('is-selected', option.dataset.planId === planId);
+      });
+    }
+
+    function updatePlanSummary(planId) {
+      if (!planSummary) {
+        return;
+      }
+
+      const plan = planCatalog[planId] || null;
+
+      if (!plan) {
+        planSummary.innerHTML = '';
+        if (chargeRow) {
+          chargeRow.classList.toggle('d-none', !requiresPayment);
+        }
+        if (chargeAmountEl) {
+          chargeAmountEl.textContent = requiresPayment ? formatCurrencyFromCents(0) : '—';
+        }
+        return;
+      }
+
+      const items = [];
+      items.push(`<div class="fw-semibold text-primary-emphasis">${plan.label}</div>`);
+      items.push(`<div>${plan.price_display}</div>`);
+      if (plan.seat_limit) {
+        items.push(`<div class="text-muted">Includes up to ${plan.seat_limit} seats.</div>`);
+      }
+
+      if (requiresPayment) {
+        const priceCents = Number(plan.price_cents || 0);
+        if (chargeAmountEl) {
+          if (priceCents > 0) {
+            chargeAmountEl.textContent = formatCurrencyFromCents(priceCents);
+            chargeAmountEl.classList.remove('text-success');
+          } else {
+            chargeAmountEl.textContent = 'No charge';
+            chargeAmountEl.classList.add('text-success');
+          }
+        }
+        if (chargeRow) {
+          chargeRow.classList.remove('d-none');
+        }
+      } else if (chargeRow) {
+        chargeRow.classList.add('d-none');
+        if (chargeAmountEl) {
+          chargeAmountEl.textContent = '—';
+          chargeAmountEl.classList.remove('text-success');
+        }
+      }
+
+      planSummary.innerHTML = items.join('');
+    }
+
+    function applyPlanAccountType(plan) {
+      if (!accountTypeField || !plan) {
+        return;
+      }
+      const nextAccountType = plan.account_type || ACCOUNT_INDIVIDUAL;
+      accountTypeField.value = nextAccountType;
+    }
+
+    function clearPaymentState() {
+      if (paymentField) {
+        paymentField.value = '';
+      }
+      if (subscriptionField) {
+        subscriptionField.value = '';
+      }
+      if (customerField) {
+        customerField.value = '';
+      }
+      if (invoiceField) {
+        invoiceField.value = '';
+      }
+
+      const paymentModule = window.LeadCRM && window.LeadCRM.payment;
+      if (paymentModule) {
+        paymentModule.setError(stripeMountConfig, '');
+      }
+    }
+
+    function handlePlanChange(planId, options = {}) {
+      const resolvedPlanId = planId || resolvePlanIdFromInputs();
+      const selectedPlan = planCatalog[resolvedPlanId] || null;
+
+      if (planHiddenField) {
+        planHiddenField.value = resolvedPlanId || '';
+      }
+
+      syncPlanSelection(resolvedPlanId);
+      updatePlanSummary(resolvedPlanId);
+      if (selectedPlan) {
+        applyPlanAccountType(selectedPlan);
+      }
+
+      if (!options.skipClearPayment) {
+        clearPaymentState();
+      }
+
+      return resolvedPlanId;
+    }
+
+    // ensure we start with a plan selected
+    const initialPlanId = resolvePlanIdFromInputs();
+    handlePlanChange(initialPlanId, { skipClearPayment: true });
+
+    planInputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        if (input.checked) {
+          handlePlanChange(input.value);
+        }
+      });
+    });
+
+    planCards.forEach((card) => {
+      card.addEventListener('click', (event) => {
+        const option = card.closest('[data-plan-option]');
+        if (!option) {
+          return;
+        }
+        const input = option.querySelector('input[data-plan-input]');
+        if (!input) {
+          return;
+        }
+        if (!input.checked) {
+          input.checked = true;
+        }
+        handlePlanChange(input.value);
+      });
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          card.click();
+        }
+      });
+    });
+
+    function mountCardElement(attempt = 0) {
+      if (!requiresPayment) {
+        return;
+      }
+
+      const paymentModule = window.LeadCRM && window.LeadCRM.payment;
+      if (!paymentModule) {
+        if (attempt < 10) {
+          window.setTimeout(() => mountCardElement(attempt + 1), 200);
+        }
+        return;
+      }
+
+      paymentModule.mount(stripeMountConfig);
+
+      if (!paymentModule.isReady() && attempt < 10) {
+        window.setTimeout(() => mountCardElement(attempt + 1), 200);
+      }
+    }
+
+    async function handleSubmit(event) {
+      if (!requiresPayment) {
+        // Team-billing flow
+        return;
+      }
+
+      const planId = handlePlanChange(planHiddenField ? planHiddenField.value : resolvePlanIdFromInputs(), {
+        skipClearPayment: true,
+      });
+      const selectedPlan = planId ? planCatalog[planId] : null;
+
+      // Free or no endpoint? let normal submit happen
+      if (!selectedPlan || selectedPlan.price_cents <= 0 || !paymentEndpoint) {
+        return;
+      }
+
+      // If we already have Stripe info (user resubmitted), let it post
+      if (
+        paymentField && subscriptionField &&
+        paymentField.value && subscriptionField.value
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing…';
+      }
+
+      const emailField = document.getElementById('id_email');
+
+      const payload = {
+        planId: planId,
+        accountType: accountTypeField ? accountTypeField.value : ACCOUNT_INDIVIDUAL,
+        email: emailField ? emailField.value : '',
+      };
+
+      clearPaymentState();
+
+      const paymentConfig = {
+        enabled: true,
+        mode: 'subscription',
+        createIntentEndpoint: paymentEndpoint,
+        cardElementId,
+        cardErrorId,
+        intentPayload: payload,
+      };
+
+      const paymentModule = window.LeadCRM && window.LeadCRM.payment;
+
+      if (!paymentModule || !paymentModule.isReady()) {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = submitButtonDefaultHtml;
+        }
+        mountCardElement();
+        return;
+      }
+
+      const result = await paymentModule.process(paymentConfig);
+
+      if (!result || !result.paymentIntentId || !result.subscriptionId) {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = submitButtonDefaultHtml;
+        }
+        return;
+      }
+
+      if (paymentField) {
+        paymentField.value = result.paymentIntentId || '';
+      }
+      if (subscriptionField) {
+        subscriptionField.value = result.subscriptionId || '';
+      }
+      if (customerField) {
+        customerField.value = result.customerId || '';
+      }
+      if (invoiceField) {
+        invoiceField.value = result.invoiceId || '';
+      }
+
+      form.removeEventListener('submit', handleSubmit);
+      form.submit();
+    }
+
+    // finally actually do the things
+    if (requiresPayment) {
+      mountCardElement();
+      form.addEventListener('submit', handleSubmit);
+      updatePlanSummary();
+    }
+  }
+
+  // run initSignupPage now, or wait if DOM isn't ready yet (safety)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSignupPage);
+  } else {
+    initSignupPage();
+  }
+})();
+</script>
+{% endblock %}

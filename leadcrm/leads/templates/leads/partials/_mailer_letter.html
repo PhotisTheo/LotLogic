@@ -1,0 +1,99 @@
+<style>
+  .mailer-sheet {
+    width: 8.5in;
+    height: 11in;
+    margin: 0 auto;
+    padding: 1.25in 1.2in 1in;
+    box-sizing: border-box;
+    font-family: "Arial", sans-serif;
+    color: #1f1f1f;
+    background: #ffffff;
+  }
+  .mailer-body p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 14px;
+  }
+  .mailer-bullets {
+    margin: 0 0 26px;
+    padding-left: 18px;
+  }
+  .mailer-bullets li {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .mailer-signature {
+    margin-top: 32px;
+  }
+  .mailer-signature p {
+    margin: 0;
+    font-size: 14px;
+  }
+  .mailer-signature p + p {
+    margin-top: 4px;
+  }
+  .mailer-footer {
+    margin-top: 32px;
+  }
+  .mailer-qr {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .mailer-qr-caption {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .mailer-qr img {
+    width: 140px;
+    height: 140px;
+  }
+</style>
+<div class="mailer-sheet">
+  <div class="mailer-body">
+    {% for line in mailer.letter_lines %}
+      {% if line %}
+        <p>{{ line }}</p>
+      {% else %}
+        <p>&nbsp;</p>
+      {% endif %}
+    {% endfor %}
+    {% if mailer.value_props %}
+      <p>&nbsp;</p>
+      <p class="fw-semibold">{{ mailer.value_props_title|default:"Highlights" }}</p>
+      <ul class="mailer-bullets">
+        {% for point in mailer.value_props %}
+          <li>{{ point }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+  {% if mailer.agent_name or mailer.agent_title or mailer.agent_company or mailer.agent_tagline or mailer.contact_phone %}
+    <div class="mailer-signature">
+      {% if mailer.agent_name %}<p class="fw-semibold">{{ mailer.agent_name }}</p>{% endif %}
+      {% if mailer.agent_title %}<p>{{ mailer.agent_title }}</p>{% endif %}
+      {% if mailer.agent_company %}<p>{{ mailer.agent_company }}</p>{% endif %}
+      {% if mailer.contact_phone %}<p>{{ mailer.contact_phone }}</p>{% endif %}
+      {% if mailer.agent_tagline %}<p class="text-muted small">{{ mailer.agent_tagline }}</p>{% endif %}
+    </div>
+  {% endif %}
+  <div class="mailer-footer">
+    <div class="mailer-qr">
+      <p class="mailer-qr-caption">
+        {{ mailer.qr_caption|default:"Call us or scan the QR code to schedule a call." }}
+      </p>
+      {% if mailer.qr_image_url %}
+        {% if mailer.qr_target %}
+          <a href="{{ mailer.qr_target }}" target="_blank" rel="noopener">
+            <img src="{{ mailer.qr_image_url }}" alt="Schedule QR code">
+          </a>
+        {% else %}
+          <img src="{{ mailer.qr_image_url }}" alt="Schedule QR code">
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>

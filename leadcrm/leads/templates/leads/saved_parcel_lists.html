@@ -1,0 +1,83 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Saved Parcel Lists{% endblock %}
+
+{% block content %}
+  <div class="page-header mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h1 class="mb-1">Saved Parcel Lists</h1>
+      <p class="text-muted mb-0">Revisit prior MassGIS searches and pick up where you left off.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-primary" href="{% url 'parcel_search' %}">🔍 New Search</a>
+      {% if archived_count and not show_archived %}
+        <a class="btn btn-outline-secondary" href="{% url 'saved_parcel_lists' %}?view=archived">
+          📁 Archived ({{ archived_count }})
+        </a>
+      {% elif show_archived %}
+        <a class="btn btn-outline-secondary" href="{% url 'saved_parcel_lists' %}">
+          📂 Active ({{ active_count }})
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if lists %}
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Town</th>
+              <th>Parcels</th>
+              <th>Saved</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in lists %}
+              <tr>
+                <td class="fw-semibold">{{ item.name }}</td>
+                <td>{{ item.town_name }}</td>
+                <td><span class="stat-pill">{{ item.loc_ids|length }}</span></td>
+                <td>{{ item.created_at|date:"M j, Y H:i" }}</td>
+                <td>
+                  {% if item.archived_at %}
+                    <span class="badge text-bg-secondary">Archived {{ item.archived_at|date:"M j, Y" }}</span>
+                  {% else %}
+                    <span class="badge text-bg-success">Active</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-secondary me-2" href="{% url 'saved_parcel_list_export' item.pk %}">⬇ CSV</a>
+                  <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'saved_parcel_list_detail' item.pk %}">Open</a>
+                  {% if show_archived %}
+                    <form method="post"
+                          action="{% url 'saved_parcel_list_restore' item.pk %}"
+                          class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn btn-sm btn-outline-success">Restore</button>
+                    </form>
+                  {% else %}
+                    <form method="post"
+                          action="{% url 'saved_parcel_list_archive' item.pk %}"
+                          class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Archive</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info">You haven't saved any parcel lists yet. Run a search and use "Save List" to store results.</div>
+  {% endif %}
+{% endblock %}
