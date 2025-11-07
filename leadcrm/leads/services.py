@@ -49,7 +49,12 @@ MASSGIS_DATASET_INDEX = GISDATA_ROOT / "dataset_index.json"
 MASSGIS_CATALOG_LISTING_URL = "https://download.massgis.digital.mass.gov/shapefiles/l3parcels/"
 MASSGIS_CATALOG_CACHE = GISDATA_ROOT / "massgis_catalog.json"
 MASSGIS_CATALOG_CACHE_MAX_AGE = timedelta(days=1)
-MASSGIS_DATASET_TTL = timedelta(days=30)
+MASSGIS_DATASET_TTL = timedelta(days=90)  # Quarterly refresh (90 days)
+
+# S3 GIS Storage Configuration
+USE_S3_FOR_GIS = os.getenv("USE_S3_FOR_GIS", "True").lower() in ("true", "1", "yes")
+S3_GIS_BUCKET = os.getenv("AWS_STORAGE_BUCKET_NAME", "")
+S3_GIS_PREFIX = "gisdata/"
 MASSGIS_EXCEL_FILENAME = "MassGIS_Parcel_Download_Links.xlsx"
 MASSGIS_TOWNS_URL = "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/townssurvey_shp.zip"
 MASSGIS_TOWNS_DIR = GISDATA_ROOT / "townssurvey"
@@ -241,6 +246,84 @@ def _delete_local_dataset(slug: str) -> None:
     if slug in data:
         data.pop(slug)
         _save_dataset_index(data)
+
+
+# S3 GIS Storage Helper Functions
+def _get_s3_client():
+    """Get boto3 S3 client if S3 is configured."""
+    if not USE_S3_FOR_GIS or not S3_GIS_BUCKET:
+        return None
+    try:
+        import boto3
+        return boto3.client(
+            's3',
+            aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+            region_name=os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
+        )
+    except Exception as exc:
+        logger.warning("Failed to create S3 client for GIS storage: %s", exc)
+        return None
+
+
+def _check_s3_dataset_exists(slug: str) -> Optional[datetime]:
+    """Check if dataset exists in S3 and return its last modified time."""
+    s3 = _get_s3_client()
+    if not s3:
+        return None
+
+    try:
+        # Check if the zip file exists in S3
+        key = f"{S3_GIS_PREFIX}{slug}.zip"
+        response = s3.head_object(Bucket=S3_GIS_BUCKET, Key=key)
+        return response['LastModified']
+    except Exception:
+        return None
+
+
+def _download_from_s3(slug: str, local_zip_path: Path) -> bool:
+    """Download GIS dataset from S3 to local filesystem."""
+    s3 = _get_s3_client()
+    if not s3:
+        return False
+
+    try:
+        key = f"{S3_GIS_PREFIX}{slug}.zip"
+        logger.info("Downloading %s from S3: s3://%s/%s", slug, S3_GIS_BUCKET, key)
+        local_zip_path.parent.mkdir(parents=True, exist_ok=True)
+        s3.download_file(S3_GIS_BUCKET, key, str(local_zip_path))
+        logger.info("Successfully downloaded %s from S3", slug)
+        return True
+    except Exception as exc:
+        logger.warning("Failed to download %s from S3: %s", slug, exc)
+        return False
+
+
+def _upload_to_s3(slug: str, local_zip_path: Path) -> bool:
+    """Upload GIS dataset from local filesystem to S3."""
+    s3 = _get_s3_client()
+    if not s3:
+        return False
+
+    try:
+        key = f"{S3_GIS_PREFIX}{slug}.zip"
+        logger.info("Uploading %s to S3: s3://%s/%s", slug, S3_GIS_BUCKET, key)
+        s3.upload_file(str(local_zip_path), S3_GIS_BUCKET, key)
+        logger.info("Successfully uploaded %s to S3", slug)
+        return True
+    except Exception as exc:
+        logger.warning("Failed to upload %s to S3: %s", slug, exc)
+        return False
+
+
+def _is_s3_dataset_stale(last_modified: datetime) -> bool:
+    """Check if S3 dataset is older than quarterly refresh period (90 days)."""
+    now = datetime.now(timezone.utc)
+    # Make last_modified timezone-aware if it isn't
+    if last_modified.tzinfo is None:
+        last_modified = last_modified.replace(tzinfo=timezone.utc)
+    age = now - last_modified
+    return age > MASSGIS_DATASET_TTL
 
 
 def _parse_iso_datetime(value: Optional[str]) -> Optional[datetime]:
@@ -2608,6 +2691,18 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
 
     zip_path = MASSGIS_DOWNLOAD_DIR / f"{slug}.zip"
 
+    # Try to get from S3 cache first
+    s3_last_modified = _check_s3_dataset_exists(slug)
+    if s3_last_modified and not _is_s3_dataset_stale(s3_last_modified):
+        logger.info("Found %s in S3 cache (age: %s days)", slug, (now - s3_last_modified).days)
+        if not zip_path.exists():
+            if _download_from_s3(slug, zip_path):
+                logger.info("Successfully retrieved %s from S3 cache", slug)
+            else:
+                logger.warning("Failed to download from S3, will fetch from source")
+    elif s3_last_modified:
+        logger.info("S3 cache for %s is stale (age: %s days), will refresh", slug, (now - s3_last_modified).days)
+
     # Validate existing zip file or download new one
     if zip_path.exists():
         try:
@@ -2631,6 +2726,10 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
                 _download_boston_dataset(boston_dataset_id, zip_path)
             else:
                 _download_file(shapefile_url, zip_path)
+
+            # Upload to S3 cache after successful download
+            if zip_path.exists():
+                _upload_to_s3(slug, zip_path)
         except Exception as exc:  # noqa: BLE001
             raise MassGISDownloadError(
                 f"Unable to download MassGIS shapefile for {town.name}."
