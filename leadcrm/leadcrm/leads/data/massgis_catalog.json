@@ -1,0 +1,2462 @@
+{
+  "entries": {
+    "1": {
+      "dataset_slug": "L3_SHP_M001_ABINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M001_parcels_gdb.zip",
+      "name": "Abington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M001_ABINGTON.zip"
+    },
+    "10": {
+      "dataset_slug": "L3_SHP_M010_ARLINGTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M010_parcels_gdb.zip",
+      "name": "Arlington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M010_ARLINGTON.zip"
+    },
+    "100": {
+      "dataset_slug": "L3_SHP_M100_FRAMINGHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M100_parcels_gdb.zip",
+      "name": "Framingham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M100_FRAMINGHAM.zip"
+    },
+    "101": {
+      "dataset_slug": "L3_SHP_M101_FRANKLIN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M101_parcels_gdb.zip",
+      "name": "Franklin",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M101_FRANKLIN.zip"
+    },
+    "102": {
+      "dataset_slug": "L3_SHP_M102_FREETOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M102_parcels_gdb.zip",
+      "name": "Freetown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M102_FREETOWN.zip"
+    },
+    "103": {
+      "dataset_slug": "L3_SHP_M103_GARDNER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M103_parcels_gdb.zip",
+      "name": "Gardner",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M103_GARDNER.zip"
+    },
+    "104": {
+      "dataset_slug": "L3_SHP_M104_AQUINNAH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M104_parcels_gdb.zip",
+      "name": "Aquinnah",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M104_AQUINNAH.zip"
+    },
+    "105": {
+      "dataset_slug": "L3_SHP_M105_GEORGETOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M105_parcels_gdb.zip",
+      "name": "Georgetown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M105_GEORGETOWN.zip"
+    },
+    "106": {
+      "dataset_slug": "L3_SHP_M106_GILL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M106_parcels_gdb.zip",
+      "name": "Gill",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M106_GILL.zip"
+    },
+    "107": {
+      "dataset_slug": "L3_SHP_M107_GLOUCESTER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M107_parcels_gdb.zip",
+      "name": "Gloucester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M107_GLOUCESTER.zip"
+    },
+    "108": {
+      "dataset_slug": "L3_SHP_M108_GOSHEN",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M108_parcels_gdb.zip",
+      "name": "Goshen",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M108_GOSHEN.zip"
+    },
+    "109": {
+      "dataset_slug": "L3_SHP_M109_GOSNOLD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M109_parcels_gdb.zip",
+      "name": "Gosnold",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M109_GOSNOLD.zip"
+    },
+    "11": {
+      "dataset_slug": "L3_SHP_M011_ASHBURNHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M011_parcels_gdb.zip",
+      "name": "Ashburnham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M011_ASHBURNHAM.zip"
+    },
+    "110": {
+      "dataset_slug": "L3_SHP_M110_GRAFTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M110_parcels_gdb.zip",
+      "name": "Grafton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M110_GRAFTON.zip"
+    },
+    "111": {
+      "dataset_slug": "L3_SHP_M111_GRANBY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M111_parcels_gdb.zip",
+      "name": "Granby",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M111_GRANBY.zip"
+    },
+    "112": {
+      "dataset_slug": "L3_SHP_M112_GRANVILLE",
+      "fiscal_year": "2021",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M112_parcels_gdb.zip",
+      "name": "Granville",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M112_GRANVILLE.zip"
+    },
+    "113": {
+      "dataset_slug": "L3_SHP_M113_GREATBARRINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M113_parcels_gdb.zip",
+      "name": "Great Barrington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M113_GREATBARRINGTON.zip"
+    },
+    "114": {
+      "dataset_slug": "L3_SHP_M114_GREENFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M114_parcels_gdb.zip",
+      "name": "Greenfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M114_GREENFIELD.zip"
+    },
+    "115": {
+      "dataset_slug": "L3_SHP_M115_GROTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M115_parcels_gdb.zip",
+      "name": "Groton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M115_GROTON.zip"
+    },
+    "116": {
+      "dataset_slug": "L3_SHP_M116_GROVELAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M116_parcels_gdb.zip",
+      "name": "Groveland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M116_GROVELAND.zip"
+    },
+    "117": {
+      "dataset_slug": "L3_SHP_M117_HADLEY",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M117_parcels_gdb.zip",
+      "name": "Hadley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M117_HADLEY.zip"
+    },
+    "118": {
+      "dataset_slug": "L3_SHP_M118_HALIFAX",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M118_parcels_gdb.zip",
+      "name": "Halifax",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M118_HALIFAX.zip"
+    },
+    "119": {
+      "dataset_slug": "L3_SHP_M119_HAMILTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M119_parcels_gdb.zip",
+      "name": "Hamilton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M119_HAMILTON.zip"
+    },
+    "12": {
+      "dataset_slug": "L3_SHP_M012_ASHBY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M012_parcels_gdb.zip",
+      "name": "Ashby",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M012_ASHBY.zip"
+    },
+    "120": {
+      "dataset_slug": "L3_SHP_M120_HAMPDEN",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M120_parcels_gdb.zip",
+      "name": "Hampden",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M120_HAMPDEN.zip"
+    },
+    "121": {
+      "dataset_slug": "L3_SHP_M121_HANCOCK",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M121_parcels_gdb.zip",
+      "name": "Hancock",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M121_HANCOCK.zip"
+    },
+    "122": {
+      "dataset_slug": "L3_SHP_M122_HANOVER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M122_parcels_gdb.zip",
+      "name": "Hanover",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M122_HANOVER.zip"
+    },
+    "123": {
+      "dataset_slug": "L3_SHP_M123_HANSON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M123_parcels_gdb.zip",
+      "name": "Hanson",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M123_HANSON.zip"
+    },
+    "124": {
+      "dataset_slug": "L3_SHP_M124_HARDWICK",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M124_parcels_gdb.zip",
+      "name": "Hardwick",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M124_HARDWICK.zip"
+    },
+    "125": {
+      "dataset_slug": "L3_SHP_M125_HARVARD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M125_parcels_gdb.zip",
+      "name": "Harvard",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M125_HARVARD.zip"
+    },
+    "126": {
+      "dataset_slug": "L3_SHP_M126_HARWICH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M126_parcels_gdb.zip",
+      "name": "Harwich",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M126_HARWICH.zip"
+    },
+    "127": {
+      "dataset_slug": "L3_SHP_M127_HATFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M127_parcels_gdb.zip",
+      "name": "Hatfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M127_HATFIELD.zip"
+    },
+    "128": {
+      "dataset_slug": "L3_SHP_M128_HAVERHILL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M128_parcels_gdb.zip",
+      "name": "Haverhill",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M128_HAVERHILL.zip"
+    },
+    "129": {
+      "dataset_slug": "L3_SHP_M129_HAWLEY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M129_parcels_gdb.zip",
+      "name": "Hawley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M129_HAWLEY.zip"
+    },
+    "13": {
+      "dataset_slug": "L3_SHP_M013_ASHFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M013_parcels_gdb.zip",
+      "name": "Ashfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M013_ASHFIELD.zip"
+    },
+    "130": {
+      "dataset_slug": "L3_SHP_M130_HEATH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M130_parcels_gdb.zip",
+      "name": "Heath",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M130_HEATH.zip"
+    },
+    "131": {
+      "dataset_slug": "L3_SHP_M131_HINGHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M131_parcels_gdb.zip",
+      "name": "Hingham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M131_HINGHAM.zip"
+    },
+    "132": {
+      "dataset_slug": "L3_SHP_M132_HINSDALE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M132_parcels_gdb.zip",
+      "name": "Hinsdale",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M132_HINSDALE.zip"
+    },
+    "133": {
+      "dataset_slug": "L3_SHP_M133_HOLBROOK",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M133_parcels_gdb.zip",
+      "name": "Holbrook",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M133_HOLBROOK.zip"
+    },
+    "134": {
+      "dataset_slug": "L3_SHP_M134_HOLDEN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M134_parcels_gdb.zip",
+      "name": "Holden",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M134_HOLDEN.zip"
+    },
+    "135": {
+      "dataset_slug": "L3_SHP_M135_HOLLAND",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M135_parcels_gdb.zip",
+      "name": "Holland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M135_HOLLAND.zip"
+    },
+    "136": {
+      "dataset_slug": "L3_SHP_M136_HOLLISTON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M136_parcels_gdb.zip",
+      "name": "Holliston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M136_HOLLISTON.zip"
+    },
+    "137": {
+      "dataset_slug": "L3_SHP_M137_HOLYOKE",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M137_parcels_gdb.zip",
+      "name": "Holyoke",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M137_HOLYOKE.zip"
+    },
+    "138": {
+      "dataset_slug": "L3_SHP_M138_HOPEDALE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M138_parcels_gdb.zip",
+      "name": "Hopedale",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M138_HOPEDALE.zip"
+    },
+    "139": {
+      "dataset_slug": "L3_SHP_M139_HOPKINTON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M139_parcels_gdb.zip",
+      "name": "Hopkinton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M139_HOPKINTON.zip"
+    },
+    "14": {
+      "dataset_slug": "L3_SHP_M014_ASHLAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M014_parcels_gdb.zip",
+      "name": "Ashland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M014_ASHLAND.zip"
+    },
+    "140": {
+      "dataset_slug": "L3_SHP_M140_HUBBARDSTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M140_parcels_gdb.zip",
+      "name": "Hubbardston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M140_HUBBARDSTON.zip"
+    },
+    "141": {
+      "dataset_slug": "L3_SHP_M141_HUDSON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M141_parcels_gdb.zip",
+      "name": "Hudson",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M141_HUDSON.zip"
+    },
+    "142": {
+      "dataset_slug": "L3_SHP_M142_HULL",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M142_parcels_gdb.zip",
+      "name": "Hull",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M142_HULL.zip"
+    },
+    "143": {
+      "dataset_slug": "L3_SHP_M143_HUNTINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M143_parcels_gdb.zip",
+      "name": "Huntington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M143_HUNTINGTON.zip"
+    },
+    "144": {
+      "dataset_slug": "L3_SHP_M144_IPSWICH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M144_parcels_gdb.zip",
+      "name": "Ipswich",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M144_IPSWICH.zip"
+    },
+    "145": {
+      "dataset_slug": "L3_SHP_M145_KINGSTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M145_parcels_gdb.zip",
+      "name": "Kingston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M145_KINGSTON.zip"
+    },
+    "146": {
+      "dataset_slug": "L3_SHP_M146_LAKEVILLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M146_parcels_gdb.zip",
+      "name": "Lakeville",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M146_LAKEVILLE.zip"
+    },
+    "147": {
+      "dataset_slug": "L3_SHP_M147_LANCASTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M147_parcels_gdb.zip",
+      "name": "Lancaster",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M147_LANCASTER.zip"
+    },
+    "148": {
+      "dataset_slug": "L3_SHP_M148_LANESBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M148_parcels_gdb.zip",
+      "name": "Lanesborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M148_LANESBOROUGH.zip"
+    },
+    "149": {
+      "dataset_slug": "L3_SHP_M149_LAWRENCE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M149_parcels_gdb.zip",
+      "name": "Lawrence",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M149_LAWRENCE.zip"
+    },
+    "15": {
+      "dataset_slug": "L3_SHP_M015_ATHOL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M015_parcels_gdb.zip",
+      "name": "Athol",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M015_ATHOL.zip"
+    },
+    "150": {
+      "dataset_slug": "L3_SHP_M150_LEE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M150_parcels_gdb.zip",
+      "name": "Lee",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M150_LEE.zip"
+    },
+    "151": {
+      "dataset_slug": "L3_SHP_M151_LEICESTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M151_parcels_gdb.zip",
+      "name": "Leicester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M151_LEICESTER.zip"
+    },
+    "152": {
+      "dataset_slug": "L3_SHP_M152_LENOX",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M152_parcels_gdb.zip",
+      "name": "Lenox",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M152_LENOX.zip"
+    },
+    "153": {
+      "dataset_slug": "L3_SHP_M153_LEOMINSTER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M153_parcels_gdb.zip",
+      "name": "Leominster",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M153_LEOMINSTER.zip"
+    },
+    "154": {
+      "dataset_slug": "L3_SHP_M154_LEVERETT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M154_parcels_gdb.zip",
+      "name": "Leverett",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M154_LEVERETT.zip"
+    },
+    "155": {
+      "dataset_slug": "L3_SHP_M155_LEXINGTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M155_parcels_gdb.zip",
+      "name": "Lexington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M155_LEXINGTON.zip"
+    },
+    "156": {
+      "dataset_slug": "L3_SHP_M156_LEYDEN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M156_parcels_gdb.zip",
+      "name": "Leyden",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M156_LEYDEN.zip"
+    },
+    "157": {
+      "dataset_slug": "L3_SHP_M157_LINCOLN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M157_parcels_gdb.zip",
+      "name": "Lincoln",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M157_LINCOLN.zip"
+    },
+    "158": {
+      "dataset_slug": "L3_SHP_M158_LITTLETON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M158_parcels_gdb.zip",
+      "name": "Littleton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M158_LITTLETON.zip"
+    },
+    "159": {
+      "dataset_slug": "L3_SHP_M159_LONGMEADOW",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M159_parcels_gdb.zip",
+      "name": "Longmeadow",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M159_LONGMEADOW.zip"
+    },
+    "16": {
+      "dataset_slug": "L3_SHP_M016_ATTLEBORO",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M016_parcels_gdb.zip",
+      "name": "Attleboro",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M016_ATTLEBORO.zip"
+    },
+    "160": {
+      "dataset_slug": "L3_SHP_M160_LOWELL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M160_parcels_gdb.zip",
+      "name": "Lowell",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M160_LOWELL.zip"
+    },
+    "161": {
+      "dataset_slug": "L3_SHP_M161_LUDLOW",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M161_parcels_gdb.zip",
+      "name": "Ludlow",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M161_LUDLOW.zip"
+    },
+    "162": {
+      "dataset_slug": "L3_SHP_M162_LUNENBURG",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M162_parcels_gdb.zip",
+      "name": "Lunenburg",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M162_LUNENBURG.zip"
+    },
+    "163": {
+      "dataset_slug": "L3_SHP_M163_LYNN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M163_parcels_gdb.zip",
+      "name": "Lynn",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M163_LYNN.zip"
+    },
+    "164": {
+      "dataset_slug": "L3_SHP_M164_LYNNFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M164_parcels_gdb.zip",
+      "name": "Lynnfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M164_LYNNFIELD.zip"
+    },
+    "165": {
+      "dataset_slug": "L3_SHP_M165_MALDEN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M165_parcels_gdb.zip",
+      "name": "Malden",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M165_MALDEN.zip"
+    },
+    "166": {
+      "dataset_slug": "L3_SHP_M166_MANCHESTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M166_parcels_gdb.zip",
+      "name": "Manchester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M166_MANCHESTER.zip"
+    },
+    "167": {
+      "dataset_slug": "L3_SHP_M167_MANSFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M167_parcels_gdb.zip",
+      "name": "Mansfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M167_MANSFIELD.zip"
+    },
+    "168": {
+      "dataset_slug": "L3_SHP_M168_MARBLEHEAD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M168_parcels_gdb.zip",
+      "name": "Marblehead",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M168_MARBLEHEAD.zip"
+    },
+    "169": {
+      "dataset_slug": "L3_SHP_M169_MARION",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M169_parcels_gdb.zip",
+      "name": "Marion",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M169_MARION.zip"
+    },
+    "17": {
+      "dataset_slug": "L3_SHP_M017_AUBURN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M017_parcels_gdb.zip",
+      "name": "Auburn",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M017_AUBURN.zip"
+    },
+    "170": {
+      "dataset_slug": "L3_SHP_M170_MARLBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M170_parcels_gdb.zip",
+      "name": "Marlborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M170_MARLBOROUGH.zip"
+    },
+    "171": {
+      "dataset_slug": "L3_SHP_M171_MARSHFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M171_parcels_gdb.zip",
+      "name": "Marshfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M171_MARSHFIELD.zip"
+    },
+    "172": {
+      "dataset_slug": "L3_SHP_M172_MASHPEE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M172_parcels_gdb.zip",
+      "name": "Mashpee",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M172_MASHPEE.zip"
+    },
+    "173": {
+      "dataset_slug": "L3_SHP_M173_MATTAPOISETT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M173_parcels_gdb.zip",
+      "name": "Mattapoisett",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M173_MATTAPOISETT.zip"
+    },
+    "174": {
+      "dataset_slug": "L3_SHP_M174_MAYNARD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M174_parcels_gdb.zip",
+      "name": "Maynard",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M174_MAYNARD.zip"
+    },
+    "175": {
+      "dataset_slug": "L3_SHP_M175_MEDFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M175_parcels_gdb.zip",
+      "name": "Medfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M175_MEDFIELD.zip"
+    },
+    "176": {
+      "dataset_slug": "L3_SHP_M176_MEDFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M176_parcels_gdb.zip",
+      "name": "Medford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M176_MEDFORD.zip"
+    },
+    "177": {
+      "dataset_slug": "L3_SHP_M177_MEDWAY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M177_parcels_gdb.zip",
+      "name": "Medway",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M177_MEDWAY.zip"
+    },
+    "178": {
+      "dataset_slug": "L3_SHP_M178_MELROSE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M178_parcels_gdb.zip",
+      "name": "Melrose",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M178_MELROSE.zip"
+    },
+    "179": {
+      "dataset_slug": "L3_SHP_M179_MENDON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M179_parcels_gdb.zip",
+      "name": "Mendon",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M179_MENDON.zip"
+    },
+    "18": {
+      "dataset_slug": "L3_SHP_M018_AVON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M018_parcels_gdb.zip",
+      "name": "Avon",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M018_AVON.zip"
+    },
+    "180": {
+      "dataset_slug": "L3_SHP_M180_MERRIMAC",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M180_parcels_gdb.zip",
+      "name": "Merrimac",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M180_MERRIMAC.zip"
+    },
+    "181": {
+      "dataset_slug": "L3_SHP_M181_METHUEN",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M181_parcels_gdb.zip",
+      "name": "Methuen",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M181_METHUEN.zip"
+    },
+    "182": {
+      "dataset_slug": "L3_SHP_M182_MIDDLEBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M182_parcels_gdb.zip",
+      "name": "Middleborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M182_MIDDLEBOROUGH.zip"
+    },
+    "183": {
+      "dataset_slug": "L3_SHP_M183_MIDDLEFIELD",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M183_parcels_gdb.zip",
+      "name": "Middlefield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M183_MIDDLEFIELD.zip"
+    },
+    "184": {
+      "dataset_slug": "L3_SHP_M184_MIDDLETON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M184_parcels_gdb.zip",
+      "name": "Middleton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M184_MIDDLETON.zip"
+    },
+    "185": {
+      "dataset_slug": "L3_SHP_M185_MILFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M185_parcels_gdb.zip",
+      "name": "Milford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M185_MILFORD.zip"
+    },
+    "186": {
+      "dataset_slug": "L3_SHP_M186_MILLBURY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M186_parcels_gdb.zip",
+      "name": "Millbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M186_MILLBURY.zip"
+    },
+    "187": {
+      "dataset_slug": "L3_SHP_M187_MILLIS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M187_parcels_gdb.zip",
+      "name": "Millis",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M187_MILLIS.zip"
+    },
+    "188": {
+      "dataset_slug": "L3_SHP_M188_MILLVILLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M188_parcels_gdb.zip",
+      "name": "Millville",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M188_MILLVILLE.zip"
+    },
+    "189": {
+      "dataset_slug": "L3_SHP_M189_MILTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M189_parcels_gdb.zip",
+      "name": "Milton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M189_MILTON.zip"
+    },
+    "19": {
+      "dataset_slug": "L3_SHP_M019_AYER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M019_parcels_gdb.zip",
+      "name": "Ayer",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M019_AYER.zip"
+    },
+    "190": {
+      "dataset_slug": "L3_SHP_M190_MONROE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M190_parcels_gdb.zip",
+      "name": "Monroe",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M190_MONROE.zip"
+    },
+    "191": {
+      "dataset_slug": "L3_SHP_M191_MONSON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M191_parcels_gdb.zip",
+      "name": "Monson",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M191_MONSON.zip"
+    },
+    "192": {
+      "dataset_slug": "L3_SHP_M192_MONTAGUE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M192_parcels_gdb.zip",
+      "name": "Montague",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M192_MONTAGUE.zip"
+    },
+    "193": {
+      "dataset_slug": "L3_SHP_M193_MONTEREY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M193_parcels_gdb.zip",
+      "name": "Monterey",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M193_MONTEREY.zip"
+    },
+    "194": {
+      "dataset_slug": "L3_SHP_M194_MONTGOMERY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M194_parcels_gdb.zip",
+      "name": "Montgomery",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M194_MONTGOMERY.zip"
+    },
+    "195": {
+      "dataset_slug": "L3_SHP_M195_MOUNTWASHINGTON",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M195_parcels_gdb.zip",
+      "name": "Mount Washington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M195_MOUNTWASHINGTON.zip"
+    },
+    "196": {
+      "dataset_slug": "L3_SHP_M196_NAHANT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M196_parcels_gdb.zip",
+      "name": "Nahant",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M196_NAHANT.zip"
+    },
+    "197": {
+      "dataset_slug": "L3_SHP_M197_NANTUCKET",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M197_parcels_gdb.zip",
+      "name": "Nantucket",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M197_NANTUCKET.zip"
+    },
+    "198": {
+      "dataset_slug": "L3_SHP_M198_NATICK",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M198_parcels_gdb.zip",
+      "name": "Natick",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M198_NATICK.zip"
+    },
+    "199": {
+      "dataset_slug": "L3_SHP_M199_NEEDHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M199_parcels_gdb.zip",
+      "name": "Needham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M199_NEEDHAM.zip"
+    },
+    "2": {
+      "dataset_slug": "L3_SHP_M002_ACTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M002_parcels_gdb.zip",
+      "name": "Acton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M002_ACTON.zip"
+    },
+    "20": {
+      "dataset_slug": "L3_SHP_M020_BARNSTABLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M020_parcels_gdb.zip",
+      "name": "Barnstable",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M020_BARNSTABLE.zip"
+    },
+    "200": {
+      "dataset_slug": "L3_SHP_M200_NEWASHFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M200_parcels_gdb.zip",
+      "name": "New Ashford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M200_NEWASHFORD.zip"
+    },
+    "201": {
+      "dataset_slug": "L3_SHP_M201_NEWBEDFORD",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M201_parcels_gdb.zip",
+      "name": "New Bedford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M201_NEWBEDFORD.zip"
+    },
+    "202": {
+      "dataset_slug": "L3_SHP_M202_NEWBRAINTREE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M202_parcels_gdb.zip",
+      "name": "New Braintree",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M202_NEWBRAINTREE.zip"
+    },
+    "203": {
+      "dataset_slug": "L3_SHP_M203_NEWMARLBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M203_parcels_gdb.zip",
+      "name": "New Marlborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M203_NEWMARLBOROUGH.zip"
+    },
+    "204": {
+      "dataset_slug": "L3_SHP_M204_NEWSALEM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M204_parcels_gdb.zip",
+      "name": "New Salem",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M204_NEWSALEM.zip"
+    },
+    "205": {
+      "dataset_slug": "L3_SHP_M205_NEWBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M205_parcels_gdb.zip",
+      "name": "Newbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M205_NEWBURY.zip"
+    },
+    "206": {
+      "dataset_slug": "L3_SHP_M206_NEWBURYPORT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M206_parcels_gdb.zip",
+      "name": "Newburyport",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M206_NEWBURYPORT.zip"
+    },
+    "207": {
+      "dataset_slug": "L3_SHP_M207_NEWTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M207_parcels_gdb.zip",
+      "name": "Newton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M207_NEWTON.zip"
+    },
+    "208": {
+      "dataset_slug": "L3_SHP_M208_NORFOLK",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M208_parcels_gdb.zip",
+      "name": "Norfolk",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M208_NORFOLK.zip"
+    },
+    "209": {
+      "dataset_slug": "L3_SHP_M209_NORTHADAMS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M209_parcels_gdb.zip",
+      "name": "North Adams",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M209_NORTHADAMS.zip"
+    },
+    "21": {
+      "dataset_slug": "L3_SHP_M021_BARRE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M021_parcels_gdb.zip",
+      "name": "Barre",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M021_BARRE.zip"
+    },
+    "210": {
+      "dataset_slug": "L3_SHP_M210_NORTHANDOVER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M210_parcels_gdb.zip",
+      "name": "North Andover",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M210_NORTHANDOVER.zip"
+    },
+    "211": {
+      "dataset_slug": "L3_SHP_M211_NORTHATTLEBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M211_parcels_gdb.zip",
+      "name": "North Attleborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M211_NORTHATTLEBOROUGH.zip"
+    },
+    "212": {
+      "dataset_slug": "L3_SHP_M212_NORTHBROOKFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M212_parcels_gdb.zip",
+      "name": "North Brookfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M212_NORTHBROOKFIELD.zip"
+    },
+    "213": {
+      "dataset_slug": "L3_SHP_M213_NORTHREADING",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M213_parcels_gdb.zip",
+      "name": "North Reading",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M213_NORTHREADING.zip"
+    },
+    "214": {
+      "dataset_slug": "L3_SHP_M214_NORTHAMPTON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M214_parcels_gdb.zip",
+      "name": "Northampton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M214_NORTHAMPTON.zip"
+    },
+    "215": {
+      "dataset_slug": "L3_SHP_M215_NORTHBOROUGH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M215_parcels_gdb.zip",
+      "name": "Northborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M215_NORTHBOROUGH.zip"
+    },
+    "216": {
+      "dataset_slug": "L3_SHP_M216_NORTHBRIDGE",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M216_parcels_gdb.zip",
+      "name": "Northbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M216_NORTHBRIDGE.zip"
+    },
+    "217": {
+      "dataset_slug": "L3_SHP_M217_NORTHFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M217_parcels_gdb.zip",
+      "name": "Northfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M217_NORTHFIELD.zip"
+    },
+    "218": {
+      "dataset_slug": "L3_SHP_M218_NORTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M218_parcels_gdb.zip",
+      "name": "Norton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M218_NORTON.zip"
+    },
+    "219": {
+      "dataset_slug": "L3_SHP_M219_NORWELL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M219_parcels_gdb.zip",
+      "name": "Norwell",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M219_NORWELL.zip"
+    },
+    "22": {
+      "dataset_slug": "L3_SHP_M022_BECKET",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M022_parcels_gdb.zip",
+      "name": "Becket",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M022_BECKET.zip"
+    },
+    "220": {
+      "dataset_slug": "L3_SHP_M220_NORWOOD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M220_parcels_gdb.zip",
+      "name": "Norwood",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M220_NORWOOD.zip"
+    },
+    "221": {
+      "dataset_slug": "L3_SHP_M221_OAKBLUFFS",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M221_parcels_gdb.zip",
+      "name": "Oak Bluffs",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M221_OAKBLUFFS.zip"
+    },
+    "222": {
+      "dataset_slug": "L3_SHP_M222_OAKHAM",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M222_parcels_gdb.zip",
+      "name": "Oakham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M222_OAKHAM.zip"
+    },
+    "223": {
+      "dataset_slug": "L3_SHP_M223_ORANGE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M223_parcels_gdb.zip",
+      "name": "Orange",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M223_ORANGE.zip"
+    },
+    "224": {
+      "dataset_slug": "L3_SHP_M224_ORLEANS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M224_parcels_gdb.zip",
+      "name": "Orleans",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M224_ORLEANS.zip"
+    },
+    "225": {
+      "dataset_slug": "L3_SHP_M225_OTIS",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M225_parcels_gdb.zip",
+      "name": "Otis",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M225_OTIS.zip"
+    },
+    "226": {
+      "dataset_slug": "L3_SHP_M226_OXFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M226_parcels_gdb.zip",
+      "name": "Oxford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M226_OXFORD.zip"
+    },
+    "227": {
+      "dataset_slug": "L3_SHP_M227_PALMER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M227_parcels_gdb.zip",
+      "name": "Palmer",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M227_PALMER.zip"
+    },
+    "228": {
+      "dataset_slug": "L3_SHP_M228_PAXTON",
+      "fiscal_year": "2020",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M228_parcels_gdb.zip",
+      "name": "Paxton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M228_PAXTON.zip"
+    },
+    "229": {
+      "dataset_slug": "L3_SHP_M229_PEABODY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M229_parcels_gdb.zip",
+      "name": "Peabody",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M229_PEABODY.zip"
+    },
+    "23": {
+      "dataset_slug": "L3_SHP_M023_BEDFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M023_parcels_gdb.zip",
+      "name": "Bedford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M023_BEDFORD.zip"
+    },
+    "230": {
+      "dataset_slug": "L3_SHP_M230_PELHAM",
+      "fiscal_year": "2019",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M230_parcels_gdb.zip",
+      "name": "Pelham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M230_PELHAM.zip"
+    },
+    "231": {
+      "dataset_slug": "L3_SHP_M231_PEMBROKE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M231_parcels_gdb.zip",
+      "name": "Pembroke",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M231_PEMBROKE.zip"
+    },
+    "232": {
+      "dataset_slug": "L3_SHP_M232_PEPPERELL",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M232_parcels_gdb.zip",
+      "name": "Pepperell",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M232_PEPPERELL.zip"
+    },
+    "233": {
+      "dataset_slug": "L3_SHP_M233_PERU",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M233_parcels_gdb.zip",
+      "name": "Peru",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M233_PERU.zip"
+    },
+    "234": {
+      "dataset_slug": "L3_SHP_M234_PETERSHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M234_parcels_gdb.zip",
+      "name": "Petersham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M234_PETERSHAM.zip"
+    },
+    "235": {
+      "dataset_slug": "L3_SHP_M235_PHILLIPSTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M235_parcels_gdb.zip",
+      "name": "Phillipston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M235_PHILLIPSTON.zip"
+    },
+    "236": {
+      "dataset_slug": "L3_SHP_M236_PITTSFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M236_parcels_gdb.zip",
+      "name": "Pittsfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M236_PITTSFIELD.zip"
+    },
+    "237": {
+      "dataset_slug": "L3_SHP_M237_PLAINFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M237_parcels_gdb.zip",
+      "name": "Plainfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M237_PLAINFIELD.zip"
+    },
+    "238": {
+      "dataset_slug": "L3_SHP_M238_PLAINVILLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M238_parcels_gdb.zip",
+      "name": "Plainville",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M238_PLAINVILLE.zip"
+    },
+    "239": {
+      "dataset_slug": "L3_SHP_M239_PLYMOUTH",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M239_parcels_gdb.zip",
+      "name": "Plymouth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M239_PLYMOUTH.zip"
+    },
+    "24": {
+      "dataset_slug": "L3_SHP_M024_BELCHERTOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M024_parcels_gdb.zip",
+      "name": "Belchertown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M024_BELCHERTOWN.zip"
+    },
+    "240": {
+      "dataset_slug": "L3_SHP_M240_PLYMPTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M240_parcels_gdb.zip",
+      "name": "Plympton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M240_PLYMPTON.zip"
+    },
+    "241": {
+      "dataset_slug": "L3_SHP_M241_PRINCETON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M241_parcels_gdb.zip",
+      "name": "Princeton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M241_PRINCETON.zip"
+    },
+    "242": {
+      "dataset_slug": "L3_SHP_M242_PROVINCETOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M242_parcels_gdb.zip",
+      "name": "Provincetown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M242_PROVINCETOWN.zip"
+    },
+    "243": {
+      "dataset_slug": "L3_SHP_M243_QUINCY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M243_parcels_gdb.zip",
+      "name": "Quincy",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M243_QUINCY.zip"
+    },
+    "244": {
+      "dataset_slug": "L3_SHP_M244_RANDOLPH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M244_parcels_gdb.zip",
+      "name": "Randolph",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M244_RANDOLPH.zip"
+    },
+    "245": {
+      "dataset_slug": "L3_SHP_M245_RAYNHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M245_parcels_gdb.zip",
+      "name": "Raynham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M245_RAYNHAM.zip"
+    },
+    "246": {
+      "dataset_slug": "L3_SHP_M246_READING",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M246_parcels_gdb.zip",
+      "name": "Reading",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M246_READING.zip"
+    },
+    "247": {
+      "dataset_slug": "L3_SHP_M247_REHOBOTH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M247_parcels_gdb.zip",
+      "name": "Rehoboth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M247_REHOBOTH.zip"
+    },
+    "248": {
+      "dataset_slug": "L3_SHP_M248_REVERE",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M248_parcels_gdb.zip",
+      "name": "Revere",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M248_REVERE.zip"
+    },
+    "249": {
+      "dataset_slug": "L3_SHP_M249_RICHMOND",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M249_parcels_gdb.zip",
+      "name": "Richmond",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M249_RICHMOND.zip"
+    },
+    "25": {
+      "dataset_slug": "L3_SHP_M025_BELLINGHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M025_parcels_gdb.zip",
+      "name": "Bellingham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M025_BELLINGHAM.zip"
+    },
+    "250": {
+      "dataset_slug": "L3_SHP_M250_ROCHESTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M250_parcels_gdb.zip",
+      "name": "Rochester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M250_ROCHESTER.zip"
+    },
+    "251": {
+      "dataset_slug": "L3_SHP_M251_ROCKLAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M251_parcels_gdb.zip",
+      "name": "Rockland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M251_ROCKLAND.zip"
+    },
+    "252": {
+      "dataset_slug": "L3_SHP_M252_ROCKPORT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M252_parcels_gdb.zip",
+      "name": "Rockport",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M252_ROCKPORT.zip"
+    },
+    "253": {
+      "dataset_slug": "L3_SHP_M253_ROWE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M253_parcels_gdb.zip",
+      "name": "Rowe",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M253_ROWE.zip"
+    },
+    "254": {
+      "dataset_slug": "L3_SHP_M254_ROWLEY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M254_parcels_gdb.zip",
+      "name": "Rowley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M254_ROWLEY.zip"
+    },
+    "255": {
+      "dataset_slug": "L3_SHP_M255_ROYALSTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M255_parcels_gdb.zip",
+      "name": "Royalston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M255_ROYALSTON.zip"
+    },
+    "256": {
+      "dataset_slug": "L3_SHP_M256_RUSSELL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M256_parcels_gdb.zip",
+      "name": "Russell",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M256_RUSSELL.zip"
+    },
+    "257": {
+      "dataset_slug": "L3_SHP_M257_RUTLAND",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M257_parcels_gdb.zip",
+      "name": "Rutland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M257_RUTLAND.zip"
+    },
+    "258": {
+      "dataset_slug": "L3_SHP_M258_SALEM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M258_parcels_gdb.zip",
+      "name": "Salem",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M258_SALEM.zip"
+    },
+    "259": {
+      "dataset_slug": "L3_SHP_M259_SALISBURY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M259_parcels_gdb.zip",
+      "name": "Salisbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M259_SALISBURY.zip"
+    },
+    "26": {
+      "dataset_slug": "L3_SHP_M026_BELMONT",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M026_parcels_gdb.zip",
+      "name": "Belmont",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M026_BELMONT.zip"
+    },
+    "260": {
+      "dataset_slug": "L3_SHP_M260_SANDISFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M260_parcels_gdb.zip",
+      "name": "Sandisfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M260_SANDISFIELD.zip"
+    },
+    "261": {
+      "dataset_slug": "L3_SHP_M261_SANDWICH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M261_parcels_gdb.zip",
+      "name": "Sandwich",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M261_SANDWICH.zip"
+    },
+    "262": {
+      "dataset_slug": "L3_SHP_M262_SAUGUS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M262_parcels_gdb.zip",
+      "name": "Saugus",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M262_SAUGUS.zip"
+    },
+    "263": {
+      "dataset_slug": "L3_SHP_M263_SAVOY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M263_parcels_gdb.zip",
+      "name": "Savoy",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M263_SAVOY.zip"
+    },
+    "264": {
+      "dataset_slug": "L3_SHP_M264_SCITUATE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M264_parcels_gdb.zip",
+      "name": "Scituate",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M264_SCITUATE.zip"
+    },
+    "265": {
+      "dataset_slug": "L3_SHP_M265_SEEKONK",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M265_parcels_gdb.zip",
+      "name": "Seekonk",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M265_SEEKONK.zip"
+    },
+    "266": {
+      "dataset_slug": "L3_SHP_M266_SHARON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M266_parcels_gdb.zip",
+      "name": "Sharon",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M266_SHARON.zip"
+    },
+    "267": {
+      "dataset_slug": "L3_SHP_M267_SHEFFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M267_parcels_gdb.zip",
+      "name": "Sheffield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M267_SHEFFIELD.zip"
+    },
+    "268": {
+      "dataset_slug": "L3_SHP_M268_SHELBURNE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M268_parcels_gdb.zip",
+      "name": "Shelburne",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M268_SHELBURNE.zip"
+    },
+    "269": {
+      "dataset_slug": "L3_SHP_M269_SHERBORN",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M269_parcels_gdb.zip",
+      "name": "Sherborn",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M269_SHERBORN.zip"
+    },
+    "27": {
+      "dataset_slug": "L3_SHP_M027_BERKLEY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M027_parcels_gdb.zip",
+      "name": "Berkley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M027_BERKLEY.zip"
+    },
+    "270": {
+      "dataset_slug": "L3_SHP_M270_SHIRLEY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M270_parcels_gdb.zip",
+      "name": "Shirley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M270_SHIRLEY.zip"
+    },
+    "271": {
+      "dataset_slug": "L3_SHP_M271_SHREWSBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M271_parcels_gdb.zip",
+      "name": "Shrewsbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M271_SHREWSBURY.zip"
+    },
+    "272": {
+      "dataset_slug": "L3_SHP_M272_SHUTESBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M272_parcels_gdb.zip",
+      "name": "Shutesbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M272_SHUTESBURY.zip"
+    },
+    "273": {
+      "dataset_slug": "L3_SHP_M273_SOMERSET",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M273_parcels_gdb.zip",
+      "name": "Somerset",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M273_SOMERSET.zip"
+    },
+    "274": {
+      "dataset_slug": "L3_SHP_M274_SOMERVILLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M274_parcels_gdb.zip",
+      "name": "Somerville",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M274_SOMERVILLE.zip"
+    },
+    "275": {
+      "dataset_slug": "L3_SHP_M275_SOUTHHADLEY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M275_parcels_gdb.zip",
+      "name": "South Hadley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M275_SOUTHHADLEY.zip"
+    },
+    "276": {
+      "dataset_slug": "L3_SHP_M276_SOUTHAMPTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M276_parcels_gdb.zip",
+      "name": "Southampton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M276_SOUTHAMPTON.zip"
+    },
+    "277": {
+      "dataset_slug": "L3_SHP_M277_SOUTHBOROUGH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M277_parcels_gdb.zip",
+      "name": "Southborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M277_SOUTHBOROUGH.zip"
+    },
+    "278": {
+      "dataset_slug": "L3_SHP_M278_SOUTHBRIDGE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M278_parcels_gdb.zip",
+      "name": "Southbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M278_SOUTHBRIDGE.zip"
+    },
+    "279": {
+      "dataset_slug": "L3_SHP_M279_SOUTHWICK",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M279_parcels_gdb.zip",
+      "name": "Southwick",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M279_SOUTHWICK.zip"
+    },
+    "28": {
+      "dataset_slug": "L3_SHP_M028_BERLIN",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M028_parcels_gdb.zip",
+      "name": "Berlin",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M028_BERLIN.zip"
+    },
+    "280": {
+      "dataset_slug": "L3_SHP_M280_SPENCER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M280_parcels_gdb.zip",
+      "name": "Spencer",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M280_SPENCER.zip"
+    },
+    "281": {
+      "dataset_slug": "L3_SHP_M281_SPRINGFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M281_parcels_gdb.zip",
+      "name": "Springfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M281_SPRINGFIELD.zip"
+    },
+    "282": {
+      "dataset_slug": "L3_SHP_M282_STERLING",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M282_parcels_gdb.zip",
+      "name": "Sterling",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M282_STERLING.zip"
+    },
+    "283": {
+      "dataset_slug": "L3_SHP_M283_STOCKBRIDGE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M283_parcels_gdb.zip",
+      "name": "Stockbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M283_STOCKBRIDGE.zip"
+    },
+    "284": {
+      "dataset_slug": "L3_SHP_M284_STONEHAM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M284_parcels_gdb.zip",
+      "name": "Stoneham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M284_STONEHAM.zip"
+    },
+    "285": {
+      "dataset_slug": "L3_SHP_M285_STOUGHTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M285_parcels_gdb.zip",
+      "name": "Stoughton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M285_STOUGHTON.zip"
+    },
+    "286": {
+      "dataset_slug": "L3_SHP_M286_STOW",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M286_parcels_gdb.zip",
+      "name": "Stow",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M286_STOW.zip"
+    },
+    "287": {
+      "dataset_slug": "L3_SHP_M287_STURBRIDGE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M287_parcels_gdb.zip",
+      "name": "Sturbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M287_STURBRIDGE.zip"
+    },
+    "288": {
+      "dataset_slug": "L3_SHP_M288_SUDBURY",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M288_parcels_gdb.zip",
+      "name": "Sudbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M288_SUDBURY.zip"
+    },
+    "289": {
+      "dataset_slug": "L3_SHP_M289_SUNDERLAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M289_parcels_gdb.zip",
+      "name": "Sunderland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M289_SUNDERLAND.zip"
+    },
+    "29": {
+      "dataset_slug": "L3_SHP_M029_BERNARDSTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M029_parcels_gdb.zip",
+      "name": "Bernardston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M029_BERNARDSTON.zip"
+    },
+    "290": {
+      "dataset_slug": "L3_SHP_M290_SUTTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M290_parcels_gdb.zip",
+      "name": "Sutton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M290_SUTTON.zip"
+    },
+    "291": {
+      "dataset_slug": "L3_SHP_M291_SWAMPSCOTT",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M291_parcels_gdb.zip",
+      "name": "Swampscott",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M291_SWAMPSCOTT.zip"
+    },
+    "292": {
+      "dataset_slug": "L3_SHP_M292_SWANSEA",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M292_parcels_gdb.zip",
+      "name": "Swansea",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M292_SWANSEA.zip"
+    },
+    "293": {
+      "dataset_slug": "L3_SHP_M293_TAUNTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M293_parcels_gdb.zip",
+      "name": "Taunton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M293_TAUNTON.zip"
+    },
+    "294": {
+      "dataset_slug": "L3_SHP_M294_TEMPLETON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M294_parcels_gdb.zip",
+      "name": "Templeton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M294_TEMPLETON.zip"
+    },
+    "295": {
+      "dataset_slug": "L3_SHP_M295_TEWKSBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M295_parcels_gdb.zip",
+      "name": "Tewksbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M295_TEWKSBURY.zip"
+    },
+    "296": {
+      "dataset_slug": "L3_SHP_M296_TISBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M296_parcels_gdb.zip",
+      "name": "Tisbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M296_TISBURY.zip"
+    },
+    "297": {
+      "dataset_slug": "L3_SHP_M297_TOLLAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M297_parcels_gdb.zip",
+      "name": "Tolland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M297_TOLLAND.zip"
+    },
+    "298": {
+      "dataset_slug": "L3_SHP_M298_TOPSFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M298_parcels_gdb.zip",
+      "name": "Topsfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M298_TOPSFIELD.zip"
+    },
+    "299": {
+      "dataset_slug": "L3_SHP_M299_TOWNSEND",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M299_parcels_gdb.zip",
+      "name": "Townsend",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M299_TOWNSEND.zip"
+    },
+    "3": {
+      "dataset_slug": "L3_SHP_M003_ACUSHNET",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M003_parcels_gdb.zip",
+      "name": "Acushnet",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M003_ACUSHNET.zip"
+    },
+    "30": {
+      "dataset_slug": "L3_SHP_M030_BEVERLY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M030_parcels_gdb.zip",
+      "name": "Beverly",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M030_BEVERLY.zip"
+    },
+    "300": {
+      "dataset_slug": "L3_SHP_M300_TRURO",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M300_parcels_gdb.zip",
+      "name": "Truro",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M300_TRURO.zip"
+    },
+    "301": {
+      "dataset_slug": "L3_SHP_M301_TYNGSBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M301_parcels_gdb.zip",
+      "name": "Tyngsborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M301_TYNGSBOROUGH.zip"
+    },
+    "302": {
+      "dataset_slug": "L3_SHP_M302_TYRINGHAM",
+      "fiscal_year": "2021",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M302_parcels_gdb.zip",
+      "name": "Tyringham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M302_TYRINGHAM.zip"
+    },
+    "303": {
+      "dataset_slug": "L3_SHP_M303_UPTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M303_parcels_gdb.zip",
+      "name": "Upton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M303_UPTON.zip"
+    },
+    "304": {
+      "dataset_slug": "L3_SHP_M304_UXBRIDGE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M304_parcels_gdb.zip",
+      "name": "Uxbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M304_UXBRIDGE.zip"
+    },
+    "305": {
+      "dataset_slug": "L3_SHP_M305_WAKEFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M305_parcels_gdb.zip",
+      "name": "Wakefield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M305_WAKEFIELD.zip"
+    },
+    "306": {
+      "dataset_slug": "L3_SHP_M306_WALES",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M306_parcels_gdb.zip",
+      "name": "Wales",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M306_WALES.zip"
+    },
+    "307": {
+      "dataset_slug": "L3_SHP_M307_WALPOLE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M307_parcels_gdb.zip",
+      "name": "Walpole",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M307_WALPOLE.zip"
+    },
+    "308": {
+      "dataset_slug": "L3_SHP_M308_WALTHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M308_parcels_gdb.zip",
+      "name": "Waltham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M308_WALTHAM.zip"
+    },
+    "309": {
+      "dataset_slug": "L3_SHP_M309_WARE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M309_parcels_gdb.zip",
+      "name": "Ware",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M309_WARE.zip"
+    },
+    "31": {
+      "dataset_slug": "L3_SHP_M031_BILLERICA",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M031_parcels_gdb.zip",
+      "name": "Billerica",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M031_BILLERICA.zip"
+    },
+    "310": {
+      "dataset_slug": "L3_SHP_M310_WAREHAM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M310_parcels_gdb.zip",
+      "name": "Wareham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M310_WAREHAM.zip"
+    },
+    "311": {
+      "dataset_slug": "L3_SHP_M311_WARREN",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M311_parcels_gdb.zip",
+      "name": "Warren",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M311_WARREN.zip"
+    },
+    "312": {
+      "dataset_slug": "L3_SHP_M312_WARWICK",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M312_parcels_gdb.zip",
+      "name": "Warwick",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M312_WARWICK.zip"
+    },
+    "313": {
+      "dataset_slug": "L3_SHP_M313_WASHINGTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M313_parcels_gdb.zip",
+      "name": "Washington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M313_WASHINGTON.zip"
+    },
+    "314": {
+      "dataset_slug": "L3_SHP_M314_WATERTOWN",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M314_parcels_gdb.zip",
+      "name": "Watertown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M314_WATERTOWN.zip"
+    },
+    "315": {
+      "dataset_slug": "L3_SHP_M315_WAYLAND",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M315_parcels_gdb.zip",
+      "name": "Wayland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M315_WAYLAND.zip"
+    },
+    "316": {
+      "dataset_slug": "L3_SHP_M316_WEBSTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M316_parcels_gdb.zip",
+      "name": "Webster",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M316_WEBSTER.zip"
+    },
+    "317": {
+      "dataset_slug": "L3_SHP_M317_WELLESLEY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M317_parcels_gdb.zip",
+      "name": "Wellesley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M317_WELLESLEY.zip"
+    },
+    "318": {
+      "dataset_slug": "L3_SHP_M318_WELLFLEET",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M318_parcels_gdb.zip",
+      "name": "Wellfleet",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M318_WELLFLEET.zip"
+    },
+    "319": {
+      "dataset_slug": "L3_SHP_M319_WENDELL",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M319_parcels_gdb.zip",
+      "name": "Wendell",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M319_WENDELL.zip"
+    },
+    "32": {
+      "dataset_slug": "L3_SHP_M032_BLACKSTONE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M032_parcels_gdb.zip",
+      "name": "Blackstone",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M032_BLACKSTONE.zip"
+    },
+    "320": {
+      "dataset_slug": "L3_SHP_M320_WENHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M320_parcels_gdb.zip",
+      "name": "Wenham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M320_WENHAM.zip"
+    },
+    "321": {
+      "dataset_slug": "L3_SHP_M321_WESTBOYLSTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M321_parcels_gdb.zip",
+      "name": "West Boylston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M321_WESTBOYLSTON.zip"
+    },
+    "322": {
+      "dataset_slug": "L3_SHP_M322_WESTBRIDGEWATER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M322_parcels_gdb.zip",
+      "name": "West Bridgewater",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M322_WESTBRIDGEWATER.zip"
+    },
+    "323": {
+      "dataset_slug": "L3_SHP_M323_WESTBROOKFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M323_parcels_gdb.zip",
+      "name": "West Brookfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M323_WESTBROOKFIELD.zip"
+    },
+    "324": {
+      "dataset_slug": "L3_SHP_M324_WESTNEWBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M324_parcels_gdb.zip",
+      "name": "West Newbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M324_WESTNEWBURY.zip"
+    },
+    "325": {
+      "dataset_slug": "L3_SHP_M325_WESTSPRINGFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M325_parcels_gdb.zip",
+      "name": "West Springfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M325_WESTSPRINGFIELD.zip"
+    },
+    "326": {
+      "dataset_slug": "L3_SHP_M326_WESTSTOCKBRIDGE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M326_parcels_gdb.zip",
+      "name": "West Stockbridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M326_WESTSTOCKBRIDGE.zip"
+    },
+    "327": {
+      "dataset_slug": "L3_SHP_M327_WESTTISBURY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M327_parcels_gdb.zip",
+      "name": "West Tisbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M327_WESTTISBURY.zip"
+    },
+    "328": {
+      "dataset_slug": "L3_SHP_M328_WESTBOROUGH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M328_parcels_gdb.zip",
+      "name": "Westborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M328_WESTBOROUGH.zip"
+    },
+    "329": {
+      "dataset_slug": "L3_SHP_M329_WESTFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M329_parcels_gdb.zip",
+      "name": "Westfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M329_WESTFIELD.zip"
+    },
+    "33": {
+      "dataset_slug": "L3_SHP_M033_BLANDFORD",
+      "fiscal_year": "2021",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M033_parcels_gdb.zip",
+      "name": "Blandford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M033_BLANDFORD.zip"
+    },
+    "330": {
+      "dataset_slug": "L3_SHP_M330_WESTFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M330_parcels_gdb.zip",
+      "name": "Westford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M330_WESTFORD.zip"
+    },
+    "331": {
+      "dataset_slug": "L3_SHP_M331_WESTHAMPTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M331_parcels_gdb.zip",
+      "name": "Westhampton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M331_WESTHAMPTON.zip"
+    },
+    "332": {
+      "dataset_slug": "L3_SHP_M332_WESTMINSTER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M332_parcels_gdb.zip",
+      "name": "Westminster",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M332_WESTMINSTER.zip"
+    },
+    "333": {
+      "dataset_slug": "L3_SHP_M333_WESTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M333_parcels_gdb.zip",
+      "name": "Weston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M333_WESTON.zip"
+    },
+    "334": {
+      "dataset_slug": "L3_SHP_M334_WESTPORT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M334_parcels_gdb.zip",
+      "name": "Westport",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M334_WESTPORT.zip"
+    },
+    "335": {
+      "dataset_slug": "L3_SHP_M335_WESTWOOD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M335_parcels_gdb.zip",
+      "name": "Westwood",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M335_WESTWOOD.zip"
+    },
+    "336": {
+      "dataset_slug": "L3_SHP_M336_WEYMOUTH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M336_parcels_gdb.zip",
+      "name": "Weymouth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M336_WEYMOUTH.zip"
+    },
+    "337": {
+      "dataset_slug": "L3_SHP_M337_WHATELY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M337_parcels_gdb.zip",
+      "name": "Whately",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M337_WHATELY.zip"
+    },
+    "338": {
+      "dataset_slug": "L3_SHP_M338_WHITMAN",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M338_parcels_gdb.zip",
+      "name": "Whitman",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M338_WHITMAN.zip"
+    },
+    "339": {
+      "dataset_slug": "L3_SHP_M339_WILBRAHAM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M339_parcels_gdb.zip",
+      "name": "Wilbraham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M339_WILBRAHAM.zip"
+    },
+    "34": {
+      "dataset_slug": "L3_SHP_M034_BOLTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M034_parcels_gdb.zip",
+      "name": "Bolton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M034_BOLTON.zip"
+    },
+    "340": {
+      "dataset_slug": "L3_SHP_M340_WILLIAMSBURG",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M340_parcels_gdb.zip",
+      "name": "Williamsburg",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M340_WILLIAMSBURG.zip"
+    },
+    "341": {
+      "dataset_slug": "L3_SHP_M341_WILLIAMSTOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M341_parcels_gdb.zip",
+      "name": "Williamstown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M341_WILLIAMSTOWN.zip"
+    },
+    "342": {
+      "dataset_slug": "L3_SHP_M342_WILMINGTON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M342_parcels_gdb.zip",
+      "name": "Wilmington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M342_WILMINGTON.zip"
+    },
+    "343": {
+      "dataset_slug": "L3_SHP_M343_WINCHENDON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M343_parcels_gdb.zip",
+      "name": "Winchendon",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M343_WINCHENDON.zip"
+    },
+    "344": {
+      "dataset_slug": "L3_SHP_M344_WINCHESTER",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M344_parcels_gdb.zip",
+      "name": "Winchester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M344_WINCHESTER.zip"
+    },
+    "345": {
+      "dataset_slug": "L3_SHP_M345_WINDSOR",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M345_parcels_gdb.zip",
+      "name": "Windsor",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M345_WINDSOR.zip"
+    },
+    "346": {
+      "dataset_slug": "L3_SHP_M346_WINTHROP",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M346_parcels_gdb.zip",
+      "name": "Winthrop",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M346_WINTHROP.zip"
+    },
+    "347": {
+      "dataset_slug": "L3_SHP_M347_WOBURN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M347_parcels_gdb.zip",
+      "name": "Woburn",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M347_WOBURN.zip"
+    },
+    "348": {
+      "dataset_slug": "L3_SHP_M348_WORCESTER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M348_parcels_gdb.zip",
+      "name": "Worcester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M348_WORCESTER.zip"
+    },
+    "349": {
+      "dataset_slug": "L3_SHP_M349_WORTHINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M349_parcels_gdb.zip",
+      "name": "Worthington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M349_WORTHINGTON.zip"
+    },
+    "35": {
+      "dataset_slug": "BOSTON_TAXPAR",
+      "fiscal_year": "2023",
+      "gdb_url": null,
+      "name": "Boston",
+      "shapefile_url": "file:///Volumes/OWC%20Envoy%20Ultra/Websites/lead_CRM/gisdata/downloads/BOSTON_TAXPAR.zip"
+    },
+    "350": {
+      "dataset_slug": "L3_SHP_M350_WRENTHAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M350_parcels_gdb.zip",
+      "name": "Wrentham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M350_WRENTHAM.zip"
+    },
+    "351": {
+      "dataset_slug": "L3_SHP_M351_YARMOUTH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M351_parcels_gdb.zip",
+      "name": "Yarmouth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M351_YARMOUTH.zip"
+    },
+    "36": {
+      "dataset_slug": "L3_SHP_M036_BOURNE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M036_parcels_gdb.zip",
+      "name": "Bourne",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M036_BOURNE.zip"
+    },
+    "37": {
+      "dataset_slug": "L3_SHP_M037_BOXBOROUGH",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M037_parcels_gdb.zip",
+      "name": "Boxborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M037_BOXBOROUGH.zip"
+    },
+    "38": {
+      "dataset_slug": "L3_SHP_M038_BOXFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M038_parcels_gdb.zip",
+      "name": "Boxford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M038_BOXFORD.zip"
+    },
+    "39": {
+      "dataset_slug": "L3_SHP_M039_BOYLSTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M039_parcels_gdb.zip",
+      "name": "Boylston",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M039_BOYLSTON.zip"
+    },
+    "4": {
+      "dataset_slug": "L3_SHP_M004_ADAMS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M004_parcels_gdb.zip",
+      "name": "Adams",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M004_ADAMS.zip"
+    },
+    "40": {
+      "dataset_slug": "L3_SHP_M040_BRAINTREE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M040_parcels_gdb.zip",
+      "name": "Braintree",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M040_BRAINTREE.zip"
+    },
+    "41": {
+      "dataset_slug": "L3_SHP_M041_BREWSTER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M041_parcels_gdb.zip",
+      "name": "Brewster",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M041_BREWSTER.zip"
+    },
+    "42": {
+      "dataset_slug": "L3_SHP_M042_BRIDGEWATER",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M042_parcels_gdb.zip",
+      "name": "Bridgewater",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M042_BRIDGEWATER.zip"
+    },
+    "43": {
+      "dataset_slug": "L3_SHP_M043_BRIMFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M043_parcels_gdb.zip",
+      "name": "Brimfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M043_BRIMFIELD.zip"
+    },
+    "44": {
+      "dataset_slug": "L3_SHP_M044_BROCKTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M044_parcels_gdb.zip",
+      "name": "Brockton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M044_BROCKTON.zip"
+    },
+    "45": {
+      "dataset_slug": "L3_SHP_M045_BROOKFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M045_parcels_gdb.zip",
+      "name": "Brookfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M045_BROOKFIELD.zip"
+    },
+    "46": {
+      "dataset_slug": "L3_SHP_M046_BROOKLINE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M046_parcels_gdb.zip",
+      "name": "Brookline",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M046_BROOKLINE.zip"
+    },
+    "47": {
+      "dataset_slug": "L3_SHP_M047_BUCKLAND",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M047_parcels_gdb.zip",
+      "name": "Buckland",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M047_BUCKLAND.zip"
+    },
+    "48": {
+      "dataset_slug": "L3_SHP_M048_BURLINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M048_parcels_gdb.zip",
+      "name": "Burlington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M048_BURLINGTON.zip"
+    },
+    "49": {
+      "dataset_slug": "L3_SHP_M049_CAMBRIDGE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M049_parcels_gdb.zip",
+      "name": "Cambridge",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M049_CAMBRIDGE.zip"
+    },
+    "5": {
+      "dataset_slug": "L3_SHP_M005_AGAWAM",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M005_parcels_gdb.zip",
+      "name": "Agawam",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M005_AGAWAM.zip"
+    },
+    "50": {
+      "dataset_slug": "L3_SHP_M050_CANTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M050_parcels_gdb.zip",
+      "name": "Canton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M050_CANTON.zip"
+    },
+    "51": {
+      "dataset_slug": "L3_SHP_M051_CARLISLE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M051_parcels_gdb.zip",
+      "name": "Carlisle",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M051_CARLISLE.zip"
+    },
+    "52": {
+      "dataset_slug": "L3_SHP_M052_CARVER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M052_parcels_gdb.zip",
+      "name": "Carver",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M052_CARVER.zip"
+    },
+    "53": {
+      "dataset_slug": "L3_SHP_M053_CHARLEMONT",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M053_parcels_gdb.zip",
+      "name": "Charlemont",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M053_CHARLEMONT.zip"
+    },
+    "54": {
+      "dataset_slug": "L3_SHP_M054_CHARLTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M054_parcels_gdb.zip",
+      "name": "Charlton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M054_CHARLTON.zip"
+    },
+    "55": {
+      "dataset_slug": "L3_SHP_M055_CHATHAM",
+      "fiscal_year": "2018",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M055_parcels_gdb.zip",
+      "name": "Chatham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M055_CHATHAM.zip"
+    },
+    "56": {
+      "dataset_slug": "L3_SHP_M056_CHELMSFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M056_parcels_gdb.zip",
+      "name": "Chelmsford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M056_CHELMSFORD.zip"
+    },
+    "57": {
+      "dataset_slug": "L3_SHP_M057_CHELSEA",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M057_parcels_gdb.zip",
+      "name": "Chelsea",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M057_CHELSEA.zip"
+    },
+    "58": {
+      "dataset_slug": "L3_SHP_M058_CHESHIRE",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M058_parcels_gdb.zip",
+      "name": "Cheshire",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M058_CHESHIRE.zip"
+    },
+    "59": {
+      "dataset_slug": "L3_SHP_M059_CHESTER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M059_parcels_gdb.zip",
+      "name": "Chester",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M059_CHESTER.zip"
+    },
+    "6": {
+      "dataset_slug": "L3_SHP_M006_ALFORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M006_parcels_gdb.zip",
+      "name": "Alford",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M006_ALFORD.zip"
+    },
+    "60": {
+      "dataset_slug": "L3_SHP_M060_CHESTERFIELD",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M060_parcels_gdb.zip",
+      "name": "Chesterfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M060_CHESTERFIELD.zip"
+    },
+    "61": {
+      "dataset_slug": "L3_SHP_M061_CHICOPEE",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M061_parcels_gdb.zip",
+      "name": "Chicopee",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M061_CHICOPEE.zip"
+    },
+    "62": {
+      "dataset_slug": "L3_SHP_M062_CHILMARK",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M062_parcels_gdb.zip",
+      "name": "Chilmark",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M062_CHILMARK.zip"
+    },
+    "63": {
+      "dataset_slug": "L3_SHP_M063_CLARKSBURG",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M063_parcels_gdb.zip",
+      "name": "Clarksburg",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M063_CLARKSBURG.zip"
+    },
+    "64": {
+      "dataset_slug": "L3_SHP_M064_CLINTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M064_parcels_gdb.zip",
+      "name": "Clinton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M064_CLINTON.zip"
+    },
+    "65": {
+      "dataset_slug": "L3_SHP_M065_COHASSET",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M065_parcels_gdb.zip",
+      "name": "Cohasset",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M065_COHASSET.zip"
+    },
+    "66": {
+      "dataset_slug": "L3_SHP_M066_COLRAIN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M066_parcels_gdb.zip",
+      "name": "Colrain",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M066_COLRAIN.zip"
+    },
+    "67": {
+      "dataset_slug": "L3_SHP_M067_CONCORD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M067_parcels_gdb.zip",
+      "name": "Concord",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M067_CONCORD.zip"
+    },
+    "68": {
+      "dataset_slug": "L3_SHP_M068_CONWAY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M068_parcels_gdb.zip",
+      "name": "Conway",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M068_CONWAY.zip"
+    },
+    "69": {
+      "dataset_slug": "L3_SHP_M069_CUMMINGTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M069_parcels_gdb.zip",
+      "name": "Cummington",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M069_CUMMINGTON.zip"
+    },
+    "7": {
+      "dataset_slug": "L3_SHP_M007_AMESBURY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M007_parcels_gdb.zip",
+      "name": "Amesbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M007_AMESBURY.zip"
+    },
+    "70": {
+      "dataset_slug": "L3_SHP_M070_DALTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M070_parcels_gdb.zip",
+      "name": "Dalton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M070_DALTON.zip"
+    },
+    "71": {
+      "dataset_slug": "L3_SHP_M071_DANVERS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M071_parcels_gdb.zip",
+      "name": "Danvers",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M071_DANVERS.zip"
+    },
+    "72": {
+      "dataset_slug": "L3_SHP_M072_DARTMOUTH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M072_parcels_gdb.zip",
+      "name": "Dartmouth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M072_DARTMOUTH.zip"
+    },
+    "73": {
+      "dataset_slug": "L3_SHP_M073_DEDHAM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M073_parcels_gdb.zip",
+      "name": "Dedham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M073_DEDHAM.zip"
+    },
+    "74": {
+      "dataset_slug": "L3_SHP_M074_DEERFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M074_parcels_gdb.zip",
+      "name": "Deerfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M074_DEERFIELD.zip"
+    },
+    "75": {
+      "dataset_slug": "L3_SHP_M075_DENNIS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M075_parcels_gdb.zip",
+      "name": "Dennis",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M075_DENNIS.zip"
+    },
+    "76": {
+      "dataset_slug": "L3_SHP_M076_DIGHTON",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M076_parcels_gdb.zip",
+      "name": "Dighton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M076_DIGHTON.zip"
+    },
+    "77": {
+      "dataset_slug": "L3_SHP_M077_DOUGLAS",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M077_parcels_gdb.zip",
+      "name": "Douglas",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M077_DOUGLAS.zip"
+    },
+    "78": {
+      "dataset_slug": "L3_SHP_M078_DOVER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M078_parcels_gdb.zip",
+      "name": "Dover",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M078_DOVER.zip"
+    },
+    "79": {
+      "dataset_slug": "L3_SHP_M079_DRACUT",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M079_parcels_gdb.zip",
+      "name": "Dracut",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M079_DRACUT.zip"
+    },
+    "8": {
+      "dataset_slug": "L3_SHP_M008_AMHERST",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M008_parcels_gdb.zip",
+      "name": "Amherst",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M008_AMHERST.zip"
+    },
+    "80": {
+      "dataset_slug": "L3_SHP_M080_DUDLEY",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M080_parcels_gdb.zip",
+      "name": "Dudley",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M080_DUDLEY.zip"
+    },
+    "81": {
+      "dataset_slug": "L3_SHP_M081_DUNSTABLE",
+      "fiscal_year": "2023",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M081_parcels_gdb.zip",
+      "name": "Dunstable",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M081_DUNSTABLE.zip"
+    },
+    "82": {
+      "dataset_slug": "L3_SHP_M082_DUXBURY",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M082_parcels_gdb.zip",
+      "name": "Duxbury",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M082_DUXBURY.zip"
+    },
+    "83": {
+      "dataset_slug": "L3_SHP_M083_EASTBRIDGEWATER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M083_parcels_gdb.zip",
+      "name": "East Bridgewater",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M083_EASTBRIDGEWATER.zip"
+    },
+    "84": {
+      "dataset_slug": "L3_SHP_M084_EASTBROOKFIELD",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M084_parcels_gdb.zip",
+      "name": "East Brookfield",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M084_EASTBROOKFIELD.zip"
+    },
+    "85": {
+      "dataset_slug": "L3_SHP_M085_EASTLONGMEADOW",
+      "fiscal_year": "2019",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M085_parcels_gdb.zip",
+      "name": "East Longmeadow",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M085_EASTLONGMEADOW.zip"
+    },
+    "86": {
+      "dataset_slug": "L3_SHP_M086_EASTHAM",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M086_parcels_gdb.zip",
+      "name": "Eastham",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M086_EASTHAM.zip"
+    },
+    "87": {
+      "dataset_slug": "L3_SHP_M087_EASTHAMPTON",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M087_parcels_gdb.zip",
+      "name": "Easthampton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M087_EASTHAMPTON.zip"
+    },
+    "88": {
+      "dataset_slug": "L3_SHP_M088_EASTON",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M088_parcels_gdb.zip",
+      "name": "Easton",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M088_EASTON.zip"
+    },
+    "89": {
+      "dataset_slug": "L3_SHP_M089_EDGARTOWN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M089_parcels_gdb.zip",
+      "name": "Edgartown",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M089_EDGARTOWN.zip"
+    },
+    "9": {
+      "dataset_slug": "L3_SHP_M009_ANDOVER",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M009_parcels_gdb.zip",
+      "name": "Andover",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M009_ANDOVER.zip"
+    },
+    "90": {
+      "dataset_slug": "L3_SHP_M090_EGREMONT",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M090_parcels_gdb.zip",
+      "name": "Egremont",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M090_EGREMONT.zip"
+    },
+    "91": {
+      "dataset_slug": "L3_SHP_M091_ERVING",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M091_parcels_gdb.zip",
+      "name": "Erving",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M091_ERVING.zip"
+    },
+    "92": {
+      "dataset_slug": "L3_SHP_M092_ESSEX",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M092_parcels_gdb.zip",
+      "name": "Essex",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M092_ESSEX.zip"
+    },
+    "93": {
+      "dataset_slug": "L3_SHP_M093_EVERETT",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M093_parcels_gdb.zip",
+      "name": "Everett",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M093_EVERETT.zip"
+    },
+    "94": {
+      "dataset_slug": "L3_SHP_M094_FAIRHAVEN",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M094_parcels_gdb.zip",
+      "name": "Fairhaven",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M094_FAIRHAVEN.zip"
+    },
+    "95": {
+      "dataset_slug": "L3_SHP_M095_FALLRIVER",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M095_parcels_gdb.zip",
+      "name": "Fall River",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M095_FALLRIVER.zip"
+    },
+    "96": {
+      "dataset_slug": "L3_SHP_M096_FALMOUTH",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M096_parcels_gdb.zip",
+      "name": "Falmouth",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M096_FALMOUTH.zip"
+    },
+    "97": {
+      "dataset_slug": "L3_SHP_M097_FITCHBURG",
+      "fiscal_year": "2024",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M097_parcels_gdb.zip",
+      "name": "Fitchburg",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M097_FITCHBURG.zip"
+    },
+    "98": {
+      "dataset_slug": "L3_SHP_M098_FLORIDA",
+      "fiscal_year": "2022",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M098_parcels_gdb.zip",
+      "name": "Florida",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M098_FLORIDA.zip"
+    },
+    "99": {
+      "dataset_slug": "L3_SHP_M099_FOXBOROUGH",
+      "fiscal_year": "2025",
+      "gdb_url": "http://download.massgis.digital.mass.gov/gdbs/l3parcels/M099_parcels_gdb.zip",
+      "name": "Foxborough",
+      "shapefile_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M099_FOXBOROUGH.zip"
+    }
+  },
+  "fetched_at": "2025-11-07T16:13:47.342742+00:00"
+}

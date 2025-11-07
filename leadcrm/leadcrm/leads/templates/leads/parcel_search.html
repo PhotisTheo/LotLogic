@@ -1,0 +1,3603 @@
+{% extends "leads/base.html" %}
+
+{% block title %}MassGIS Parcel Search{% endblock %}
+
+{% block content %}
+<style>
+  /* Override base template container padding for full-screen layout */
+  main.container {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Full-screen map layout */
+  .parcel-search-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    margin-left: calc(-50vw + 50%);
+    overflow: hidden;
+  }
+
+  .parcel-search-map-fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+  }
+
+  /* Frosted glass search overlay - now a left sidebar */
+  .search-overlay {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    width: 420px;
+    height: calc(100vh - 72px);
+    overflow-y: auto;
+    z-index: 1200;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .search-overlay-header {
+    padding: 24px 20px 20px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 10;
+  }
+
+  .search-overlay-header h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+  }
+
+  .search-overlay-header p {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+
+  .search-overlay-body {
+    padding: 20px;
+    padding-bottom: 140px;
+  }
+
+  /* Enhanced filter tabs */
+  .nav-tabs {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+  }
+
+  .nav-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    padding: 12px 20px;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.05);
+    border-radius: 8px 8px 0 0;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background: transparent;
+    border-bottom-color: #0d6efd;
+  }
+
+  /* Filter content pane */
+  .tab-content {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0 0 12px 12px !important;
+    border-top: none !important;
+    padding: 20px !important;
+    margin-bottom: 16px;
+  }
+
+  /* Active filter badge */
+  .filter-badge {
+    display: inline-block;
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  /* Clear filters button */
+  .clear-filters-btn {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .clear-filters-btn:hover {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.3);
+  }
+
+  /* Filter section headers */
+  .filter-section-header {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  /* Form controls in overlay */
+  .search-overlay .form-control,
+  .search-overlay .form-select {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+  }
+
+  .search-overlay .form-control:focus,
+  .search-overlay .form-select:focus {
+    background: rgba(255, 255, 255, 1);
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  }
+
+  /* Collapse button */
+  .toggle-search-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    display: none;
+  }
+
+  .search-overlay.collapsed {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Filter toggle button - floating icon on left */
+  .filter-toggle-btn {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    z-index: 999;
+    background: rgba(13, 110, 253, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(13, 110, 253, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease, opacity 0.3s ease, color 0.3s ease;
+    color: white;
+    font-size: 24px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .filter-toggle-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 28px rgba(13, 110, 253, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: rgba(13, 110, 253, 1);
+  }
+
+  .search-overlay.collapsed ~ .filter-toggle-btn {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Active filter badge on toggle button */
+  .filter-toggle-btn .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+  }
+
+  /* Results panel that slides up from bottom */
+  .results-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1002;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-overlay:not(.collapsed) ~ .results-panel {
+    left: 420px;
+    right: auto;
+    width: calc(100% - 420px);
+  }
+
+  @media (max-width: 768px) {
+    .search-overlay:not(.collapsed) ~ .results-panel {
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  .results-panel.collapsed {
+    transform: translateY(calc(100% - 60px)); /* Show only header when collapsed */
+  }
+
+  .results-panel-header {
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .results-panel-header:hover {
+    background: rgba(248, 249, 250, 0.98);
+  }
+
+  .results-panel-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 20px;
+  }
+
+  .results-toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .results-panel.collapsed .results-toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Show results button */
+  .show-results-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 30px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+    animation: bounce 2s infinite;
+    display: none;
+  }
+
+  .search-overlay:not(.collapsed) ~ .show-results-btn {
+    left: calc(420px + (100% - 420px) / 2);
+  }
+
+  @media (max-width: 768px) {
+    .search-overlay:not(.collapsed) ~ .show-results-btn {
+      left: 50%;
+    }
+  }
+
+  .results-panel.collapsed ~ .show-results-btn {
+    display: block;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-10px); }
+    60% { transform: translateX(-50%) translateY(-5px); }
+  }
+
+  /* Quick view preview */
+  .parcel-quick-view {
+    position: fixed;
+    width: 280px;
+    max-width: calc(100% - 48px);
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+    z-index: 1200;
+    overflow: hidden;
+    transition: opacity 0.15s ease-in-out;
+  }
+
+  .parcel-quick-view.is-hidden {
+    display: none;
+  }
+
+  .parcel-quick-view .quick-view-map {
+    height: 160px;
+    background: #e2e8f0;
+  }
+
+  .parcel-quick-view .leaflet-container {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .parcel-quick-view .quick-view-body {
+    padding: 14px 16px 16px;
+  }
+
+  .parcel-quick-view .quick-view-body .quick-view-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  .parcel-quick-view .quick-view-tags .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 992px) {
+    .parcel-quick-view {
+      display: none !important;
+    }
+  }
+
+  /* Parcel Overview Modal */
+  .parcel-overview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .parcel-overview-modal.active {
+    display: flex;
+  }
+
+  .parcel-overview-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .parcel-overview-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+  }
+
+  .parcel-overview-header {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .parcel-overview-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .parcel-overview-header .btn-close {
+    margin-top: 4px;
+  }
+
+  .parcel-overview-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .overview-streetview-container {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+
+  .overview-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .overview-info-card {
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .overview-info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+
+  .overview-info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    word-break: break-word;
+  }
+
+  .overview-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .overview-badges .badge {
+    font-size: 0.875rem;
+    padding: 6px 12px;
+  }
+
+  .parcel-overview-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .parcel-overview-content {
+      width: 95%;
+      max-height: 95vh;
+    }
+
+    .overview-info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .parcel-overview-header {
+      padding: 16px;
+    }
+
+    .parcel-overview-body {
+      padding: 16px;
+    }
+
+    .parcel-overview-footer {
+      padding: 16px;
+      flex-direction: column-reverse;
+    }
+
+    .parcel-overview-footer .btn {
+      width: 100%;
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .search-overlay {
+      max-width: calc(100% - 40px);
+    }
+  }
+
+  @media (max-width: 992px) {
+    .search-overlay {
+      top: 64px;
+      height: calc(100vh - 64px);
+    }
+  }
+
+  /* Loading indicator */
+  .parcel-loading-indicator {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: none;
+    font-size: 14px;
+  }
+
+  .parcel-loading-indicator.active {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<div class="parcel-search-container">
+  <!-- Full-screen map -->
+  <div id="parcel-search-map" class="parcel-search-map-fullscreen"></div>
+
+  <!-- Loading indicator -->
+  <div id="parcelLoadingIndicator" class="parcel-loading-indicator">
+    <div class="spinner"></div>
+    <span>Loading parcels...</span>
+  </div>
+
+  <!-- CSRF token for AJAX forms -->
+  {% csrf_token %}
+
+  <!-- Frosted glass search overlay -->
+  <div class="search-overlay collapsed" id="searchOverlay" aria-hidden="true">
+    <div class="search-overlay-header">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="flex-grow-1">
+          <h1><i class="bi bi-funnel"></i> Filters</h1>
+          <p class="text-muted mb-0">Refine your parcel search</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-light" onclick="toggleSearchOverlay()" title="Close filters">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm clear-filters-btn" onclick="clearAllFilters()" id="clearFiltersBtn" style="display: none;">
+          <i class="bi bi-x-circle"></i> Clear All Filters
+        </button>
+        <div id="activeFiltersCount" class="ms-auto" style="display: none;">
+          <span class="filter-badge">0 active</span>
+        </div>
+      </div>
+    </div>
+    <div class="search-overlay-body">
+      <form method="get" id="parcelSearchForm">
+        <div class="row gy-3 gx-3 align-items-start mb-3">
+          <div class="col-12 col-xl-8">
+            <label class="form-label" for="{{ form.town_id.id_for_label }}">Town</label>
+            {{ form.town_id }}
+            {% if form.town_datalist %}
+              <datalist id="{{ form.town_datalist_id }}">
+                {% for value, label in form.town_datalist %}
+                  <option value="{{ label|escape }}"></option>
+                {% endfor %}
+              </datalist>
+            {% endif %}
+            <div class="form-text">Begin typing to search the statewide town list.</div>
+          </div>
+          <!-- Boston neighborhood selector removed - neighborhoods are now treated as towns -->
+          <div class="col-12 col-xl-8" id="bostonNeighborhoodContainer" style="display: none;">
+            <label class="form-label" for="bostonNeighborhoodSelect">
+              Boston Neighborhood
+            </label>
+            <select class="form-select" id="bostonNeighborhoodSelect" name="boston_neighborhood">
+              <option value="">All Boston neighborhoods</option>
+            </select>
+            <div class="form-text">Selecting a neighborhood limits parcels to that area for faster loading.</div>
+          </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="search-type-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-basics" data-bs-toggle="tab" data-bs-target="#pane-basics" type="button" role="tab" aria-controls="pane-basics" aria-selected="true">
+              Basics
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-property" data-bs-toggle="tab" data-bs-target="#pane-property" type="button" role="tab" aria-controls="pane-property" aria-selected="false">
+              Property
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-value" data-bs-toggle="tab" data-bs-target="#pane-value" type="button" role="tab" aria-controls="pane-value" aria-selected="false">
+              Value
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-ownership" data-bs-toggle="tab" data-bs-target="#pane-ownership" type="button" role="tab" aria-controls="pane-ownership" aria-selected="false">
+              Ownership
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-proximity" data-bs-toggle="tab" data-bs-target="#pane-proximity" type="button" role="tab" aria-controls="pane-proximity" aria-selected="false">
+              Proximity
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="pane-basics" role="tabpanel" aria-labelledby="tab-basics">
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.address_contains.id_for_label }}">Address Contains</label>
+                {{ form.address_contains }}
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="pane-property" role="tabpanel" aria-labelledby="tab-property">
+            <div class="filter-section-header">Property Classification</div>
+            <div class="row gy-3 gx-3 align-items-start mb-3">
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ form.property_category.id_for_label }}">
+                  <i class="bi bi-tags"></i> Property Category
+                </label>
+                {{ form.property_category }}
+                <div class="form-text">Residential, Commercial, Industrial, etc.</div>
+              </div>
+              <div class="col-12 col-lg-6" id="commercialSubtypeWrapper">
+                <label class="form-label" for="{{ form.commercial_subtype.id_for_label }}">
+                  <i class="bi bi-shop"></i> Commercial Type
+                </label>
+                {{ form.commercial_subtype }}
+                <div class="form-text">Retail, Office, Mixed Use, Service (Commercial only)</div>
+              </div>
+            </div>
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.property_type.id_for_label }}">
+                  <i class="bi bi-house"></i> Property Type
+                </label>
+                {{ form.property_type }}
+                <div class="form-text">Single Family, Two Family, etc. (select town first)</div>
+              </div>
+            </div>
+            <div class="filter-section-header">Building Details</div>
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.style.id_for_label }}">
+                  <i class="bi bi-building"></i> Architectural Style Contains
+                </label>
+                {{ form.style }}
+                <div class="form-text">Colonial, Ranch, Cape, etc.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="pane-value" role="tabpanel" aria-labelledby="tab-value">
+            <div class="filter-section-header">Assessed Value Range</div>
+            <div class="row gy-3 gx-3 align-items-start mb-3">
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ form.min_price.id_for_label }}">
+                  <i class="bi bi-currency-dollar"></i> Minimum Value
+                </label>
+                {{ form.min_price }}
+                <div class="form-text">Lowest assessed value to include</div>
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ form.max_price.id_for_label }}">
+                  <i class="bi bi-currency-dollar"></i> Maximum Value
+                </label>
+                {{ form.max_price }}
+                <div class="form-text">Highest assessed value to include</div>
+              </div>
+            </div>
+            <div class="filter-section-header">Investment Metrics</div>
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.equity_min.id_for_label }}">
+                  <i class="bi bi-graph-up-arrow"></i> Minimum Equity Percentage
+                </label>
+                {{ form.equity_min }}
+                <div class="form-text">Based on assessed value vs. estimated remaining loan balance</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="pane-ownership" role="tabpanel" aria-labelledby="tab-ownership">
+            <div class="filter-section-header">Owner Occupancy</div>
+            <div class="row gy-3 gx-3 align-items-start mb-3">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.absentee.id_for_label }}">
+                  <i class="bi bi-people"></i> Occupancy Status
+                </label>
+                {{ form.absentee }}
+                <div class="form-text">Filter by whether owner lives at property address</div>
+              </div>
+            </div>
+            <div class="filter-section-header">Ownership Duration</div>
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12">
+                <label class="form-label" for="{{ form.min_years_owned.id_for_label }}">
+                  <i class="bi bi-calendar-check"></i> Minimum Years Owned
+                </label>
+                {{ form.min_years_owned }}
+                <div class="form-text">Based on last recorded sale date</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="pane-proximity" role="tabpanel" aria-labelledby="tab-proximity">
+            <div class="row gy-3 gx-3 align-items-start">
+              <div class="col-12 col-lg-7">
+                <label class="form-label" for="{{ form.proximity_address.id_for_label }}">Center Address</label>
+                {{ form.proximity_address }}
+                <div class="form-text">Provide a street address to anchor the radius search.</div>
+              </div>
+              <div class="col-12 col-lg-3">
+                <label class="form-label" for="{{ form.proximity_radius_miles.id_for_label }}">Radius (miles)</label>
+                {{ form.proximity_radius_miles }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-start mt-4 flex-wrap gap-2">
+          <button type="button" class="btn btn-outline-secondary" onclick="clearAllFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i> Clear Filters
+          </button>
+        </div>
+      </form>
+      {% if radius_meta.radius_requested %}
+        {% if radius_meta.radius_center_found %}
+          <div class="alert alert-success mt-3 mb-0 d-flex justify-content-between align-items-center small">
+            <span>Radius filter active (origin via {{ radius_meta.radius_center_source|default:"parcel"|title }}); {{ radius_meta.radius_excluded_count }} parcel{% if radius_meta.radius_excluded_count != 1 %}s{% endif %} outside the circle were removed.</span>
+          </div>
+        {% else %}
+          <div class="alert alert-warning mt-3 mb-0 small">
+            We couldn't locate that center address within the dataset, so the radius filter was not applied.
+          </div>
+        {% endif %}
+      {% endif %}
+      {% if form.errors %}
+        <div class="alert alert-danger mt-3 mb-0 small">Please correct the highlighted fields and try again.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="filter-toggle-btn"
+    id="filterToggleBtn"
+    title="Show filters"
+    aria-label="Show filters"
+    aria-expanded="false"
+    aria-controls="searchOverlay"
+    onclick="toggleSearchOverlay()"
+  >
+    <i class="bi bi-funnel-fill" id="filterToggleIcon" aria-hidden="true"></i>
+    <span class="visually-hidden" id="toggleIcon">Show filters</span>
+    <span class="badge" id="filterToggleBadge" style="display: none;">0</span>
+  </button>
+
+  <!-- Scroll to results button (shown when results exist) -->
+  {% if search_performed and results %}
+    <button type="button" class="show-results-btn" onclick="toggleResultsPanel()">
+      View {{ results|length }} Result{{ results|length|pluralize }} ↑
+    </button>
+  {% endif %}
+
+  <div class="parcel-quick-view is-hidden" id="parcelQuickView">
+    <div class="quick-view-map" id="parcelQuickViewMap"></div>
+    <div class="quick-view-body">
+      <div class="fw-semibold" id="quickViewAddress">Hover a parcel to preview</div>
+      <div class="small text-muted mb-2" id="quickViewOwner"></div>
+      <div class="quick-view-tags d-flex flex-wrap gap-2 mb-2">
+        <span class="badge text-bg-light" id="quickViewCategory"></span>
+        <span class="badge text-bg-light" id="quickViewValue"></span>
+      </div>
+      <div class="quick-view-meta mb-3" id="quickViewMeta"></div>
+      <a class="btn btn-primary btn-sm w-100" id="quickViewDetailLink" target="_blank" rel="noopener">View Details →</a>
+    </div>
+  </div>
+
+  <!-- Parcel Overview Modal -->
+  <div class="parcel-overview-modal" id="parcelOverviewModal">
+    <div class="parcel-overview-backdrop" onclick="closeParcelOverview()"></div>
+    <div class="parcel-overview-content">
+      <div class="parcel-overview-header">
+        <div>
+          <h3 class="mb-1" id="overviewAddress">Parcel Overview</h3>
+          <p class="text-muted small mb-0" id="overviewLocation"></p>
+        </div>
+        <button type="button" class="btn-close" onclick="closeParcelOverview()" aria-label="Close"></button>
+      </div>
+
+      <div class="parcel-overview-body">
+        <div class="overview-streetview-container">
+          <iframe id="overviewStreetView" style="width: 100%; height: 250px; border: 0; border-radius: 8px;" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <div class="overview-info-grid">
+          <div class="overview-info-card">
+            <div class="overview-info-label">Owner</div>
+            <div class="overview-info-value" id="overviewOwner">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Property Type</div>
+            <div class="overview-info-value" id="overviewPropertyType">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Total Value</div>
+            <div class="overview-info-value" id="overviewValue">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Recorded Liens</div>
+            <div class="overview-info-value" id="overviewLiens">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Legal Actions</div>
+            <div class="overview-info-value" id="overviewLegalActions">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Lot Size</div>
+            <div class="overview-info-value" id="overviewLotSize">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Building Area</div>
+            <div class="overview-info-value" id="overviewBuildingArea">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Year Built</div>
+            <div class="overview-info-value" id="overviewYearBuilt">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Style</div>
+            <div class="overview-info-value" id="overviewStyle">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Units</div>
+            <div class="overview-info-value" id="overviewUnits">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Owner Occupied</div>
+            <div class="overview-info-value" id="overviewAbsentee">—</div>
+          </div>
+
+          <div class="overview-info-card">
+            <div class="overview-info-label">Zoning</div>
+            <div class="overview-info-value" id="overviewZoning">—</div>
+          </div>
+        </div>
+
+        <div class="overview-badges" id="overviewBadges"></div>
+      </div>
+
+      <div class="parcel-overview-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeParcelOverview()">Close</button>
+        <a class="btn btn-primary" id="overviewDetailLink" href="#" target="_blank" rel="noopener">
+          View Full Details →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results panel that slides up from bottom -->
+    <div class="results-panel collapsed" id="resultsPanel">
+      <div class="results-panel-header" onclick="toggleResultsPanel()">
+        <div>
+          <strong id="resultsTitle">Parcel Results</strong>
+          <span class="text-muted small ms-2" id="resultsCount">No parcels loaded</span>
+        </div>
+        <div class="results-toggle-icon">▼</div>
+      </div>
+
+      <div class="results-panel-body">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap" id="resultsActions">
+            <!-- Save list form will be populated by JavaScript -->
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Address</th>
+                <th>Owner</th>
+                <th>Category / Property Type</th>
+                <th>Style</th>
+                <th>Units</th>
+                <th>Absentee</th>
+                <th>Equity %</th>
+                <th>Total Value</th>
+                <th>Lot Size</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="parcelResultsTableBody">
+              {% for parcel in results %}
+                <tr>
+                  <td class="fw-semibold">
+                    {{ parcel.site_address|default:"—" }}
+                    <div class="text-muted small">
+                      {{ parcel.site_city|default:town.name }}{% if parcel.site_zip %} {{ parcel.site_zip }}{% endif %}
+                    </div>
+                  </td>
+                  <td>{{ parcel.owner_name|default:"—" }}</td>
+                  <td>
+                    {{ parcel.property_category }}
+                    {% if parcel.property_type %}
+                      <div class="text-muted small">{{ parcel.property_type }}</div>
+                    {% endif %}
+                  </td>
+                  <td>{{ parcel.style|default:"—" }}</td>
+                  <td>{{ parcel.units|default:"—" }}</td>
+                  <td>
+                    {% if parcel.absentee %}
+                      <span class="badge text-bg-warning text-dark">Absentee</span>
+                    {% else %}
+                      <span class="badge text-bg-success">Owner</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if parcel.equity_percent is not None %}
+                      {{ parcel.equity_percent|floatformat:1 }}%
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if parcel.total_value %}
+                      ${{ parcel.total_value|floatformat:0 }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if parcel.lot_size %}
+                      {{ parcel.lot_size|floatformat:2 }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td class="text-end">
+                    <a href="{% url 'parcel_detail' town_id=parcel.town.town_id loc_id=parcel.loc_id %}{% if initial_auto_lien_search_enabled %}?enable_lien_search=1{% endif %}" class="btn btn-sm btn-outline-primary">Details</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% if search_performed %}
+      {% if not results %}
+      <div class="container mt-4">
+        <div class="alert alert-info">No parcels matched this search. Broaden your criteria or increase the result limit.</div>
+      </div>
+      {% endif %}
+    {% endif %}
+
+<script type="application/json" id="parcel-town-options-data">{{ form.town_options_json|safe }}</script>
+<script>
+  // Global variables accessible across all script blocks
+  var globalMap = null;
+  var parcelLayers = [];
+  var legendControl = null;
+  var viewportParcels = new Map();
+  var loadTimeout = null;
+  var isLoadingParcels = false;
+  var isResizingMap = false;
+  var townLayerIndex = new Map();
+  var pendingTownFocus = null;
+  var bostonNeighborhoodLayerIndex = new Map();
+  var pendingBostonNeighborhoodFocus = null;
+  var filterRefreshTimeout = null;
+  var pendingViewportReload = null;
+  var loadParcelsInViewportImpl = null;
+  window.parcelAutoLienSearchEnabled = {% if initial_auto_lien_search_enabled %}true{% else %}false{% endif %};
+  var bostonNeighborhoodLayer = null;
+  var bostonNeighborhoodGeoJSON = null;
+  var bostonNeighborhoodsPromise = null;
+  var selectedBostonNeighborhoodSlug = "";
+  var bostonNeighborhoodSelectEl = null;
+  var bostonNeighborhoodContainerEl = null;
+
+  function buildParcelDetailUrl(parcel) {
+    if (!parcel) {
+      return '#';
+    }
+    const base = `/search/parcel/${parcel.town_id}/${parcel.loc_id}`;
+    return window.parcelAutoLienSearchEnabled ? `${base}?enable_lien_search=1` : base;
+  }
+
+  async function fetchBostonNeighborhoodsData() {
+    if (!bostonNeighborhoodsPromise) {
+      bostonNeighborhoodsPromise = fetch('/api/boston-neighborhoods/', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(payload => {
+          if (payload.geojson) {
+            bostonNeighborhoodGeoJSON = payload.geojson;
+          }
+          return payload.neighborhoods || [];
+        })
+        .catch(error => {
+          console.warn('Unable to load Boston neighborhoods', error);
+          bostonNeighborhoodGeoJSON = null;
+          bostonNeighborhoodsPromise = null;
+          return [];
+        });
+    }
+    return bostonNeighborhoodsPromise;
+  }
+
+  function removeBostonNeighborhoodLayer() {
+    if (globalMap && bostonNeighborhoodLayer) {
+      try {
+        globalMap.removeLayer(bostonNeighborhoodLayer);
+      } catch (err) {
+        console.warn('Unable to remove Boston neighborhood layer', err);
+      }
+    }
+    bostonNeighborhoodLayer = null;
+    bostonNeighborhoodLayerIndex.clear();
+    pendingBostonNeighborhoodFocus = null;
+  }
+
+  function highlightBostonNeighborhoodOnMap() {
+    if (!bostonNeighborhoodLayer) {
+      return;
+    }
+    bostonNeighborhoodLayer.eachLayer(layer => {
+      const slug = layer.feature?.properties?.slug || '';
+      const isSelected = selectedBostonNeighborhoodSlug && slug === selectedBostonNeighborhoodSlug;
+      const style = {
+        color: isSelected ? '#ff4d4f' : '#2563eb',
+        weight: isSelected ? 3 : 1.5,
+        opacity: isSelected ? 0.95 : 0.5,
+        fillColor: '#3b82f6',
+        fillOpacity: isSelected ? 0.25 : 0.08
+      };
+      if (layer.setStyle) {
+        layer.setStyle(style);
+      }
+      if (isSelected && layer.bringToFront) {
+        layer.bringToFront();
+      }
+    });
+  }
+
+  function registerBostonNeighborhoodLayer(slug, layer) {
+    if (!slug || !layer) {
+      return;
+    }
+    bostonNeighborhoodLayerIndex.set(slug, layer);
+    if (pendingBostonNeighborhoodFocus && pendingBostonNeighborhoodFocus.slug === slug) {
+      const pending = pendingBostonNeighborhoodFocus;
+      pendingBostonNeighborhoodFocus = null;
+      requestAnimationFrame(() => focusBostonNeighborhood(slug, pending.options || {}));
+    }
+  }
+
+  function focusBostonNeighborhood(slug, options = {}) {
+    if (!slug) {
+      return;
+    }
+    if (!globalMap) {
+      pendingBostonNeighborhoodFocus = { slug, options };
+      return;
+    }
+
+    const targetLayer = options.layer || bostonNeighborhoodLayerIndex.get(slug);
+    if (!targetLayer || typeof targetLayer.getBounds !== "function") {
+      pendingBostonNeighborhoodFocus = { slug, options };
+      ensureBostonNeighborhoodLayerVisible().catch(() => {});
+      return;
+    }
+
+    pendingBostonNeighborhoodFocus = null;
+
+    if (!options.skipClear) {
+      clearViewportParcels();
+    }
+
+    const bounds = targetLayer.getBounds();
+    let hasTriggeredLoad = false;
+
+    const triggerLoad = () => {
+      if (hasTriggeredLoad) {
+        return;
+      }
+      hasTriggeredLoad = true;
+      loadParcelsInViewport({ immediate: true, force: true });
+    };
+
+    if (bounds && typeof bounds.isValid === "function" && bounds.isValid()) {
+      globalMap.once('moveend', triggerLoad);
+      globalMap.fitBounds(bounds, { padding: [50, 50], maxZoom: options.maxZoom || 15 });
+      setTimeout(triggerLoad, 650);
+    } else {
+      triggerLoad();
+    }
+  }
+
+  function applyBostonNeighborhoodSelection(slug, options = {}) {
+    const normalized = slug || '';
+    selectedBostonNeighborhoodSlug = normalized;
+    if (!normalized) {
+      pendingBostonNeighborhoodFocus = null;
+    }
+    if (bostonNeighborhoodSelectEl && bostonNeighborhoodSelectEl.value !== normalized) {
+      bostonNeighborhoodSelectEl.value = normalized;
+    }
+    highlightBostonNeighborhoodOnMap();
+    if (normalized) {
+      focusBostonNeighborhood(normalized, {
+        layer: options.zoomLayer,
+        skipClear: options.skipClear === true,
+      });
+    }
+    if (!options.skipReload) {
+      loadParcelsInViewport({ immediate: true, force: true });
+    }
+  }
+
+  async function ensureBostonNeighborhoodLayerVisible() {
+    if (!globalMap) {
+      return;
+    }
+    await fetchBostonNeighborhoodsData();
+    if (!bostonNeighborhoodGeoJSON) {
+      return;
+    }
+    if (bostonNeighborhoodLayer) {
+      if (!globalMap.hasLayer(bostonNeighborhoodLayer)) {
+        bostonNeighborhoodLayer.addTo(globalMap);
+      }
+      bostonNeighborhoodLayer.eachLayer(layer => {
+        const slug = layer?.feature?.properties?.slug || layer?.feature?.properties?.Slug;
+        if (slug) {
+          registerBostonNeighborhoodLayer(slug, layer);
+        }
+      });
+      highlightBostonNeighborhoodOnMap();
+      return;
+    }
+
+    bostonNeighborhoodLayer = L.geoJSON(bostonNeighborhoodGeoJSON, {
+      style: function(feature) {
+        const slug = feature?.properties?.slug || '';
+        const isSelected = selectedBostonNeighborhoodSlug && slug === selectedBostonNeighborhoodSlug;
+        return {
+          color: isSelected ? '#ff4d4f' : '#2563eb',
+          weight: isSelected ? 3 : 2,
+          opacity: isSelected ? 0.95 : 0.7,
+          fillColor: isSelected ? '#fecaca' : '#3b82f6',
+          fillOpacity: isSelected ? 0.3 : 0.12
+        };
+      },
+      onEachFeature: function(feature, layer) {
+        const name = feature?.properties?.name || 'Neighborhood';
+        const slug = feature?.properties?.slug || '';
+        layer.bindTooltip(`${name} (click to select)`);
+        layer.on('mouseover', () => {
+          try {
+            layer.setStyle({
+              color: '#1d4ed8',
+              weight: 3,
+              opacity: 0.9,
+              fillOpacity: 0.15,
+            });
+          } catch (_) {}
+        });
+        layer.on('mouseout', () => {
+          highlightBostonNeighborhoodOnMap();
+        });
+        layer.on('click', function(event) {
+          L.DomEvent.stopPropagation(event);
+          if (!slug) {
+            return;
+          }
+
+          console.log('Boston neighborhood clicked:', name, '(slug:', slug, ')');
+
+          // Use the new "boston:SLUG" format to directly select the neighborhood
+          const townInput = document.getElementById('id_town_id');
+          if (!townInput) {
+            console.warn('Town input not found');
+            return;
+          }
+
+          // Find the neighborhood label from town options
+          const neighborhoodValue = `boston:${slug}`;
+          const neighborhoodOption = idToLabel.get(neighborhoodValue);
+
+          if (neighborhoodOption) {
+            // Set the town input to the neighborhood selection
+            townInput.value = neighborhoodOption;
+
+            // Trigger the selection handler which will:
+            // 1. Set Boston as the town
+            // 2. Automatically select this neighborhood
+            // 3. Load parcels for the neighborhood
+            handleTownSelection(neighborhoodOption);
+          } else {
+            console.warn('Neighborhood option not found for:', neighborhoodValue);
+            // Fallback to old behavior
+            const applySelection = () => {
+              const nextSlug = selectedBostonNeighborhoodSlug === slug ? '' : slug;
+              applyBostonNeighborhoodSelection(nextSlug, {
+                zoomLayer: nextSlug ? layer : null
+              });
+            };
+
+            const isBostonSelected = townInput?.dataset?.resolvedTownId === '35';
+            if (!isBostonSelected && typeof window.leadsSelectTownById === 'function') {
+              window.leadsSelectTownById(35, { focus: false }).then(applySelection).catch(applySelection);
+            } else {
+              applySelection();
+            }
+          }
+        });
+
+        if (slug) {
+          registerBostonNeighborhoodLayer(slug, layer);
+        }
+      }
+    });
+
+    bostonNeighborhoodLayer.addTo(globalMap);
+    highlightBostonNeighborhoodOnMap();
+  }
+
+  function hideBostonNeighborhoodSelectorUI() {
+    if (bostonNeighborhoodContainerEl) {
+      bostonNeighborhoodContainerEl.style.display = "none";
+    }
+    applyBostonNeighborhoodSelection('', { skipReload: true });
+  }
+
+  function showBostonNeighborhoodSelector() {
+    // Set town to Boston
+    const townInput = document.querySelector('input[name="town_id"]');
+    if (townInput) {
+      townInput.value = 'Boston';
+      const event = new Event('change', { bubbles: true });
+      townInput.dispatchEvent(event);
+    }
+
+    // Show neighborhood boundaries on the map
+    if (bostonNeighborhoodLayer && globalMap) {
+      if (!globalMap.hasLayer(bostonNeighborhoodLayer)) {
+        bostonNeighborhoodLayer.addTo(globalMap);
+        console.log('Boston neighborhood boundaries added to map');
+      }
+    }
+
+    // Zoom to Boston to show neighborhoods
+    const bostonLayer = townLayerIndex.get('35');
+    if (bostonLayer && globalMap) {
+      const bounds = bostonLayer.getBounds();
+      globalMap.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }
+
+  // === Parcel Overview Modal Functions ===
+
+  function showParcelOverview(parcel, detailUrl) {
+    const overviewModal = document.getElementById('parcelOverviewModal');
+    if (!overviewModal || !parcel) {
+      return;
+    }
+
+    const targetUrl = detailUrl || buildParcelDetailUrl(parcel);
+
+    // Update header
+    const addressEl = document.getElementById('overviewAddress');
+    const locationEl = document.getElementById('overviewLocation');
+    if (addressEl) addressEl.textContent = parcel.address || 'Unknown Address';
+    if (locationEl) {
+      const locationParts = [];
+      if (parcel.site_city || parcel.city) locationParts.push(parcel.site_city || parcel.city);
+      if (parcel.site_zip || parcel.zip) locationParts.push(parcel.site_zip || parcel.zip);
+      if (parcel.town_name) locationParts.push(parcel.town_name);
+      locationEl.textContent = locationParts.filter(Boolean).join(', ');
+    }
+
+    // Update info cards
+    const setField = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value || '—';
+    };
+
+    setField('overviewOwner', parcel.owner || parcel.owner_name);
+    setField('overviewPropertyType', parcel.property_category || parcel.property_type);
+    setField('overviewValue', parcel.value_display || (parcel.value ? `$${parcel.value.toLocaleString()}` : null));
+
+    // Liens and Legal Actions
+    setField('overviewLiens', parcel.has_lien ? 'Yes' : 'None Found');
+    setField('overviewLegalActions', parcel.has_legal_action ? 'Yes' : 'None Found');
+
+    // Lot size with units
+    let lotSizeText = '—';
+    if (parcel.lot_size) {
+      const lotSize = parseFloat(parcel.lot_size);
+      if (!Number.isNaN(lotSize) && lotSize > 0) {
+        const units = parcel.lot_units || 'sqft';
+        lotSizeText = `${lotSize.toLocaleString()} ${units}`;
+      }
+    }
+    setField('overviewLotSize', lotSizeText);
+
+    // Building area - try multiple field names
+    const buildingArea = parcel.bld_area || parcel.building_area || parcel.total_living_area;
+    setField('overviewBuildingArea', buildingArea ? `${parseFloat(buildingArea).toLocaleString()} sqft` : null);
+
+    setField('overviewYearBuilt', parcel.year_built || parcel.yr_built);
+    setField('overviewStyle', parcel.style || parcel.bldg_style);
+    setField('overviewUnits', parcel.units || parcel.res_units);
+    setField('overviewAbsentee', parcel.absentee ? 'No (Absentee)' : 'Yes');
+    setField('overviewZoning', parcel.zoning || parcel.zone);
+
+    // Update badges
+    const badgesEl = document.getElementById('overviewBadges');
+    if (badgesEl) {
+      const badges = [];
+      if (parcel.absentee) badges.push('<span class="badge bg-warning">Absentee Owner</span>');
+      if (parcel.equity_percent !== null && parcel.equity_percent !== undefined) {
+        badges.push(`<span class="badge bg-info">${parcel.equity_percent}% Equity</span>`);
+      }
+      if (parcel.has_liens) badges.push('<span class="badge bg-danger">Has Liens</span>');
+      if (parcel.has_legal_actions) badges.push('<span class="badge bg-danger">Legal Actions</span>');
+      badgesEl.innerHTML = badges.join('');
+    }
+
+    // Update detail link
+    const detailLink = document.getElementById('overviewDetailLink');
+    if (detailLink) detailLink.href = targetUrl;
+
+    // Load Street View
+    const streetViewFrame = document.getElementById('overviewStreetView');
+    if (streetViewFrame) {
+      let lat = null;
+      let lng = null;
+
+      // Extract coordinates from centroid
+      if (parcel.centroid) {
+        if (Array.isArray(parcel.centroid) && parcel.centroid.length === 2) {
+          lat = parcel.centroid[0];
+          lng = parcel.centroid[1];
+        } else if (typeof parcel.centroid === 'object') {
+          lat = parcel.centroid.lat;
+          lng = parcel.centroid.lng;
+        }
+      }
+
+      if (lat && lng) {
+        // Build Google Street View embed URL
+        const params = new URLSearchParams({
+          'q': `${lat.toFixed(6)},${lng.toFixed(6)}`,
+          'layer': 'c',
+          'cbll': `${lat.toFixed(6)},${lng.toFixed(6)}`,
+          'll': `${lat.toFixed(6)},${lng.toFixed(6)}`,
+          'cbp': '11,0,0,0,0',
+          'output': 'svembed'
+        });
+        streetViewFrame.src = `https://maps.google.com/maps?${params.toString()}`;
+      } else {
+        // Fallback to address-based Street View
+        const address = parcel.address || '';
+        if (address) {
+          streetViewFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(address)}&layer=c&output=svembed`;
+        }
+      }
+    }
+
+    // Show modal
+    overviewModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeParcelOverview() {
+    const overviewModal = document.getElementById('parcelOverviewModal');
+    if (!overviewModal) return;
+
+    overviewModal.classList.remove('active');
+    document.body.style.overflow = '';
+
+    // Clear Street View iframe
+    const streetViewFrame = document.getElementById('overviewStreetView');
+    if (streetViewFrame) {
+      streetViewFrame.src = '';
+    }
+  }
+
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    const overviewModal = document.getElementById('parcelOverviewModal');
+    if (e.key === 'Escape' && overviewModal && overviewModal.classList.contains('active')) {
+      closeParcelOverview();
+    }
+  });
+
+  function loadParcelsInViewport(options = {}) {
+    if (typeof loadParcelsInViewportImpl === 'function') {
+      return loadParcelsInViewportImpl(options);
+    }
+    const queued = pendingViewportReload ? { ...pendingViewportReload } : {};
+    if (options && typeof options === 'object') {
+      queued.immediate = options.immediate || queued.immediate || false;
+      queued.force = options.force || queued.force || false;
+    }
+    if (!queued.hasOwnProperty('immediate')) {
+      queued.immediate = true;
+    }
+    pendingViewportReload = queued;
+    return null;
+  }
+</script>
+<script>
+    function clearViewportParcels() {
+      if (globalMap) {
+        try {
+          parcelLayers.forEach(layer => {
+            try {
+              globalMap.removeLayer(layer);
+            } catch (_) {}
+          });
+        } catch (_) {}
+      }
+      parcelLayers = [];
+
+      if (globalMap) {
+        viewportParcels.forEach(layer => {
+          try {
+            globalMap.removeLayer(layer);
+          } catch (_) {}
+        });
+      }
+      viewportParcels.clear();
+
+      if (globalMap && legendControl) {
+        try {
+          globalMap.removeControl(legendControl);
+        } catch (_) {}
+        legendControl = null;
+      }
+    }
+
+    function refreshParcelsForFilters(options = {}) {
+      if (!globalMap) {
+        return;
+      }
+
+      const immediate = options.immediate === true;
+      const delay = immediate ? 0 : 250;
+
+      if (filterRefreshTimeout) {
+        clearTimeout(filterRefreshTimeout);
+      }
+
+      filterRefreshTimeout = setTimeout(() => {
+        filterRefreshTimeout = null;
+        clearViewportParcels();
+        const townInputEl = document.getElementById('id_town_id');
+        const forceReload = Boolean(townInputEl && townInputEl.dataset.resolvedTownId);
+        loadParcelsInViewport({ immediate: true, force: forceReload });
+      }, delay);
+    }
+
+    function focusMapOnTown(townId, options = {}) {
+      if (!townId) {
+        return;
+      }
+
+      const normalizedId = String(townId);
+
+      if (!globalMap || !townLayerIndex.has(normalizedId)) {
+        pendingTownFocus = { townId: normalizedId, options: { ...options } };
+        return;
+      }
+
+      pendingTownFocus = null;
+
+      const layer = townLayerIndex.get(normalizedId);
+      if (!layer) {
+        return;
+      }
+
+      clearViewportParcels();
+
+      const bounds = layer.getBounds();
+      let hasTriggeredLoad = false;
+
+      const triggerLoad = () => {
+        if (hasTriggeredLoad) {
+          return;
+        }
+        hasTriggeredLoad = true;
+        loadParcelsInViewport({ immediate: true, force: true });
+      };
+
+      if (bounds && bounds.isValid()) {
+        globalMap.once('moveend', triggerLoad);
+        globalMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+        setTimeout(triggerLoad, 650);
+      } else {
+        triggerLoad();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const townInput = document.getElementById("id_town_id");
+      const propertyTypeSelect = document.getElementById("id_property_type");
+      const mappingElement = document.getElementById("parcel-town-options-data");
+
+      if (!townInput || !propertyTypeSelect || !mappingElement) {
+        return;
+      }
+
+      bostonNeighborhoodContainerEl = document.getElementById("bostonNeighborhoodContainer");
+      bostonNeighborhoodSelectEl = document.getElementById("bostonNeighborhoodSelect");
+
+      let townOptions = [];
+      try {
+        const jsonText = mappingElement.textContent?.trim() || "[]";
+        townOptions = JSON.parse(jsonText);
+      } catch (e) {
+        console.error('Error parsing town options JSON:', e);
+        townOptions = [];
+      }
+
+      const labelMap = new Map();
+      const idToLabel = new Map();
+      const idToBaseName = new Map();
+      townOptions.forEach((item) => {
+        if (!item) {
+          return;
+        }
+        const idKey = String(item.id);
+        labelMap.set(idKey, item.id);
+        if (item.label) {
+          const fullLabel = String(item.label);
+          idToLabel.set(idKey, fullLabel);
+          const baseLabel = fullLabel.split(" (", 1)[0] || fullLabel;
+          idToBaseName.set(idKey, baseLabel.trim());
+          labelMap.set(fullLabel, item.id);
+          labelMap.set(fullLabel.toLowerCase(), item.id);
+          labelMap.set(baseLabel, item.id);
+          labelMap.set(baseLabel.toLowerCase(), item.id);
+        }
+      });
+
+      const endpointTemplate = propertyTypeSelect.dataset.endpointTemplate || "";
+      const preloadTemplate = propertyTypeSelect.dataset.preloadTemplate || "";
+      let datasetPreloadCache = null;
+      let currentTownId = null;
+
+      function buildEndpoint(townId) {
+        if (!endpointTemplate) {
+          return null;
+        }
+        return endpointTemplate.replace("__id__", String(townId));
+      }
+
+      function resetSelect(message) {
+        propertyTypeSelect.innerHTML = "";
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = message || "Select a town to load property types";
+        propertyTypeSelect.appendChild(placeholder);
+        propertyTypeSelect.disabled = true;
+      }
+
+      async function preloadDataset(townId) {
+        if (!preloadTemplate) {
+          return;
+        }
+        const url = preloadTemplate.replace("__id__", String(townId));
+        if (datasetPreloadCache && datasetPreloadCache.url === url) {
+          return datasetPreloadCache.promise;
+        }
+        const promise = fetch(url, {
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        }).catch((error) => {
+          console.warn("Failed to preload dataset", error);
+        });
+        datasetPreloadCache = { url, promise };
+        return promise;
+      }
+
+      async function fetchPropertyTypes(townId) {
+        const url = buildEndpoint(townId);
+        if (!url) {
+          return null;
+        }
+        try {
+          const response = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          if (!response.ok) {
+            return null;
+          }
+          const payload = await response.json();
+          return payload.choices || [];
+        } catch (error) {
+          console.error("Property type fetch failed", error);
+          return null;
+        }
+      }
+
+      function populateSelect(options, selectedValue) {
+        propertyTypeSelect.innerHTML = "";
+        const anyOption = document.createElement("option");
+        anyOption.value = "any";
+        anyOption.textContent = "Any property type";
+        propertyTypeSelect.appendChild(anyOption);
+
+        (options || []).forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = item.code;
+          opt.textContent = item.label;
+          propertyTypeSelect.appendChild(opt);
+        });
+
+        if (selectedValue && propertyTypeSelect.querySelector(`option[value="${selectedValue}"]`)) {
+          propertyTypeSelect.value = selectedValue;
+        } else {
+          propertyTypeSelect.value = "any";
+        }
+        propertyTypeSelect.disabled = false;
+        propertyTypeSelect.dataset.initial = propertyTypeSelect.value;
+      }
+
+      function resolveTownId(rawValue) {
+        if (!rawValue) {
+          return null;
+        }
+        const value = String(rawValue).trim();
+        if (!value) {
+          return null;
+        }
+        if (labelMap.has(value)) {
+          return labelMap.get(value);
+        }
+        const lowered = value.toLowerCase();
+        if (labelMap.has(lowered)) {
+          return labelMap.get(lowered);
+        }
+        return null;
+      }
+
+      async function updateBostonNeighborhoodSelector(townId) {
+        if (!bostonNeighborhoodContainerEl || !bostonNeighborhoodSelectEl) {
+          return;
+        }
+        if (String(townId) !== "35") {
+          hideBostonNeighborhoodSelectorUI();
+          return;
+        }
+
+        const neighborhoods = await fetchBostonNeighborhoodsData();
+        if (!Array.isArray(neighborhoods) || neighborhoods.length === 0) {
+          hideBostonNeighborhoodSelectorUI();
+          return;
+        }
+
+        bostonNeighborhoodContainerEl.style.display = "";
+        const preservedValue = selectedBostonNeighborhoodSlug || bostonNeighborhoodSelectEl.value;
+        bostonNeighborhoodSelectEl.innerHTML = "";
+        const anyOption = document.createElement("option");
+        anyOption.value = "";
+        anyOption.textContent = "All Boston neighborhoods";
+        bostonNeighborhoodSelectEl.appendChild(anyOption);
+        neighborhoods.forEach((item) => {
+          if (!item || !item.slug) {
+            return;
+          }
+          const option = document.createElement("option");
+          option.value = item.slug;
+          option.textContent = item.name || item.slug;
+          bostonNeighborhoodSelectEl.appendChild(option);
+        });
+
+        if (preservedValue && bostonNeighborhoodSelectEl.querySelector(`option[value="${preservedValue}"]`)) {
+          bostonNeighborhoodSelectEl.value = preservedValue;
+          selectedBostonNeighborhoodSlug = preservedValue;
+        } else {
+          bostonNeighborhoodSelectEl.value = "";
+          selectedBostonNeighborhoodSlug = "";
+        }
+
+        if (bostonNeighborhoodSelectEl && !bostonNeighborhoodSelectEl._leadcrmHandlerAttached) {
+          bostonNeighborhoodSelectEl.addEventListener("change", () => {
+            const slug = bostonNeighborhoodSelectEl.value || "";
+            if (!slug) {
+              applyBostonNeighborhoodSelection("");
+              return;
+            }
+            const ensureBostonSelected =
+              typeof window.leadsSelectTownById === "function"
+                ? window.leadsSelectTownById(35, { focus: false })
+                : Promise.resolve();
+            Promise.resolve(ensureBostonSelected)
+              .catch(() => {})
+              .finally(() => {
+                applyBostonNeighborhoodSelection(slug);
+              });
+          });
+          bostonNeighborhoodSelectEl._leadcrmHandlerAttached = true;
+        }
+
+        await ensureBostonNeighborhoodLayerVisible();
+        highlightBostonNeighborhoodOnMap();
+      }
+
+      async function setTownById(townId, options = {}) {
+        const targetId = String(townId);
+        const canonicalLabel = idToLabel.get(targetId);
+        if (canonicalLabel) {
+          townInput.value = canonicalLabel;
+        } else {
+          townInput.value = targetId;
+        }
+        await handleTownSelection(townInput.value);
+        if (options.focus !== false) {
+          focusMapOnTown(targetId, options.focusOptions || {});
+        }
+      }
+
+      window.leadsSelectTownById = setTownById;
+
+      async function handleTownSelection(rawValue) {
+        const townId = resolveTownId(rawValue);
+
+        if (!townId) {
+          if (currentTownId !== null) {
+            currentTownId = null;
+            resetSelect("Select a town to load property types");
+            refreshParcelsForFilters({ immediate: true });
+          } else {
+            resetSelect("Select a town to load property types");
+          }
+          delete townInput.dataset.resolvedTownId;
+          delete townInput.dataset.townName;
+          hideBostonNeighborhoodSelectorUI();
+          return;
+        }
+
+        if (townId === currentTownId) {
+          townInput.dataset.resolvedTownId = String(townId);
+          const storedBase = idToBaseName.get(String(townId));
+          if (storedBase) {
+            townInput.dataset.townName = storedBase;
+          }
+          updateBostonNeighborhoodSelector(townId);
+          focusMapOnTown(townId);
+          return;
+        }
+
+        currentTownId = townId;
+        const previousSelection = propertyTypeSelect.value && propertyTypeSelect.value !== "" ? propertyTypeSelect.value : propertyTypeSelect.dataset.initial || "";
+
+        townInput.dataset.resolvedTownId = String(townId);
+        const canonicalLabel = idToLabel.get(String(townId));
+        const baseLabel = idToBaseName.get(String(townId)) || (canonicalLabel ? canonicalLabel.split(" (", 1)[0] : "");
+        if (canonicalLabel) {
+          townInput.value = canonicalLabel;
+        }
+        if (baseLabel) {
+          townInput.dataset.townName = baseLabel;
+        } else {
+          delete townInput.dataset.townName;
+        }
+
+        // For Boston, skip property type loading (Boston uses neighborhoods, not property types)
+        if (townId === 35) {
+          resetSelect("Property types not applicable for Boston");
+          propertyTypeSelect.disabled = true;
+        } else {
+          resetSelect("Loading property types…");
+          await preloadDataset(townId);
+          const options = await fetchPropertyTypes(townId);
+          if (!options) {
+            resetSelect("Property types unavailable");
+            return;
+          }
+          populateSelect(options, previousSelection);
+        }
+
+        await updateBostonNeighborhoodSelector(townId);
+        focusMapOnTown(townId);
+        refreshParcelsForFilters({ immediate: true });
+      }
+
+      townInput.setAttribute('list', "{{ form.town_datalist_id }}");
+
+      const initialTownId = resolveTownId(townInput.value);
+      if (!initialTownId && !townInput.value) {
+        resetSelect("Select a town to load property types");
+      } else if (initialTownId) {
+        townInput.dataset.resolvedTownId = String(initialTownId);
+        const baseLabel = idToBaseName.get(String(initialTownId));
+        if (baseLabel) {
+          townInput.dataset.townName = baseLabel;
+        }
+        handleTownSelection(townInput.value);
+      }
+
+      townInput.addEventListener("input", (event) => {
+        handleTownSelection(event.target.value);
+      });
+
+      townInput.addEventListener("change", (event) => {
+        handleTownSelection(event.target.value);
+      });
+    });
+
+    // Wait for Leaflet to be available before defining map code
+    function waitForLeaflet(callback) {
+      if (typeof L !== 'undefined') {
+        callback();
+      } else {
+        console.log('Waiting for Leaflet to load...');
+        setTimeout(() => waitForLeaflet(callback), 100);
+      }
+    }
+
+    // All map-related code wrapped in waitForLeaflet
+    waitForLeaflet(function() {
+      console.log('Leaflet loaded, initializing map code...');
+
+    // Note: Global variables are declared at top of page for cross-script access
+
+    // Initialize base map (always visible)
+    function initializeMap() {
+      const mapEl = document.getElementById('parcel-search-map');
+      if (!mapEl) {
+        console.error('Map element not found');
+        return;
+      }
+
+      // Don't initialize if already initialized - check both global var and Leaflet container
+      if (globalMap || mapEl._leaflet_id) {
+        console.log('Map already initialized (globalMap exists or container has _leaflet_id), skipping');
+        return;
+      }
+
+      console.log('Initializing map for the first time...');
+
+      // Initialize Leaflet map - start at Massachusetts center
+      // This will be adjusted by fitBounds when parcels load
+      try {
+        globalMap = L.map('parcel-search-map').setView([42.4072, -71.3824], 8);
+        if (globalMap.doubleClickZoom && typeof globalMap.doubleClickZoom.disable === 'function') {
+          globalMap.doubleClickZoom.disable();
+        }
+        console.log('Map object created successfully');
+      } catch(e) {
+        console.error('Error creating map:', e);
+        return;
+      }
+
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+      }).addTo(globalMap);
+
+      console.log('Map tiles added');
+
+      // Load town boundaries
+      fetch('/api/town-boundaries/')
+        .then(response => response.json())
+        .then(geojson => {
+          L.geoJSON(geojson, {
+            style: function(feature) {
+              const townId = feature.properties?.TOWN_ID;
+              const isBoston = townId === 35 || townId === '35';
+
+              return {
+                color: '#4A5568',
+                weight: 2,
+                opacity: 0.6,
+                fillColor: 'transparent',
+                fillOpacity: 0
+              };
+            },
+            onEachFeature: function(feature, layer) {
+                if (feature.properties && feature.properties.TOWN) {
+                  const townName = feature.properties.TOWN;
+                  const townId = feature.properties.TOWN_ID;
+                  const normalizedTownId = String(townId);
+                  const isBoston = townId === 35 || townId === '35';
+
+                  townLayerIndex.set(normalizedTownId, layer);
+                  if (pendingTownFocus && pendingTownFocus.townId === normalizedTownId) {
+                    const pendingOptions = pendingTownFocus.options || {};
+                    pendingTownFocus = null;
+                    focusMapOnTown(normalizedTownId, pendingOptions);
+                  }
+
+                  if (isBoston) {
+                    layer.bindTooltip('Boston (double-click to select neighborhood)', {
+                      permanent: false,
+                      direction: 'center',
+                      className: 'town-label'
+                    });
+                  } else {
+                    layer.bindTooltip(townName + ' (double-click to load)', {
+                      permanent: false,
+                      direction: 'center',
+                      className: 'town-label'
+                    });
+                  }
+
+                  // Require double-click to apply town filter and load parcels
+                  layer.on('dblclick', function(e) {
+                    L.DomEvent.stopPropagation(e);
+                    if (e.originalEvent && typeof e.originalEvent.preventDefault === 'function') {
+                      e.originalEvent.preventDefault();
+                    }
+
+                    if (isBoston) {
+                      showBostonNeighborhoodSelector();
+                      focusMapOnTown(normalizedTownId);
+                      return;
+                    }
+
+                    const townInput = document.querySelector('input[name="town_id"]');
+                    if (townInput) {
+                      townInput.value = townName;
+                      console.log(`Town filter set to: ${townName} (double-click)`);
+                      const event = new Event('change', { bubbles: true });
+                      townInput.dispatchEvent(event);
+                    } else {
+                      focusMapOnTown(townId);
+                    }
+                  });
+
+                // Highlight on hover
+                layer.on('mouseover', function() {
+                  layer.setStyle({
+                    fillColor: '#4A5568',
+                    fillOpacity: 0.1,
+                    weight: 3
+                  });
+                });
+
+                layer.on('mouseout', function() {
+                  layer.setStyle({
+                    fillColor: 'transparent',
+                    fillOpacity: 0,
+                    weight: 2
+                  });
+                });
+              }
+            }
+          }).addTo(globalMap);
+          console.log('Town boundaries loaded');
+
+          // Load Boston neighborhoods as clickable map boundaries
+          fetchBostonNeighborhoodsData().then(neighborhoods => {
+            if (!bostonNeighborhoodGeoJSON) {
+              console.warn('Boston neighborhoods GeoJSON not available');
+              return;
+            }
+
+            // Add Boston neighborhoods as clickable boundaries
+            bostonNeighborhoodLayer = L.geoJSON(bostonNeighborhoodGeoJSON, {
+              style: {
+                color: '#2563eb',
+                weight: 2,
+                opacity: 0.6,
+                fillColor: 'transparent',
+                fillOpacity: 0
+              },
+              onEachFeature: function(feature, layer) {
+                const name = feature?.properties?.name || 'Neighborhood';
+                const slug = feature?.properties?.slug || '';
+
+                if (!slug) return;
+
+                // Store in neighborhood index for focusing
+                bostonNeighborhoodLayerIndex.set(slug, layer);
+
+                // Tooltip
+                layer.bindTooltip(`${name} (click to load parcels)`, {
+                  permanent: false,
+                  direction: 'center',
+                  className: 'town-label'
+                });
+
+                // Click handler - select this neighborhood
+                layer.on('click', function() {
+                  console.log(`Neighborhood clicked: ${name} (${slug})`);
+                  applyBostonNeighborhoodSelection(slug);
+                });
+
+                // Hover effects
+                layer.on('mouseover', function() {
+                  layer.setStyle({
+                    fillColor: '#2563eb',
+                    fillOpacity: 0.1,
+                    weight: 3
+                  });
+                });
+
+                layer.on('mouseout', function() {
+                  layer.setStyle({
+                    fillColor: 'transparent',
+                    fillOpacity: 0,
+                    weight: 2
+                  });
+                });
+              }
+            });
+
+            // Don't add to map yet - will be added when Boston is selected
+            console.log('Boston neighborhoods loaded (hidden until Boston selected)');
+          }).catch(error => {
+            console.warn('Unable to load Boston neighborhoods:', error);
+          });
+        })
+        .catch(error => {
+          console.warn('Could not load town boundaries:', error);
+        });
+
+      // Add map event listeners for viewport-based parcel loading
+      globalMap.on('moveend zoomend', function() {
+        loadParcelsInViewport();
+      });
+    }
+
+    // Color palette for zones/property types (global)
+    const zoneColors = {
+      'Residential': '#4CAF50',      // Green
+      'Commercial': '#2196F3',       // Blue
+      'Industrial': '#9C27B0',       // Purple
+      'Mixed Use': '#FF9800',        // Orange
+      'Agricultural': '#8BC34A',     // Light Green
+      'Exempt': '#9E9E9E',           // Gray
+      'Unknown': '#607D8B',          // Blue Gray
+      'Apartment': '#00BCD4',        // Cyan
+      'Multi-Family': '#009688',     // Teal
+      'Condominium': '#3F51B5',      // Indigo
+      'Vacant Land': '#CDDC39',      // Lime
+      'Other': '#795548'             // Brown
+    };
+
+    // Calculate centroid of a polygon
+    function calculateCentroid(geometry) {
+      if (!geometry || geometry.length === 0) {
+        return [0, 0];
+      }
+
+      let sumLat = 0;
+      let sumLng = 0;
+      let count = 0;
+
+      geometry.forEach(point => {
+        sumLat += point[0];
+        sumLng += point[1];
+        count++;
+      });
+
+      return [sumLat / count, sumLng / count];
+    }
+
+    function getColorForZone(propertyType) {
+      if (!propertyType || propertyType === 'Unknown') {
+        return zoneColors['Unknown'];
+      }
+
+      // Check for exact match first
+      if (zoneColors[propertyType]) {
+        return zoneColors[propertyType];
+      }
+
+      // Check for partial matches
+      const type = propertyType.toLowerCase();
+      if (type.includes('residential') || type.includes('single')) return zoneColors['Residential'];
+      if (type.includes('commercial')) return zoneColors['Commercial'];
+      if (type.includes('industrial')) return zoneColors['Industrial'];
+      if (type.includes('mixed')) return zoneColors['Mixed Use'];
+      if (type.includes('apartment')) return zoneColors['Apartment'];
+      if (type.includes('multi') || type.includes('family')) return zoneColors['Multi-Family'];
+      if (type.includes('condo')) return zoneColors['Condominium'];
+      if (type.includes('agricultural') || type.includes('farm')) return zoneColors['Agricultural'];
+      if (type.includes('vacant') || type.includes('land')) return zoneColors['Vacant Land'];
+      if (type.includes('exempt') || type.includes('tax')) return zoneColors['Exempt'];
+
+      return zoneColors['Other'];
+    }
+
+    // Extend initializeMap to handle search results
+    function loadSearchResults() {
+      {% if search_performed and results %}
+      // Clear existing parcel layers and legend
+      parcelLayers.forEach(layer => globalMap.removeLayer(layer));
+      parcelLayers = [];
+      if (legendControl) {
+        globalMap.removeControl(legendControl);
+        legendControl = null;
+      }
+
+      // Parcel data from search results
+          const parcels = [
+            {% for parcel in results %}
+            {
+              loc_id: '{{ parcel.loc_id|escapejs }}',
+              town_id: {{ town.town_id }},
+              address: '{{ parcel.site_address|default:"No address"|escapejs }}',
+              city: '{{ parcel.site_city|default:""|escapejs }}',
+              zip: '{{ parcel.site_zip|default:""|escapejs }}',
+              owner: '{{ parcel.owner_name|default:"Unknown"|escapejs }}',
+              value: {{ parcel.total_value|default:0 }},
+              value_display: {% if parcel.total_value %}'${{ parcel.total_value|floatformat:0 }}'{% else %}'N/A'{% endif %},
+              property_type: '{{ parcel.property_category|default:"Unknown"|escapejs }}',
+              style: '{{ parcel.style|default_if_none:""|escapejs }}',
+              units: {% if parcel.units is not None %}{{ parcel.units }}{% else %}null{% endif %},
+              absentee: {{ parcel.absentee|yesno:"true,false" }},
+              lot_size: {% if parcel.lot_size is not None %}{{ parcel.lot_size }}{% else %}null{% endif %},
+              lot_units: '{{ parcel.lot_units|default_if_none:""|escapejs }}',
+              year_built: {% if parcel.year_built is not None %}{{ parcel.year_built }}{% else %}null{% endif %},
+              zoning: '{{ parcel.zoning|default_if_none:""|escapejs }}',
+              detail_url: '{% url "parcel_detail" town.town_id parcel.loc_id %}{% if initial_auto_lien_search_enabled %}?enable_lien_search=1{% endif %}'
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          ];
+
+      console.log(`Loading ${parcels.length} parcels on map...`);
+      console.log('First 3 parcels:', parcels.slice(0, 3));
+
+      parcels.forEach(parcel => {
+        parcel.detail_url = buildParcelDetailUrl(parcel);
+      });
+
+      // Track unique zones for legend
+      const uniqueZones = new Map(); // Map of zone -> count
+
+      // Fetch geometries and render parcels
+      let loadedCount = 0;
+      let processedCount = 0; // Track all attempts, not just successes
+      const bounds = L.latLngBounds();
+
+      // Fallback: After 5 seconds, fit bounds with whatever we have
+      setTimeout(() => {
+        if (bounds.isValid() && loadedCount < parcels.length) {
+          console.log(`Timeout: Fitting bounds with ${loadedCount}/${parcels.length} parcels loaded`);
+          globalMap.fitBounds(bounds, { padding: [50, 50] });
+        }
+      }, 5000);
+
+      parcels.forEach(parcelData => {
+        // Fetch geometry for each parcel - encode loc_id for URL safety
+        const encodedLocId = encodeURIComponent(parcelData.loc_id);
+        const url = `/api/parcel/${parcelData.town_id}/${encodedLocId}/geometry/`;
+
+        console.log(`Fetching: ${url} for loc_id="${parcelData.loc_id}"`);
+
+        fetch(url)
+          .then(response => {
+            console.log(`Response status: ${response.status} for ${url}`);
+            if (!response.ok) {
+              return response.text().then(text => {
+                console.error(`Error response for ${url}:`);
+                console.error(`Status: ${response.status}`);
+                console.error(`Body: ${text.substring(0, 500)}`);
+                return null;
+              });
+            }
+            return response.text().then(text => {
+              console.log(`Raw response for ${parcelData.loc_id}: ${text.substring(0, 300)}`);
+              try {
+                return JSON.parse(text);
+              } catch(e) {
+                console.error(`JSON parse error for ${url}:`, e);
+                console.error(`Full response: ${text}`);
+                return null;
+              }
+            });
+          })
+          .catch(error => {
+            console.error(`Fetch error for ${url}:`, error);
+            return null;
+          })
+          .then(geojson => {
+            processedCount++;
+
+            if (!geojson || !geojson.geometry) {
+              console.warn(`Empty or invalid geometry for ${parcelData.loc_id}`);
+              // Try to fit bounds if this was the last parcel
+              if (processedCount === parcels.length && bounds.isValid()) {
+                console.log(`Fitting bounds after processing all ${processedCount} parcels (${loadedCount} successful)`);
+                globalMap.fitBounds(bounds, { padding: [50, 50] });
+              }
+              return;
+            }
+
+            // Get lot map info from geojson properties
+            const mapNo = geojson.properties?.map_no || '';
+            const mapParId = geojson.properties?.map_par_id || '';
+            const lotMapInfo = mapParId ? `Map ${mapNo}, Lot ${mapParId}` : '';
+
+            // Track unique zones for legend
+            const zone = parcelData.property_type || 'Unknown';
+            if (!uniqueZones.has(zone)) {
+              uniqueZones.set(zone, 0);
+            }
+            uniqueZones.set(zone, uniqueZones.get(zone) + 1);
+
+            // Get color for this zone/property type
+            const baseColor = getColorForZone(zone);
+            const borderColor = baseColor; // Same color but darker for border
+
+            // Create GeoJSON layer for this parcel with zone-based color
+            const layer = L.geoJSON(geojson.geometry, {
+              style: {
+                color: borderColor,
+                weight: 3,
+                opacity: 1.0,
+                fillColor: baseColor,
+                fillOpacity: 0.5
+              }
+            });
+
+            // Build popup content
+            const popupContent = `
+              <div style="min-width: 200px;">
+                <h6 class="fw-semibold mb-2">${parcelData.address}</h6>
+                ${lotMapInfo ? `<div class="text-muted small mb-2">${lotMapInfo}</div>` : ''}
+                <div class="small">
+                  <div class="mb-1"><strong>Owner:</strong> ${parcelData.owner}</div>
+                  <div class="mb-1"><strong>Value:</strong> ${parcelData.value_display}</div>
+                  <div class="mb-1"><strong>Type:</strong> ${parcelData.property_type}</div>
+                  ${parcelData.absentee ? '<div class="mb-1"><span class="badge bg-warning text-dark">Absentee</span></div>' : ''}
+                  <div class="mt-2">
+                    <a href="${parcelData.detail_url}" class="btn btn-sm btn-primary">View Details →</a>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            // Add click interaction to show overview modal
+            // Use a timeout to distinguish single-click from double-click
+            let clickTimeout = null;
+            layer.on('click', function(e) {
+              L.DomEvent.stopPropagation(e);
+
+              // Clear any pending click
+              if (clickTimeout) {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+                return; // This is part of a double-click, ignore it
+              }
+
+              // Wait to see if this is a double-click
+              clickTimeout = setTimeout(() => {
+                clickTimeout = null;
+                showParcelOverview(parcelData, parcelData.detail_url);
+              }, 250);
+            });
+
+            // Keep double-click for quick access to detail page in new tab
+            layer.on('dblclick', function(e) {
+              L.DomEvent.stopPropagation(e);
+
+              // Clear the pending single-click
+              if (clickTimeout) {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+              }
+
+              window.open(parcelData.detail_url, '_blank', 'noopener');
+            });
+
+            // Add to map and track layer
+            layer.addTo(globalMap);
+            parcelLayers.push(layer);
+            console.log(`✓ Added parcel ${parcelData.loc_id} to map (${loadedCount + 1}/${parcels.length})`);
+
+            // Extend bounds
+            try {
+              bounds.extend(layer.getBounds());
+            } catch(e) {
+              console.warn(`Could not extend bounds for ${parcelData.loc_id}:`, e);
+            }
+
+            loadedCount++;
+
+            // After all loaded, fit map and add legend
+            if (loadedCount === parcels.length) {
+              console.log(`All ${loadedCount} parcels loaded successfully!`);
+              console.log(`Bounds valid: ${bounds.isValid()}`);
+              console.log(`Bounds:`, bounds);
+              console.log(`Unique zones found: ${uniqueZones.size}`);
+              if (bounds.isValid()) {
+                globalMap.fitBounds(bounds, { padding: [50, 50] });
+                console.log(`Map zoom level after fitBounds: ${globalMap.getZoom()}`);
+                console.log(`Map center after fitBounds:`, globalMap.getCenter());
+              }
+
+              // Add legend showing zone colors
+              if (uniqueZones.size > 0) {
+                legendControl = L.control({ position: 'bottomright' });
+
+                legendControl.onAdd = function(m) {
+                  const div = L.DomUtil.create('div', 'map-legend');
+                  div.style.cssText = 'background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); max-height: 300px; overflow-y: auto;';
+
+                  let html = '<div style="font-weight: bold; margin-bottom: 8px; font-size: 12px;">Property Zones</div>';
+
+                  // Sort zones alphabetically
+                  const sortedZones = Array.from(uniqueZones.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+                  sortedZones.forEach(([zone, count]) => {
+                    const color = getColorForZone(zone);
+                    html += `<div style="margin: 3px 0; font-size: 11px;">
+                      <span style="display: inline-block; width: 12px; height: 12px; background: ${color}; border: 1px solid #333; margin-right: 5px; vertical-align: middle;"></span>
+                      ${zone} <span style="color: #666;">(${count})</span>
+                    </div>`;
+                  });
+
+                  div.innerHTML = html;
+                  return div;
+                };
+
+                legendControl.addTo(globalMap);
+              }
+            }
+          })
+          .catch(error => {
+            console.warn(`Error loading geometry for ${parcelData.loc_id}:`, error);
+          });
+      });
+      {% endif %}
+    }
+
+    // Call loadSearchResults after map is initialized
+    {% if search_performed and results %}
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(loadSearchResults, 100);
+      });
+    } else {
+      setTimeout(loadSearchResults, 100);
+    }
+    {% endif %}
+
+    // Update results count in header
+    function updateResultsCount(count) {
+      const resultsCount = document.getElementById('resultsCount');
+      if (resultsCount) {
+        resultsCount.textContent = count > 0
+          ? `Found ${count} matching parcel${count !== 1 ? 's' : ''}`
+          : 'No parcels loaded';
+      }
+    }
+
+    // Populate results table with parcels
+    function populateResultsTable(parcels) {
+      const tbody = document.getElementById('parcelResultsTableBody');
+      if (!tbody) return;
+
+      // Clear existing rows
+      tbody.innerHTML = '';
+      if (!parcels || parcels.length === 0) {
+        scheduleHideQuickView();
+      }
+
+      // Add each parcel as a row
+      parcels.forEach(parcel => {
+        const row = document.createElement('tr');
+        row.style.cursor = 'pointer';
+        row.title = 'Open parcel details in a new tab';
+        const detailUrl = buildParcelDetailUrl(parcel);
+        parcel.detail_url = detailUrl;
+
+        row.innerHTML = `
+          <td class="fw-semibold">
+            ${parcel.address || '—'}
+            <div class="text-muted small">${parcel.site_city || parcel.town_name || ''}${parcel.site_zip ? ' ' + parcel.site_zip : ''}</div>
+          </td>
+          <td>${parcel.owner || '—'}</td>
+          <td>
+            ${parcel.property_category || '—'}
+            ${parcel.use_description && parcel.use_description !== 'Unknown'
+              ? `<div class="text-muted small">${parcel.use_description}</div>`
+              : ''}
+          </td>
+          <td>${parcel.style || '—'}</td>
+          <td>${parcel.units || '—'}</td>
+          <td>
+            ${parcel.absentee
+              ? '<span class="badge text-bg-warning text-dark">Absentee</span>'
+              : '<span class="badge text-bg-success">Owner</span>'}
+          </td>
+          <td>
+            ${parcel.equity_percent != null
+              ? parcel.equity_percent.toFixed(1) + '%'
+              : '—'}
+          </td>
+          <td>${parcel.value_display || '—'}</td>
+          <td>
+            ${parcel.lot_size && parcel.lot_size > 0
+              ? parcel.lot_size.toLocaleString() + (parcel.lot_units ? ' ' + parcel.lot_units : '')
+              : '—'}
+          </td>
+          <td>
+            <a href="${detailUrl}"
+               class="btn btn-sm btn-outline-primary"
+               target="_blank">View</a>
+          </td>
+        `;
+
+        row.addEventListener('dblclick', (event) => {
+          const anchor = event.target.closest('a');
+          if (anchor) {
+            return;
+          }
+          window.open(detailUrl, '_blank', 'noopener');
+        });
+
+        row.addEventListener('click', (event) => {
+          const anchor = event.target.closest('a');
+          if (anchor) {
+            return;
+          }
+          event.preventDefault();
+          showParcelOverview(parcel, detailUrl);
+        });
+
+        tbody.appendChild(row);
+      });
+
+      console.log(`Populated results table with ${parcels.length} parcels`);
+
+      // Update save list form
+      updateSaveListForm(parcels);
+    }
+
+    const quickViewEl = document.getElementById('parcelQuickView');
+    const quickViewMapEl = document.getElementById('parcelQuickViewMap');
+    const quickViewAddressEl = document.getElementById('quickViewAddress');
+    const quickViewOwnerEl = document.getElementById('quickViewOwner');
+    const quickViewCategoryEl = document.getElementById('quickViewCategory');
+    const quickViewValueEl = document.getElementById('quickViewValue');
+    const quickViewMetaEl = document.getElementById('quickViewMeta');
+    const quickViewDetailLink = document.getElementById('quickViewDetailLink');
+    let quickViewMap = null;
+    let quickViewPolygon = null;
+    let quickViewHideTimeout = null;
+
+    function ensureQuickViewMap(center) {
+      if (!quickViewEl || !quickViewMapEl) {
+        return;
+      }
+      if (!quickViewMap) {
+        quickViewMap = L.map('parcelQuickViewMap', {
+          attributionControl: false,
+          zoomControl: false,
+          dragging: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          tap: false,
+          touchZoom: false,
+        }).setView(center, 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+        }).addTo(quickViewMap);
+      }
+    }
+
+    function showParcelQuickView(parcel, detailUrl, anchorRect = null) {
+      if (!quickViewEl || !parcel) {
+        return;
+      }
+
+      clearTimeout(quickViewHideTimeout);
+
+      const targetUrl = detailUrl || buildParcelDetailUrl(parcel);
+      const address = parcel.address || 'Unknown address';
+      const owner = parcel.owner || 'Owner unknown';
+      const value = parcel.value_display || 'Value unavailable';
+      const category = parcel.property_category || '—';
+
+      if (quickViewAddressEl) quickViewAddressEl.textContent = address;
+      if (quickViewOwnerEl) quickViewOwnerEl.textContent = `Owner: ${owner}`;
+      if (quickViewCategoryEl) quickViewCategoryEl.textContent = category;
+      if (quickViewValueEl) quickViewValueEl.textContent = value;
+      if (quickViewMetaEl) {
+        const metaParts = [];
+        if (parcel.site_city || parcel.site_zip) {
+          metaParts.push(`${parcel.site_city || ''}${parcel.site_zip ? ' ' + parcel.site_zip : ''}`.trim());
+        }
+        if (parcel.units) {
+          const units = parseFloat(parcel.units);
+          if (!Number.isNaN(units) && units > 0) {
+            metaParts.push(`${units} unit${units === 1 ? '' : 's'}`);
+          }
+        }
+        if (parcel.absentee) {
+          metaParts.push('Absentee owner');
+        }
+        const description = parcel.use_description && parcel.use_description !== 'Unknown'
+          ? parcel.use_description
+          : '';
+        if (description) {
+          metaParts.push(description);
+        }
+        quickViewMetaEl.textContent = metaParts.filter(Boolean).join(' • ');
+      }
+      if (quickViewDetailLink) quickViewDetailLink.href = targetUrl;
+
+      let center = null;
+      if (parcel.centroid) {
+        if (Array.isArray(parcel.centroid) && parcel.centroid.length === 2) {
+          center = [parcel.centroid[0], parcel.centroid[1]];
+        } else if (typeof parcel.centroid === 'object') {
+          const { lat, lng } = parcel.centroid;
+          if (typeof lat === 'number' && typeof lng === 'number') {
+            center = [lat, lng];
+          }
+        }
+      } else if (parcel.geometry && parcel.geometry.length >= 2) {
+        center = parcel.geometry[0];
+      }
+      if (!center) {
+        center = [42.4072, -71.3824];
+      }
+
+      ensureQuickViewMap(center);
+      if (quickViewMap) {
+        if (quickViewPolygon) {
+          quickViewPolygon.remove();
+          quickViewPolygon = null;
+        }
+        if (parcel.geometry && parcel.geometry.length >= 3) {
+          quickViewPolygon = L.polygon(parcel.geometry, {
+            color: '#2563eb',
+            weight: 2,
+            opacity: 0.9,
+            fillColor: '#60a5fa',
+            fillOpacity: 0.35,
+          }).addTo(quickViewMap);
+          try {
+            quickViewMap.fitBounds(quickViewPolygon.getBounds(), { padding: [10, 10] });
+          } catch (err) {
+            quickViewMap.setView(center, 17);
+          }
+        } else {
+          quickViewMap.setView(center, 17);
+        }
+      }
+
+      quickViewEl.classList.remove('is-hidden');
+      quickViewEl.style.visibility = 'hidden';
+      quickViewEl.style.opacity = '0';
+
+      requestAnimationFrame(() => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const quickWidth = quickViewEl.offsetWidth || 280;
+        const quickHeight = quickViewEl.offsetHeight || 240;
+
+        if (anchorRect) {
+          let top = anchorRect.top + window.scrollY + anchorRect.height / 2 - quickHeight / 2;
+          let left = anchorRect.right + 16 + window.scrollX;
+
+          if (top + quickHeight > window.scrollY + viewportHeight - 16) {
+            top = window.scrollY + viewportHeight - quickHeight - 16;
+          }
+          if (top < window.scrollY + 16) {
+            top = window.scrollY + 16;
+          }
+
+          if (left + quickWidth > window.scrollX + viewportWidth - 16) {
+            left = anchorRect.left + window.scrollX - quickWidth - 16;
+            if (left < window.scrollX + 16) {
+              left = window.scrollX + viewportWidth - quickWidth - 16;
+            }
+          }
+
+          quickViewEl.style.top = `${top}px`;
+          quickViewEl.style.left = `${left}px`;
+          quickViewEl.style.right = 'auto';
+          quickViewEl.style.bottom = 'auto';
+        } else {
+          quickViewEl.style.top = 'auto';
+          quickViewEl.style.left = 'auto';
+          quickViewEl.style.right = '32px';
+          quickViewEl.style.bottom = '32px';
+        }
+
+        quickViewEl.style.visibility = 'visible';
+        quickViewEl.style.opacity = '1';
+
+        if (quickViewMap) {
+          setTimeout(() => quickViewMap.invalidateSize(), 60);
+        }
+      });
+    }
+
+    function scheduleHideQuickView() {
+      if (!quickViewEl) {
+        return;
+      }
+      clearTimeout(quickViewHideTimeout);
+      quickViewHideTimeout = setTimeout(() => {
+        quickViewEl.classList.add('is-hidden');
+        quickViewEl.style.visibility = '';
+        quickViewEl.style.opacity = '';
+      }, 600);
+    }
+
+    if (quickViewEl) {
+      quickViewEl.addEventListener('mouseenter', () => {
+        clearTimeout(quickViewHideTimeout);
+      });
+      quickViewEl.addEventListener('mouseleave', scheduleHideQuickView);
+    }
+
+    // Update the save list form with current parcels
+    function updateSaveListForm(parcels) {
+      const resultsActions = document.getElementById('resultsActions');
+      if (!resultsActions || parcels.length === 0) {
+        if (resultsActions) resultsActions.innerHTML = '';
+        return;
+      }
+
+      // Get CSRF token
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+      if (!csrfToken) {
+        console.warn('CSRF token not found');
+        return;
+      }
+
+      // Collect all loc_ids and town_id (assuming all parcels are from same town for now)
+      const locIds = parcels.map(p => p.loc_id).join(',');
+      const townId = parcels[0]?.town_id;
+
+      // Build criteria from current filters
+      const filters = {};
+      const categorySelect = document.querySelector('select[name="property_category"]');
+      if (categorySelect?.value && categorySelect.value !== 'any') filters.property_category = categorySelect.value;
+      const propertyTypeSelect = document.querySelector('select[name="property_type"]');
+      if (propertyTypeSelect && !propertyTypeSelect.disabled && propertyTypeSelect.value && propertyTypeSelect.value !== 'any') {
+        filters.property_type = propertyTypeSelect.value;
+      }
+      const minPriceInput = document.querySelector('input[name="min_price"]');
+      if (minPriceInput?.value) filters.min_price = minPriceInput.value;
+      const maxPriceInput = document.querySelector('input[name="max_price"]');
+      if (maxPriceInput?.value) filters.max_price = maxPriceInput.value;
+      const equityMinInput = document.querySelector('input[name="equity_min"]');
+      if (equityMinInput?.value) filters.equity_min = equityMinInput.value;
+      const absenteeSelect = document.querySelector('select[name="absentee"]');
+      if (absenteeSelect?.value && absenteeSelect.value !== 'any') filters.absentee = absenteeSelect.value;
+      const minYearsOwnedInput = document.querySelector('input[name="min_years_owned"]');
+      if (minYearsOwnedInput?.value) filters.min_years_owned = minYearsOwnedInput.value;
+      const townInput = document.querySelector('input[name="town_id"]');
+      const resolvedTownId = townInput?.dataset?.resolvedTownId || townId || '';
+      const normalizedTownName = townInput?.dataset?.townName
+        || (townInput?.value ? townInput.value.split(' (', 1)[0] : '');
+      if (normalizedTownName) filters.town_name = normalizedTownName;
+      if (resolvedTownId) filters.town_id = resolvedTownId;
+
+      // Check for Boston neighborhood - from either the select dropdown or the data attribute
+      const neighborhoodSelect = document.getElementById('bostonNeighborhoodSelect');
+      const bostonNeighborhoodFromData = townInput?.dataset?.bostonNeighborhood;
+
+      if (bostonNeighborhoodFromData) {
+        filters.neighborhood = bostonNeighborhoodFromData;
+        console.log('Adding neighborhood filter from data attribute:', bostonNeighborhoodFromData);
+      } else if (neighborhoodSelect && neighborhoodSelect.value) {
+        filters.neighborhood = neighborhoodSelect.value;
+        console.log('Adding neighborhood filter from select:', neighborhoodSelect.value);
+      }
+
+      const criteriaJson = JSON.stringify(filters);
+
+      // Create the save form
+      resultsActions.innerHTML = `
+        <form method="post" action="/search/save-list/" class="d-flex gap-2" id="saveListForm">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+          <input type="hidden" name="town_id" value="${resolvedTownId || ''}">
+          <input type="hidden" name="criteria" value="${criteriaJson.replace(/"/g, '&quot;')}">
+          <input type="hidden" name="loc_ids" value="${locIds}">
+          <div class="input-group input-group-sm">
+            <input type="text"
+                   name="name"
+                   class="form-control"
+                   placeholder="List name"
+                   required
+                   maxlength="100">
+            <button type="submit" class="btn btn-outline-primary">Save List (${parcels.length})</button>
+          </div>
+        </form>
+      `;
+
+      console.log(`Save list form updated with ${parcels.length} parcels`);
+    }
+
+    // Load parcels in current viewport with debouncing
+    loadParcelsInViewportImpl = function(options = {}) {
+      const immediate = options.immediate === true;
+      const forceReload = options.force === true;
+      const debounceDelay = immediate ? 120 : 500;
+
+      // Don't load if we're resizing the map (e.g., results panel toggle)
+      if (isResizingMap) {
+        return;
+      }
+
+      // Debounce - wait for the configured delay after last trigger
+      if (loadTimeout) {
+        clearTimeout(loadTimeout);
+      }
+
+      loadTimeout = setTimeout(function() {
+        if (!globalMap || isResizingMap) {
+          return;
+        }
+
+        if (isLoadingParcels) {
+          const nextImmediate = immediate || (pendingViewportReload && pendingViewportReload.immediate);
+          const nextForce = forceReload || (pendingViewportReload && pendingViewportReload.force);
+          pendingViewportReload = { immediate: nextImmediate, force: nextForce };
+          return;
+        }
+
+        // Only load if zoomed in enough (zoom 12+)
+        const zoom = globalMap.getZoom();
+        if (!forceReload && zoom < 12) {
+          console.log(`Zoom level ${zoom} too low for parcel loading (need 12+)`);
+          return;
+        }
+
+        pendingViewportReload = null;
+
+        const bounds = globalMap.getBounds();
+        const north = bounds.getNorth();
+        const south = bounds.getSouth();
+        const east = bounds.getEast();
+        const west = bounds.getWest();
+
+        // Get filter values from form
+        const filters = {};
+        const addressContainsInput = document.querySelector('input[name="address_contains"]');
+        if (addressContainsInput && addressContainsInput.value) {
+          filters.address_contains = addressContainsInput.value.trim();
+        }
+        const categorySelect = document.querySelector('select[name="property_category"]');
+        console.log('Property category select value:', categorySelect ? categorySelect.value : 'NOT FOUND');
+        if (categorySelect && categorySelect.value && categorySelect.value !== 'any') {
+          filters.property_category = categorySelect.value;
+        }
+        const propertyTypeSelect = document.querySelector('select[name="property_type"]');
+        console.log('Property type select value:', propertyTypeSelect ? propertyTypeSelect.value : 'NOT FOUND');
+        if (propertyTypeSelect && !propertyTypeSelect.disabled && propertyTypeSelect.value && propertyTypeSelect.value !== 'any') {
+          filters.property_type = propertyTypeSelect.value;
+        }
+        const minPriceInput = document.querySelector('input[name="min_price"]');
+        if (minPriceInput && minPriceInput.value) {
+          filters.min_price = minPriceInput.value;
+        }
+        const maxPriceInput = document.querySelector('input[name="max_price"]');
+        if (maxPriceInput && maxPriceInput.value) {
+          filters.max_price = maxPriceInput.value;
+        }
+        const equityMinInput = document.querySelector('input[name="equity_min"]');
+        if (equityMinInput && equityMinInput.value) {
+          filters.equity_min = equityMinInput.value;
+        }
+        const absenteeSelect = document.querySelector('select[name="absentee"]');
+        if (absenteeSelect && absenteeSelect.value && absenteeSelect.value !== 'any') {
+          filters.absentee = absenteeSelect.value;
+        }
+        const minYearsOwnedInput = document.querySelector('input[name="min_years_owned"]');
+        if (minYearsOwnedInput && minYearsOwnedInput.value) {
+          filters.min_years_owned = minYearsOwnedInput.value;
+        }
+        const townInput = document.querySelector('input[name="town_id"]');
+        const resolvedTownId = townInput?.dataset?.resolvedTownId;
+        const normalizedTownName = townInput?.dataset?.townName
+          || (townInput && townInput.value ? townInput.value.split(' (', 1)[0] : null);
+        console.log('Town input value:', townInput ? townInput.value : 'NOT FOUND', 'resolved ID:', resolvedTownId, 'normalized name:', normalizedTownName);
+        if (normalizedTownName) {
+          filters.town_name = normalizedTownName;
+        }
+        if (resolvedTownId) {
+          filters.town_id = resolvedTownId;
+        }
+
+        // Check for Boston neighborhood - from either the select dropdown or the data attribute
+        const neighborhoodSelect = document.getElementById('bostonNeighborhoodSelect');
+        const bostonNeighborhoodFromData = townInput?.dataset?.bostonNeighborhood;
+
+        if (bostonNeighborhoodFromData) {
+          filters.neighborhood = bostonNeighborhoodFromData;
+          console.log('Adding neighborhood filter from data attribute:', bostonNeighborhoodFromData);
+        } else if (neighborhoodSelect && neighborhoodSelect.value) {
+          filters.neighborhood = neighborhoodSelect.value;
+          console.log('Adding neighborhood filter from select:', neighborhoodSelect.value);
+        }
+
+        // Debug: Log filters object before building params
+        console.log('Filters object before URLSearchParams:', JSON.stringify(filters));
+
+        // Build query string - manually append filters to avoid spread operator issues
+        const params = new URLSearchParams();
+        params.append('north', north);
+        params.append('south', south);
+        params.append('east', east);
+        params.append('west', west);
+
+        // Manually append each filter to ensure correct parameter names
+        if (filters.address_contains) {
+          params.append('address_contains', filters.address_contains);
+        }
+        if (filters.property_category) {
+          params.append('property_category', filters.property_category);
+        }
+        if (filters.property_type) {
+          params.append('property_type', filters.property_type);
+        }
+        if (filters.min_price) {
+          params.append('min_price', filters.min_price);
+        }
+        if (filters.max_price) {
+          params.append('max_price', filters.max_price);
+        }
+        if (filters.equity_min) {
+          params.append('equity_min', filters.equity_min);
+        }
+        if (filters.absentee) {
+          params.append('absentee', filters.absentee);
+        }
+        if (filters.min_years_owned) {
+          params.append('min_years_owned', filters.min_years_owned);
+        }
+        if (filters.town_name) {
+          params.append('town_name', filters.town_name);
+        }
+        if (filters.town_id) {
+          params.append('town_id', filters.town_id);
+        }
+        if (filters.neighborhood) {
+          params.append('neighborhood', filters.neighborhood);
+        }
+
+        // Debug: Log what URLSearchParams actually created
+        console.log('URLSearchParams entries:');
+        for (let [key, value] of params.entries()) {
+          console.log(`  ${key}: ${value}`);
+        }
+
+        isLoadingParcels = true;
+        const apiUrl = `/api/parcels-in-viewport/?${params}`;
+        console.log('Loading parcels in viewport...', {north, south, east, west, zoom, filters});
+        console.log('API URL:', apiUrl);
+
+        // Show loading indicator
+        const loadingIndicator = document.getElementById('parcelLoadingIndicator');
+        if (loadingIndicator) {
+          loadingIndicator.classList.add('active');
+        }
+
+        const hasPendingReload = () => Boolean(pendingViewportReload);
+
+        fetch(apiUrl)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.text();
+          })
+          .then(text => {
+            try {
+              return JSON.parse(text);
+            } catch (e) {
+              console.error('JSON parse error:', e);
+              console.error('Response text:', text.substring(0, 500));
+              throw new Error('Invalid JSON response from server');
+            }
+          })
+          .then(data => {
+            if (!data) {
+              return;
+            }
+
+            if (hasPendingReload()) {
+              console.log('Skipping viewport render due to pending reload request.');
+              return;
+            }
+
+            console.log(`Received ${data.count} parcels from API`);
+
+            window.parcelAutoLienSearchEnabled = Boolean(data.autoLienSearchEnabled);
+
+            if (Array.isArray(data.parcels)) {
+              data.parcels.forEach(parcel => {
+                parcel.detail_url = buildParcelDetailUrl(parcel);
+              });
+            }
+
+            if (data.count === 0) {
+              console.warn('No parcels returned. Check server logs for details.');
+              console.warn('Request params:', {north, south, east, west, filters});
+
+              // Check if this is Boston without a neighborhood selected
+              const townInput = document.getElementById('id_town_id');
+              const resolvedTownId = townInput?.dataset?.resolvedTownId;
+              const neighborhoodSelect = document.getElementById('bostonNeighborhoodSelect');
+              const hasNeighborhood = neighborhoodSelect && neighborhoodSelect.value;
+
+              // Boston town ID is 35
+              if (resolvedTownId === '35' && !hasNeighborhood) {
+                console.info('Boston detected without neighborhood - showing info message');
+                // Show a helpful message to the user
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'alert alert-info position-fixed top-50 start-50 translate-middle';
+                infoDiv.style.zIndex = '10000';
+                infoDiv.style.maxWidth = '400px';
+                infoDiv.innerHTML = `
+                  <strong>Boston Neighborhood Required</strong>
+                  <p class="mb-0 mt-2">Please select a specific Boston neighborhood from the dropdown above to view parcels. Boston is too large to display all at once.</p>
+                `;
+                document.body.appendChild(infoDiv);
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                  infoDiv.remove();
+                }, 5000);
+              }
+
+              return;
+            }
+
+            // Debug: Check first parcel structure
+            if (data.parcels && data.parcels.length > 0) {
+              console.log('First parcel sample:', {
+                loc_id: data.parcels[0].loc_id,
+                category: data.parcels[0].property_category,
+                has_geometry: !!data.parcels[0].geometry,
+                geometry_points: data.parcels[0].geometry ? data.parcels[0].geometry.length : 0
+              });
+            }
+
+            // Track unique zones for legend
+            const uniqueZones = new Map();
+
+            // Add each parcel as polygon
+            data.parcels.forEach(parcel => {
+              const key = `${parcel.town_id}-${parcel.loc_id}`;
+
+              // Skip if already loaded
+              if (viewportParcels.has(key)) {
+                return;
+              }
+
+              // Get color based on property category
+              const category = parcel.property_category || 'Other';
+              const zoneColor = getColorForZone(category);
+
+              // Track zones for legend
+              if (!uniqueZones.has(category)) {
+                uniqueZones.set(category, 0);
+              }
+              uniqueZones.set(category, uniqueZones.get(category) + 1);
+
+              // Render parcel as polygon outline
+              const polygon = L.polygon(parcel.geometry, {
+                fillColor: zoneColor,
+                fillOpacity: 0.3,
+                color: zoneColor,
+                weight: 2,
+                opacity: 0.8
+              });
+
+              // Add click handler to show overview modal
+              // Use a timeout to distinguish single-click from double-click
+              let clickTimeout = null;
+              polygon.on('click', function(e) {
+                L.DomEvent.stopPropagation(e);
+
+                // Clear any pending click
+                if (clickTimeout) {
+                  clearTimeout(clickTimeout);
+                  clickTimeout = null;
+                  return; // This is part of a double-click, ignore it
+                }
+
+                // Wait to see if this is a double-click
+                clickTimeout = setTimeout(() => {
+                  clickTimeout = null;
+                  showParcelOverview(parcel, buildParcelDetailUrl(parcel));
+                }, 250);
+              });
+
+              // Add double-click handler for quick access
+              polygon.on('dblclick', function(e) {
+                L.DomEvent.stopPropagation(e);
+
+                // Clear the pending single-click
+                if (clickTimeout) {
+                  clearTimeout(clickTimeout);
+                  clickTimeout = null;
+                }
+
+                window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
+              });
+
+              polygon.addTo(globalMap);
+              viewportParcels.set(key, polygon);
+
+              // Add red exclamation marker if parcel has liens or legal actions
+              if (parcel.has_lien || parcel.has_legal_action) {
+                // Calculate centroid if not provided
+                const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+
+                // Create a custom icon with red exclamation mark
+                const alertIcon = L.divIcon({
+                  className: 'custom-alert-marker',
+                  html: '<div style="background: #dc3545; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">!</div>',
+                  iconSize: [24, 24],
+                  iconAnchor: [12, 12]
+                });
+
+                const alertMarker = L.marker(centroid, { icon: alertIcon });
+
+                // Add click handler to alert marker
+                alertMarker.on('click', function(e) {
+                  L.DomEvent.stopPropagation(e);
+                  showParcelOverview(parcel, buildParcelDetailUrl(parcel));
+                });
+
+                alertMarker.addTo(globalMap);
+
+                // Store marker with polygon so we can remove it later
+                viewportParcels.set(key + '_alert', alertMarker);
+              }
+            });
+
+            // Update/create legend
+            if (uniqueZones.size > 0) {
+              // Remove old legend if exists
+              if (legendControl) {
+                globalMap.removeControl(legendControl);
+              }
+
+              legendControl = L.control({ position: 'topright' });
+              legendControl.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'map-legend');
+                div.style.cssText = 'background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); max-height: 320px; overflow-y: auto; cursor: move;';
+                div.setAttribute('title', 'Drag to reposition legend');
+
+                let html = '<div style="font-weight: bold; margin-bottom: 8px; font-size: 12px;">Property Zones</div>';
+
+                // Sort zones alphabetically
+                const sortedZones = Array.from(uniqueZones.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+                sortedZones.forEach(([zone, count]) => {
+                  const color = getColorForZone(zone);
+                  html += `
+                    <div style="margin: 4px 0; display: flex; align-items: center; font-size: 11px;">
+                      <span style="display: inline-block; width: 16px; height: 16px; background-color: ${color}; border: 1px solid #333; margin-right: 6px;"></span>
+                      <span>${zone} (${count})</span>
+                    </div>
+                  `;
+                });
+
+                // Add indicator section
+                html += `
+                  <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #ddd;">
+                    <div style="font-weight: bold; margin-bottom: 6px; font-size: 11px;">Indicators</div>
+                    <div style="margin: 4px 0; display: flex; align-items: center; font-size: 11px;">
+                      <span style="display: inline-block; width: 24px; height: 24px; background-color: #dc3545; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold; border: 2px solid white; margin-right: 6px; flex-shrink: 0;">!</span>
+                      <span>Has Liens or Legal Actions</span>
+                    </div>
+                  </div>
+                `;
+
+                div.innerHTML = html;
+
+                // Make legend draggable
+                if (L.Draggable) {
+                  const draggable = new L.Draggable(div);
+                  draggable.enable();
+                }
+
+                return div;
+              };
+
+              legendControl.addTo(globalMap);
+            }
+
+            // Populate property type dropdown with USE_CODE values from loaded parcels
+            const propertyTypeSelect = document.getElementById('id_property_type');
+            if (propertyTypeSelect && data.parcels.length > 0) {
+              const previouslySelected = propertyTypeSelect.value;
+
+              // Collect property types by description (consolidate multiple USE_CODEs with same description)
+              const propertyTypesByDesc = new Map();
+
+              data.parcels.forEach(parcel => {
+                const useCode = parcel.property_type;
+                const useDesc = parcel.use_description || 'Unknown';
+                const category = parcel.property_category;
+
+                if (useCode && useCode !== 'Unknown') {
+                  // Group by description
+                  if (!propertyTypesByDesc.has(useDesc)) {
+                    propertyTypesByDesc.set(useDesc, {
+                      description: useDesc,
+                      codes: new Set(),
+                      category: category,
+                      count: 0
+                    });
+                  }
+                  const typeInfo = propertyTypesByDesc.get(useDesc);
+                  typeInfo.codes.add(useCode);
+                  typeInfo.count++;
+                }
+              });
+
+              console.log(`Found ${propertyTypesByDesc.size} unique property descriptions:`);
+              propertyTypesByDesc.forEach((info, desc) => {
+                console.log(`  "${desc}" - codes: ${Array.from(info.codes).join(', ')} (${info.count} parcels)`);
+              });
+
+              // Clear and repopulate dropdown
+              propertyTypeSelect.innerHTML = '';
+
+              // Add "Any" option
+              const anyOption = document.createElement('option');
+              anyOption.value = '';
+              anyOption.textContent = 'Any';
+              propertyTypeSelect.appendChild(anyOption);
+
+              // Sort by description
+              const sortedTypes = Array.from(propertyTypesByDesc.values()).sort((a, b) =>
+                a.description.localeCompare(b.description)
+              );
+
+              let restoredSelection = false;
+
+              sortedTypes.forEach(type => {
+                const codes = Array.from(type.codes).sort();
+                const option = document.createElement('option');
+                // Use the description as the value so we can filter by it
+                option.value = type.description;
+                // Show: "Single Family Residential (101, 104) - 1234 parcels"
+                const codeDisplay = codes.length > 1 ? `(${codes.join(', ')})` : `(${codes[0]})`;
+                option.textContent = `${type.description} ${codeDisplay} - ${type.count}`;
+                if (!restoredSelection && previouslySelected && previouslySelected === type.description) {
+                  option.selected = true;
+                  restoredSelection = true;
+                }
+                propertyTypeSelect.appendChild(option);
+              });
+
+              if (!restoredSelection) {
+                propertyTypeSelect.value = previouslySelected && propertyTypeSelect.querySelector(`option[value="${previouslySelected}"]`)
+                  ? previouslySelected
+                  : '';
+              }
+
+              propertyTypeSelect.disabled = false;
+              console.log(`Populated property type dropdown with ${sortedTypes.length} descriptions`);
+            }
+
+            // Populate results table
+            populateResultsTable(data.parcels);
+
+            // Update results count
+            updateResultsCount(data.parcels.length);
+
+            const queuedBackgroundSearches = Number(data.queuedBackgroundSearches || 0);
+
+            // Schedule auto-refresh to check for newly found liens/legal actions
+            // Only do this when new background searches were actually queued so we
+            // don't interrupt users while they're interacting with the page.
+            if (queuedBackgroundSearches > 0 && !window.lienSearchRefreshScheduled) {
+              window.lienSearchRefreshScheduled = true;
+              console.log(`🔄 Scheduling auto-refresh in 15 seconds (${queuedBackgroundSearches} background search${queuedBackgroundSearches === 1 ? '' : 'es'} queued)...`);
+
+              setTimeout(() => {
+                console.log('🔄 Auto-refreshing map to show new lien/legal action markers...');
+                window.lienSearchRefreshScheduled = false;
+                // Reload the same viewport to pick up new markers
+                loadParcelsInViewport();
+              }, 15000); // 15 seconds delay
+            }
+          })
+          .catch(error => {
+            console.error('Error loading viewport parcels:', error);
+          })
+          .finally(() => {
+            isLoadingParcels = false;
+
+            if (pendingViewportReload) {
+              const reloadOptions = pendingViewportReload;
+              pendingViewportReload = null;
+              loadParcelsInViewport(reloadOptions);
+              return;
+            }
+
+            if (loadingIndicator) {
+              loadingIndicator.classList.remove('active');
+            }
+          });
+      }, debounceDelay);
+    };
+
+    if (pendingViewportReload) {
+      const queuedOptions = pendingViewportReload;
+      pendingViewportReload = null;
+      loadParcelsInViewport(queuedOptions);
+    }
+
+    // Handle search form submission without page reload
+    function handleSearchFormSubmit(event) {
+      event.preventDefault(); // Prevent page reload
+      console.log('Search form submitted - triggering viewport reload with filters');
+
+      refreshParcelsForFilters({ immediate: true });
+
+      return false;
+    }
+
+    // Attach form handler when DOM is ready
+    const setupFormHandler = () => {
+      const searchForm = document.getElementById('parcelSearchForm');
+      if (searchForm) {
+        searchForm.addEventListener('submit', handleSearchFormSubmit);
+        console.log('Search form handler attached');
+
+        const filterFields = searchForm.querySelectorAll('select, input[type="text"], input[type="number"]');
+        filterFields.forEach(field => {
+          if (!field || field.name === 'town_id') {
+            return;
+          }
+          const triggerImmediateRefresh = () => {
+            refreshParcelsForFilters({ immediate: true });
+          };
+          const triggerDebouncedRefresh = () => {
+            refreshParcelsForFilters();
+          };
+          field.addEventListener('change', triggerImmediateRefresh);
+          if (field.tagName !== 'SELECT') {
+            field.addEventListener('input', triggerDebouncedRefresh);
+          }
+        });
+      }
+    };
+
+    // Call initializeMap when DOM is ready and Leaflet is loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeMap();
+        setupFormHandler();
+      });
+    } else {
+      // DOM already loaded
+      initializeMap();
+      setupFormHandler();
+    }
+
+    }); // End waitForLeaflet wrapper
+  </script>
+
+  <script>
+    // Toggle search overlay
+    function toggleSearchOverlay(forceState) {
+      const overlay = document.getElementById('searchOverlay');
+      if (!overlay) {
+        return;
+      }
+
+      const toggleBtn = document.getElementById('filterToggleBtn');
+      const toggleText = document.getElementById('toggleIcon');
+      const toggleIcon = document.getElementById('filterToggleIcon');
+
+      const isCollapsed = overlay.classList.contains('collapsed');
+      const shouldOpen = typeof forceState === 'boolean' ? forceState : isCollapsed;
+
+      overlay.classList.toggle('collapsed', !shouldOpen);
+      overlay.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+        toggleBtn.title = shouldOpen ? 'Hide filters' : 'Show filters';
+        toggleBtn.setAttribute('aria-label', shouldOpen ? 'Hide filters' : 'Show filters');
+      }
+
+      if (toggleText) {
+        toggleText.textContent = shouldOpen ? 'Hide filters' : 'Show filters';
+      }
+
+      if (toggleIcon) {
+        toggleIcon.className = shouldOpen ? 'bi bi-x-lg' : 'bi bi-funnel-fill';
+      }
+
+      if (shouldOpen) {
+        const focusTarget = overlay.querySelector('input, select, textarea, button');
+        if (focusTarget && typeof focusTarget.focus === 'function') {
+          focusTarget.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    // Clear all filters
+    function clearAllFilters() {
+      // Clear form inputs
+      const form = document.getElementById('parcelSearchForm');
+      if (form) {
+        // Reset select dropdowns to "any" or first option
+        form.querySelectorAll('select').forEach(select => {
+          if (select.name !== 'town_id') {  // Keep town selection
+            select.value = select.options[0]?.value || '';
+          }
+        });
+
+        // Clear text inputs
+        form.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+          if (input.name !== 'town_id') {  // Keep town selection
+            input.value = '';
+          }
+        });
+
+        const townField = form.querySelector('input[name="town_id"]');
+        if (townField) {
+          delete townField.dataset.resolvedTownId;
+          delete townField.dataset.townName;
+        }
+      }
+
+      hideBostonNeighborhoodSelectorUI();
+
+      // Update the active filter count
+      updateActiveFilterCount();
+
+      // Reload parcels with cleared filters
+      if (globalMap) {
+        refreshParcelsForFilters({ immediate: true });
+      }
+
+      console.log('All filters cleared');
+    }
+
+    // Update active filter count and show/hide clear button
+    function updateActiveFilterCount() {
+      const form = document.getElementById('parcelSearchForm');
+      const clearBtn = document.getElementById('clearFiltersBtn');
+      const countDisplay = document.getElementById('activeFiltersCount');
+
+      const toggleBadge = document.getElementById('filterToggleBadge');
+
+      if (!form || !clearBtn || !countDisplay) return;
+
+      let activeCount = 0;
+
+      // Count active filters (excluding town)
+      form.querySelectorAll('select').forEach(select => {
+        if (select.name !== 'town_id' && select.value && select.value !== '' && select.value !== 'any') {
+          activeCount++;
+        }
+      });
+
+      form.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+        if (input.name !== 'town_id' && input.value && input.value.trim() !== '') {
+          activeCount++;
+        }
+      });
+
+      // Show/hide clear button and count
+      if (activeCount > 0) {
+        clearBtn.style.display = 'inline-block';
+        countDisplay.style.display = 'inline-block';
+        countDisplay.querySelector('.filter-badge').textContent = `${activeCount} active`;
+        if (toggleBadge) {
+          toggleBadge.textContent = activeCount;
+          toggleBadge.style.display = 'inline-block';
+        }
+      } else {
+        clearBtn.style.display = 'none';
+        countDisplay.style.display = 'none';
+        if (toggleBadge) {
+          toggleBadge.style.display = 'none';
+        }
+      }
+    }
+
+    // Add event listeners to all filter inputs to update count
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('parcelSearchForm');
+      if (form) {
+        form.querySelectorAll('select, input[type="text"], input[type="number"]').forEach(element => {
+          element.addEventListener('change', updateActiveFilterCount);
+          element.addEventListener('input', updateActiveFilterCount);
+        });
+
+        // Initial count update
+        updateActiveFilterCount();
+      }
+
+      // Ensure filter overlay starts collapsed with correct toggle state
+      toggleSearchOverlay(false);
+    });
+
+    // Toggle results panel
+    function toggleResultsPanel() {
+      const resultsPanel = document.getElementById('resultsPanel');
+      if (resultsPanel) {
+        // Set flag to prevent parcel loading during resize
+        isResizingMap = true;
+
+        resultsPanel.classList.toggle('collapsed');
+
+        // After toggling, invalidate map size so it adjusts to new container dimensions
+        // We use a small delay to let the CSS transition complete
+        setTimeout(() => {
+          if (globalMap) {
+            globalMap.invalidateSize({
+              pan: false,  // Don't pan the map
+              animate: false  // Don't animate the resize
+            });
+          }
+
+          // Clear the resize flag after a short delay
+          setTimeout(() => {
+            isResizingMap = false;
+          }, 100);
+        }, 300);  // Match CSS transition duration
+      }
+    }
+
+    // Invalidate map size after initialization to ensure proper rendering
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        if (globalMap && globalMap.invalidateSize) {
+          globalMap.invalidateSize();
+          console.log('Map size invalidated for proper rendering');
+        }
+      }, 500);
+
+      // Setup commercial subtype visibility toggle
+      setupCommercialSubtypeToggle();
+    });
+
+    // Show/hide commercial subtype filter based on property category selection
+    function setupCommercialSubtypeToggle() {
+      const propertyCategorySelect = document.querySelector('select[name="property_category"]');
+      const commercialSubtypeWrapper = document.getElementById('commercialSubtypeWrapper');
+      const commercialSubtypeSelect = document.querySelector('select[name="commercial_subtype"]');
+
+      if (!propertyCategorySelect || !commercialSubtypeWrapper) {
+        return;
+      }
+
+      function toggleCommercialSubtype() {
+        const category = propertyCategorySelect.value;
+        const isCommercial = category === 'commercial';
+
+        if (isCommercial) {
+          commercialSubtypeWrapper.style.display = '';
+        } else {
+          commercialSubtypeWrapper.style.display = 'none';
+          // Reset commercial subtype to "any" when hiding
+          if (commercialSubtypeSelect) {
+            commercialSubtypeSelect.value = 'any';
+          }
+        }
+      }
+
+      // Run on page load
+      toggleCommercialSubtype();
+
+      // Run when property category changes
+      propertyCategorySelect.addEventListener('change', toggleCommercialSubtype);
+    }
+  </script>
+
+{% endblock %}

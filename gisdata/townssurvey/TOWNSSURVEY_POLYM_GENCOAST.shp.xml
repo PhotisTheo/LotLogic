@@ -1,0 +1,328 @@
+<metadata><Esri><CreaDate>20240415</CreaDate><CreaTime>17170500</CreaTime><SyncOnce>TRUE</SyncOnce><SyncDate>20240415</SyncDate><SyncTime>17211200</SyncTime><ModDate>20242115</ModDate><ModTime>175NnS3400</ModTime><DataProperties><itemProps><itemName Sync="TRUE">TOWNSSURVEY_POLYM_GENCOAST</itemName><nativeExtBox><westBL Sync="TRUE">33863.732500</westBL><eastBL Sync="TRUE">330810.153100</eastBL><southBL Sync="TRUE">777606.374600</southBL><northBL Sync="TRUE">959743.044600</northBL><exTypeCode Sync="TRUE">1</exTypeCode></nativeExtBox><itemLocation><linkage Sync="TRUE">file://\\TSSARCGIS-WAP11\E$\MassGIS\Data_Distribution_Files\statewide_viewer_SHP\gisdata\men1\Political_Boundaries\TOWNSSURVEY_POLYM_GENCOAST.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></itemLocation><imsContentType>002</imsContentType><itemSize Sync="TRUE">0.000</itemSize></itemProps><coordRef><type Sync="TRUE">Projected</type><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn><projcsn Sync="TRUE">NAD_1983_StatePlane_Massachusetts_Mainland_FIPS_2001</projcsn><peXml Sync="TRUE">&lt;ProjectedCoordinateSystem xsi:type='typens:ProjectedCoordinateSystem' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.8'&gt;&lt;WKT&gt;PROJCS[&amp;quot;NAD_1983_StatePlane_Massachusetts_Mainland_FIPS_2001&amp;quot;,GEOGCS[&amp;quot;GCS_North_American_1983&amp;quot;,DATUM[&amp;quot;D_North_American_1983&amp;quot;,SPHEROID[&amp;quot;GRS_1980&amp;quot;,6378137.0,298.257222101]],PRIMEM[&amp;quot;Greenwich&amp;quot;,0.0],UNIT[&amp;quot;Degree&amp;quot;,0.0174532925199433]],PROJECTION[&amp;quot;Lambert_Conformal_Conic&amp;quot;],PARAMETER[&amp;quot;False_Easting&amp;quot;,200000.0],PARAMETER[&amp;quot;False_Northing&amp;quot;,750000.0],PARAMETER[&amp;quot;Central_Meridian&amp;quot;,-71.5],PARAMETER[&amp;quot;Standard_Parallel_1&amp;quot;,41.71666666666667],PARAMETER[&amp;quot;Standard_Parallel_2&amp;quot;,42.68333333333333],PARAMETER[&amp;quot;Latitude_Of_Origin&amp;quot;,41.0],UNIT[&amp;quot;Meter&amp;quot;,1.0],AUTHORITY[&amp;quot;EPSG&amp;quot;,26986]]&lt;/WKT&gt;&lt;XOrigin&gt;-36530900&lt;/XOrigin&gt;&lt;YOrigin&gt;-28803200&lt;/YOrigin&gt;&lt;XYScale&gt;122610652.81195112&lt;/XYScale&gt;&lt;ZOrigin&gt;-100000&lt;/ZOrigin&gt;&lt;ZScale&gt;10000&lt;/ZScale&gt;&lt;MOrigin&gt;-100000&lt;/MOrigin&gt;&lt;MScale&gt;10000&lt;/MScale&gt;&lt;XYTolerance&gt;0.001&lt;/XYTolerance&gt;&lt;ZTolerance&gt;0.001&lt;/ZTolerance&gt;&lt;MTolerance&gt;0.001&lt;/MTolerance&gt;&lt;HighPrecision&gt;true&lt;/HighPrecision&gt;&lt;WKID&gt;26986&lt;/WKID&gt;&lt;LatestWKID&gt;26986&lt;/LatestWKID&gt;&lt;/ProjectedCoordinateSystem&gt;</peXml><csUnits Sync="TRUE">Linear Unit: Meter (1.000000)</csUnits></coordRef><lineage/></DataProperties><ArcGISProfile>FGDC</ArcGISProfile><ArcGISFormat>1.0</ArcGISFormat><ArcGISstyle>FGDC CSDGM Metadata</ArcGISstyle><scaleRange><minScale>5000000</minScale><maxScale>5000</maxScale></scaleRange></Esri><mdLang><languageCode value="eng"/><countryCode value="USA" Sync="TRUE"/></mdLang><mdChar><CharSetCd value="004"/></mdChar><mdHrLv><ScopeCd value="005"/></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><mdContact><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Administrator</rpPosName><rpCntInfo><cntPhone><voiceNum tddtty="">617-626-4400</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 819</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country></cntAddress></rpCntInfo><role><RoleCd value="007"/></role></mdContact><mdDateSt Sync="TRUE">20240415</mdDateSt><mdStanName>ArcGIS Metadata</mdStanName><mdStanVer>1.0</mdStanVer><distInfo><distributor><distorCont><rpOrgName>MassGIS</rpOrgName><rpCntInfo><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 819</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country></cntAddress><cntPhone><voiceNum tddtty="">617-626-4400</voiceNum></cntPhone></rpCntInfo><role><RoleCd value="005"/></role></distorCont><distorOrdPrc><planAvDtTm time="unknown"/><ordInstr>Download from https://www.mass.gov/info-details/massgis-data-municipalities</ordInstr></distorOrdPrc><distorFormat><formatSpec>Shapefiles and Personal Geodatabase</formatSpec></distorFormat></distributor><distFormat><formatName Sync="TRUE">Shapefile</formatName></distFormat><distTranOps><transSize Sync="TRUE">0.000</transSize></distTranOps></distInfo><dataIdInfo><idCitation><resTitle>Massachusetts Municipalities (Multi-part Polygons with Generalized Coast)</resTitle><date><pubDate>2017-03-22T00:00:00</pubDate><reviseDate>2023-11-08T00:00:00</reviseDate></date><citRespParty><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="006"/></role></citRespParty><presForm><PresFormCd value="005"/></presForm><presForm><fgdcGeoform>vector digital data</fgdcGeoform></presForm></idCitation><idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The political boundary datalayer is a polygon representation of city and town boundaries created from arcs developed from survey coordinates extracted from the 68-volume Harbor and Lands Commission Town Boundary Atlas for the 351 communities (cities and towns) in Massachusetts. The Atlas was published in the early 1900's and is maintained by the Survey Section of Massachusetts Highway Department. For communities with a coastal boundary, MassGIS has collaborated with Massachusetts Water Resources Authority and the Department of Environmental Protection to complete a 1:12000 scale coastline. The boundary for the coastline was defined as being the upland side of tidal flats and rocky inter-tidal zones. Note that the 351 communities are the official municipal names, not including "villages" or other sections of towns. This layer contains multi-part polygons, in which islands or sections of municipalities separated by water have all been merged to create one feature per city or town. This layer is the same as TOWNSSURVEY_POLYM but with a generalized coastline for faster map display.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs><idPurp>This datalayer was created for the purposes of providing an up-to-date polygon version of the city and town boundaries for the 351 municipalities of the Commonwealth of Massachusetts. Mapping was based on surveyed coordinates as recorded in the Harbor and Lands Commission Town Boundary Atlas, maintained by the survey section of MassDOT - Highway Division. This layer contains multi-part polygons, in which islands or sections of municipalities separated by water have all been merged to create one feature per city or town. This layer is the same as TOWNSSURVEY_POLYM but with a generalized coastline for faster map display.</idPurp><idStatus><ProgCd value="001"/></idStatus><idPoC><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Administrator</rpPosName><rpCntInfo><cntPhone><voiceNum tddtty="">617-626-4400</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 819</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country><eMailAdd>michael.trust@state.ma.us</eMailAdd></cntAddress><cntHours>9AM-5PM</cntHours></rpCntInfo><role><RoleCd value="007"/></role></idPoC><resMaint><maintFreq><MaintFreqCd value="009"/></maintFreq></resMaint><placeKeys><keyword>Commonwealth of Massachusetts, Massachusetts</keyword></placeKeys><themeKeys><keyword>City Boundaries</keyword><keyword>Town Boundaries</keyword><keyword>Survey Points</keyword><keyword>Harbor and Lands Commission</keyword><keyword>Municipal</keyword></themeKeys><searchKeys><keyword>Commonwealth of Massachusetts</keyword><keyword>Massachusetts</keyword><keyword>City Boundaries</keyword><keyword>Town Boundaries</keyword><keyword>Survey Points</keyword><keyword>Harbor and Lands Commission</keyword><keyword>Municipal</keyword></searchKeys><resConst><Consts><useLimit>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;This data set, like all other cartographic products may contain inherent aberrations in geography or thematical errors.  The boundaries included in this data set were developed using accepted GIS methodology.  Cartographic products can never truly represent real-world conditions due to several factors.  These factors can include, but are not limited to: human error upon digitizing, computational tolerance of the computer, or the distortion of map symbology.  Because of these factors MassGIS cannot be held legally responsible for personal or property damages resulting from any type of use of the data set.  These boundaries are suitable for map display and planning purposes.  They cannot be used as a substitute for the work of a professional land surveyor.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</useLimit></Consts></resConst><resConst><LegConsts><accessConsts><RestrictCd value="008"/></accessConsts><othConsts>Not applicable. This data set is a public record.</othConsts></LegConsts></resConst><spatRpType><SpatRepTypCd value="001"/></spatRpType><dataLang><languageCode value="eng"/><countryCode value="USA" Sync="TRUE"/></dataLang><envirDesc>Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.3.1.3000</envirDesc><dataExt><geoEle><GeoBndBox><exTypeCode>true</exTypeCode><westBL>-73.533318</westBL><eastBL>-69.898590</eastBL><northBL>42.888312</northBL><southBL>41.231170</southBL></GeoBndBox></geoEle></dataExt><dataExt><exDesc>publication date</exDesc><tempEle><TempExtent><exTemp><TM_Instant><tmPosition>2017-03-22</tmPosition></TM_Instant></exTemp></TempExtent></tempEle></dataExt><dataExt><geoEle xmlns=""><GeoBndBox esriExtentType="search"><exTypeCode Sync="TRUE">1</exTypeCode><westBL Sync="TRUE">-73.533318</westBL><eastBL Sync="TRUE">-69.898918</eastBL><northBL Sync="TRUE">42.888312</northBL><southBL Sync="TRUE">41.231170</southBL></GeoBndBox></geoEle></dataExt><idCredit>MassGIS, MassDOT - Highway Division, MassDEP, MWRA</idCredit><dataChar><CharSetCd value="004"/></dataChar></dataIdInfo><mdMaint><maintFreq><MaintFreqCd value="009"/></maintFreq></mdMaint><dqInfo><dqScope><scpLvl><ScopeCd value="005"/></scpLvl></dqScope><report type="DQQuanAttAcc"><measDesc>There have been no deliberate or intentional omissions or inclusions of polygon attributes within this data set.</measDesc></report><report type="DQAbsExtPosAcc" dimension="horizontal"><measDesc>Curt Crowe (the National Geodetic Survey's liason to Massachusetts) has stated that "these are not survey quality coordinates. The atlas coordinates were only published to the nearest foot on an early datum and the survey work was done over a thirty year span. The 'Lefti" conversion updated the coordinates but it did not improve their accuracy. I would expect these values to be good to within 3 feet (1 meter) in most cases. Some areas will be slightly better and some could be much worse. "</measDesc></report><dataLineage><prcStep><stepDesc>Boundary point locations were determined under The Massachusetts Town Corner Project; Updating the Harbor and Land Commission Town Boundary Atlases to the National Spatial Reference System.
+
+The Harbor and Land Commission Town Boundary Atlases contain valuable coordinate data on almost every town bound in Massachusetts. The survey fieldwork (conventional optical triangulation) was done between 1878 and 1912. The geographic coordinates of over 3500 corners and 800 control points were computed and published in a series of 68 atlases between 1880 and 1915. These coordinates were published to the hundredth of a second of arc (+ 1 foot) on the U.S. Standard Datum, a predecessor of the North American Datum and the North American Datum of 1927.
+
+In 1999 MassHighway and MassGIS joined forces in an effort to create a digital database of the Town Boundary monuments and to update the coordinate values to the geodetic datums in current use; the North American Datum of 1927 (NAD27) and the North American Datum of 1983 (NAD83).
+
+The following method was used:
+
+-Automate coordinate data for the 3500 corners and 800 control points
+-Review, compute, and integrate over 150 pieces of Legislation which alter town lines
+-Identify control points which are in the NGS Data Base
+-300 common stations found, these points have US Standard Datum, NAD27 and NAD83 coordinate values
+-Develop a grid of datum shifts from the 300 common points to be applied to the town corner points
+-Used the National Geodetic Survey?s LEFTI software
+-Update the data set to NAD27 geographic coordinates with LEFTI software
+-Compute NAD27 State Plane Coordinates with GPPCGP software
+-Update the data set to NAD83 geographic coordinates with NADCON software
+-Compute NAD83 State Plane Coordinates with SPCS83 software
+-Graphically review the updated coordinate values
+
+The updated coordinates for the boundary points cannot be more accurate than the initial coordinates without additional survey. Given the combination of original survey methods, 100 years of exposure to natural forces and the least squares transformation process, the updated coordinates of the town line bounds should be considered to be accurate in the 1-meter (3 foot) range.
+
+Once the updated coordinates had been calculated and entered into an Access database it was passed on to MassGIS.  MassGIS then queried out the useful boundary coordinates and created a point shapefile from this information (named TOWNSSURVEY_POINT).
+
+The coastline was developed through coordination with Massachusetts Water Resources Authority.  The source for the coastline was the 1:12000 scale wetlands data layer, with the coastline boundary being the upland-side boundaries of tidal flats and rocky inter-tidal zones.  These upland boundaries were photo-interprested from 1:12000 scale color IR photography.
+
+The arc layer was created by adjusting the existing 1:25,000 scale town boundaries to the the survey point data (TOWNSSURVEY_POINT).  All GIS work for the arc creation was done using the ARCGIS 8.x suite of products.  In many areas, the boundary creation was simply a matter of "connecting the dots" from one boundary point to the next.  Where boundaries follow a stream/river or road right of way the boundary was approximately delineated using the 2001 Half Meter Color Orthophotography as a base.  All boundaries that follow a water body or a ROW are coded in the attribute table in the BND_QUAL field.  A complex boundary situation occurs when a survey point is a "witness mark", denoted by the letters WM in the coordinate name.  A witness mark point is an "on-land" representation of the next point along the boundary when that next point is in a river, wetland, or pond.  A line drawn between the point before a witness mark and a witness mark point gives you the direction of the town boundary as it proceeds to the next point in the river, wetland, or pond.  Witness marks are often but not always on the town boundary.  The Harbor and Land Commission Town Boundary Atlases included large scale maps of individual boundary point locations.  Digital images of these maps taken by MassGIS were also used as a guide in creating the town boundaries layer.
+
+Once the boundary arcs had been updated the updated coastline derived from the wetlands data was appending to the new boundary arcs.
+
+The layer was updated on May 24, 2006, when TOWNSSURVEY_PT points ID1 = 1629 (Needham-Wellesley) and 1933 (Winchendon-NH border) were slightly moved to correct coordinate data entry errors.
+
+Files were replaced on October 12, 2006, with BND_QUAL values changed along Brookline-Boston border.
+
+Files were replaced on December 4, 2007, with five adjusted boundaries based on surveyed right-of-way plans.
+
+In September 2009 TYPE was changed to 'TC' for Braintree, Palmer, Randolph and Winthrop.
+
+In May 2011 the Boston/Brookline boundary was modified (topological edit based on ARC feature class line moved from point ID1 1071 to 798), affecting the two polygon and one arc layers.
+
+In June 2011 some pseudo nodes were removed along the Haverhill boundary, affecting the two polygon and one arc layers.
+
+In October 2011 edits were made along the boundaries of: Palmer-Monson (based on parcels); West Springfield-Agawam (Acts and Resolves redefinition); Douglas-Uxbridge and Grafton-Westborough (legislative changes).</stepDesc><stepProc><rpIndName>Jennifer Inzana</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>GIS Database Specialist</rpPosName><rpCntInfo><cntPhone><voiceNum>617-626-1196</voiceNum><faxNum>617-626-1249</faxNum></cntPhone><cntAddress addressType="both"><delPoint>251 Causeway Street, Suite 500</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02114</postCode><country>US</country><eMailAdd>jennifer.inzana@state.ma.us</eMailAdd></cntAddress><cntHours>0800 - 1630 EST</cntHours></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Boundaries were modified in November and December, 2007, in five locations in Norfolk County, adjusted to match surveyed right-of-way (ROW) plans provided by the Norfolk County Engineering department. Edits included:
+
+ - Bay Road (Sharon-Stoughton); 
+ - Clapboardtree Street (Norwood-Westwood); 
+ - Old Post Road (Walpole-Sharon); 
+ - Canton Street (Norwood-Westwood and Canton-N-W); 
+ - County Street (Dover-Walpole between Medfield and Westwood)</stepDesc><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS DBA</rpPosName><rpCntInfo><cntPhone><voiceNum>617-626-1195</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>251 Causeway St., Suite 500</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02114</postCode></cntAddress></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>The TYPE field was changed from 'T' to 'TC' for BRAINTREE, PALMER, WINTHROP and RANDOLPH in September 2009.</stepDesc></prcStep><prcStep><stepDesc>Blackstone-Millville boundary edited based on Level 3 Assessors Parcels data.</stepDesc><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Edits made to the boundaries of Boxford-Topsfield and Berlin-Hudson. Edits made as part of correcting miscoded coordinates of points in the TOWNSSURVEY_PT layer.</stepDesc><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Edits made to the boundaries of Eastham-Orleans and Groton-Shirley based on data from L3 Assessor Parcels.</stepDesc><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Tinker's Island reassigned to Salem from Marblehead. Bumkin Island reassigned from Hingham to Hull. Edits based on data from Level 3 Assessors Parcels.</stepDesc><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Boston/Brookline boundary modified on May 9, 2011. Topological edit based on ARC feature class line moved from point ID1 1071 to 798.</stepDesc><stepDateTm>2011-05-09</stepDateTm><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Administrator</rpPosName><rpCntInfo><cntPhone><voiceNum>617-619-5615</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode></cntAddress></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Pseudo nodes removed along Haverill boundary.</stepDesc><stepDateTm>2011-06-08</stepDateTm><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Administrator</rpPosName><rpCntInfo><cntPhone><voiceNum>617-619-5615</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><eMailAdd>michael.trust@state.ma.us</eMailAdd></cntAddress></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Coastal polygons added to offshore areas of Boston and Medford.</stepDesc><stepDateTm>2012-11-05</stepDateTm><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Administrator</rpPosName><rpCntInfo><cntPhone><voiceNum>617-619-5615</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 1601</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country><eMailAdd>michael.trust@state.ma.us</eMailAdd></cntAddress></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Recoded TYPE = 'TC' for BRIDGEWATER, based on latest data from the Secretary of State's office.</stepDesc><stepDateTm>2014-02-06</stepDateTm><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>The boundary at the Boxford-Topsfield point B-T2 was adjusted again, using coordinates for that point supplied by MassDOT Survey section; a section of the Cambridge-Somerville boundary near Route 28 was modified based on data from Cambridge.</stepDesc><stepDateTm>2015-11-09</stepDateTm><stepProc><rpIndName>Michael Trust</rpIndName><rpOrgName>MassGIS</rpOrgName><rpPosName>Sr. GIS Database Adminstrator</rpPosName><rpCntInfo><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 819</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode></cntAddress></rpCntInfo><role><RoleCd value="009"/></role></stepProc></prcStep><prcStep><stepDesc>Modified attribute table, including adding population fields for 1960, 1970, 2020, and a 2010-2020 population change field. Removed older population change fields.</stepDesc><stepRat>Incorporating an expanded timeframe of population values.</stepRat><stepDateTm>2023-11-08T00:00:00</stepDateTm><stepProc><rpOrgName>MassGIS</rpOrgName><rpCntInfo><cntAddress addressType="both"><delPoint>One Ashburton Place, Room 819</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country></cntAddress><cntPhone><voiceNum tddtty="">617-626-4400</voiceNum></cntPhone></rpCntInfo><role><RoleCd value="005"/></role><displayName>MassGIS</displayName></stepProc></prcStep></dataLineage></dqInfo><spatRepInfo><VectSpatRep><geometObjs Name="TOWNSSURVEY_POLYM_GENCOAST"><geoObjTyp><GeoObjTypCd value="002" Sync="TRUE"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">0</geoObjCnt></geometObjs><topLvl><TopoLevCd value="001" Sync="TRUE"></TopoLevCd></topLvl></VectSpatRep></spatRepInfo><refSysInfo><RefSystem><refSysID><identCode code="26986" Sync="TRUE"/><idCodeSpace Sync="TRUE">EPSG</idCodeSpace><idVersion Sync="TRUE">2.1(3.0.1)</idVersion></refSysID></RefSystem></refSysInfo><mdExtInfo><extOnRes><linkage>http://www.mass.gov/itd/townsurvey</linkage><orName>MassGIS Web Documentation</orName></extOnRes></mdExtInfo><eainfo><detailed Name="TOWNSSURVEY_POLYM_GENCOAST"><enttyp><enttypl Sync="TRUE">TOWNSSURVEY_POLYM_GENCOAST</enttypl><enttypd>Attribute table defining characteristics of towns within the Commonwealth of Massachusetts</enttypd><enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">0</enttypc></enttyp><attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr><attrlabl>SHAPE</attrlabl><attrdef>Feature geometry.</attrdef><attrdefs>ESRI</attrdefs><attrdomv><udom>Coordinates defining the features.</udom></attrdomv><attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl>TOWN</attrlabl><attrdef>City or Town Name</attrdef><attalias Sync="TRUE">TOWN</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">21</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl>TOWN_ID</attrlabl><attrdef>MassGIS Town-ID Code (alphabetical, 1-351)</attrdef><attalias Sync="TRUE">TOWN_ID</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl>TYPE</attrlabl><attrdef>Type of Town</attrdef><attrdomv><edom><edomv>C</edomv><edomvd>City</edomvd><edomvds>Secretary of the Commonwealth</edomvds></edom><edom><edomv>T</edomv><edomvd>Town</edomvd><edomvds>Secretary of the Commonwealth</edomvds></edom><edom><edomv>TC</edomv><edomvd>Town with City form of government</edomvd><edomvds>Secretary of the Commonwealth</edomvds></edom></attrdomv><attalias Sync="TRUE">TYPE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">2</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">COUNTY</attrlabl><attalias Sync="TRUE">COUNTY</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">15</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Name of county in which the municipality is located.</attrdef><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">AREA_ACRES</attrlabl><attalias Sync="TRUE">AREA_ACRES</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Area of polygon in acres</attrdef><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">AREA_SQMI</attrlabl><attalias Sync="TRUE">AREA_SQMI</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Area of polygon in Square Miles</attrdef><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">POP1960</attrlabl><attalias Sync="TRUE">POP1960</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>1960 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP1970</attrlabl><attalias Sync="TRUE">POP1970</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>1970 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP1980</attrlabl><attalias Sync="TRUE">POP1980</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>1980 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP1990</attrlabl><attalias Sync="TRUE">POP1990</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>1990 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP2000</attrlabl><attalias Sync="TRUE">POP2000</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>2000 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP2010</attrlabl><attalias Sync="TRUE">POP2010</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>2010 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POP2020</attrlabl><attalias Sync="TRUE">POP2020</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>2020 population</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl Sync="TRUE">POPCH10_20</attrlabl><attalias Sync="TRUE">POPCH10_20</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdef>2010-2020 population change</attrdef><attrdefs>US Census Bureau</attrdefs></attr><attr><attrlabl>FOURCOLOR</attrlabl><attrdef>Codes (1,2,3,4) allowing shading of all towns using 4 symbols (based on four-color theorem where no adjacent polygons have same symbol)</attrdef><attalias Sync="TRUE">FOURCOLOR</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl>FIPS_STCO</attrlabl><attrdef>Federal Information Processing Standard (FIPS) State/County Code</attrdef><attalias Sync="TRUE">FIPS_STCO</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS</attrdefs></attr><attr><attrlabl Sync="TRUE">SHAPE_Leng</attrlabl><attalias Sync="TRUE">SHAPE_Leng</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">SHAPE_Area</attrlabl><attalias Sync="TRUE">SHAPE_Area</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Area of feature in internal units squared.</attrdef><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv></attr></detailed></eainfo><spdoinfo><ptvctinf><esriterm Name="TOWNSSURVEY_POLYM_GENCOAST"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom code="4" Sync="TRUE"></efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">0</efeacnt><spindex Sync="TRUE">FALSE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf></spdoinfo><Binary><Thumbnail><Data EsriPropertyType="PictureX">/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsK
+CwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQU
+FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCADIASwDASIA
+AhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA
+AAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3
+ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWm
+p6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEA
+AwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSEx
+BhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK
+U1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3
+uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6t+VK
+HehIZX+b7iUyZGRfvV8w01oz5S3dlW8eL7ZaL/tVYS42Su339v3Uqvc701K0VV+dVZ/nq3Zozyu3
+36lFK1iHztkXzf61qifUrOH5Wn2P/cq7N5Sb923fWbNpUFzdeYq73+/vphHl7B/benvcOy3K/d/v
+VKmpWe5FWVXf7lV4fDen7X2wL/c30Q6DbQ3DtEux/wCJ/wC9Vyg42v1JtHozTTaiuzKv+zTN/wB/
+dtproqr83zvVa8T/AEWXazfdqBxSk7JjdJm/4+JV+5LL8taEn3flqvpU2+wt22/w1Y3tt+7TWiaH
+OUXJ2QzZv+Xd/vVLIjfw0fc+X/vqntt/4HSIvcYiU3atOmaVF2RbU3VE77FoF5IfD951pzvs3/8A
+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</Data></Thumbnail></Binary></metadata>

@@ -1,0 +1,673 @@
+<metadata xml:lang="en"><Esri><CreaDate>20110607</CreaDate><CreaTime>11160500</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>FALSE</SyncOnce><DataProperties><itemProps><itemName Sync="TRUE">M245TaxPar_CY24_FY25</itemName><imsContentType Sync="TRUE" export="False">002</imsContentType><itemLocation><linkage Sync="TRUE">file://\\TSSARCGIS-WAP11\E$\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\L3_SHP_M245_Raynham\M245TaxPar_CY24_FY25.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></itemLocation><nativeExtBox><westBL Sync="TRUE">766981.419411</westBL><eastBL Sync="TRUE">794717.978111</eastBL><southBL Sync="TRUE">2782790.270666</southBL><northBL Sync="TRUE">2821955.218582</northBL><exTypeCode Sync="TRUE">1</exTypeCode></nativeExtBox><itemSize Sync="TRUE">0.000</itemSize></itemProps><coordRef><type Sync="TRUE">Projected</type><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn><projcsn Sync="TRUE">NAD_1983_StatePlane_Massachusetts_Mainland_FIPS_2001</projcsn><peXml Sync="TRUE">&lt;ProjectedCoordinateSystem xsi:type='typens:ProjectedCoordinateSystem' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.8'&gt;&lt;WKT&gt;PROJCS[&amp;quot;NAD_1983_StatePlane_Massachusetts_Mainland_FIPS_2001&amp;quot;,GEOGCS[&amp;quot;GCS_North_American_1983&amp;quot;,DATUM[&amp;quot;D_North_American_1983&amp;quot;,SPHEROID[&amp;quot;GRS_1980&amp;quot;,6378137.0,298.257222101]],PRIMEM[&amp;quot;Greenwich&amp;quot;,0.0],UNIT[&amp;quot;Degree&amp;quot;,0.0174532925199433]],PROJECTION[&amp;quot;Lambert_Conformal_Conic&amp;quot;],PARAMETER[&amp;quot;False_Easting&amp;quot;,200000.0],PARAMETER[&amp;quot;False_Northing&amp;quot;,750000.0],PARAMETER[&amp;quot;Central_Meridian&amp;quot;,-71.5],PARAMETER[&amp;quot;Standard_Parallel_1&amp;quot;,41.71666666666667],PARAMETER[&amp;quot;Standard_Parallel_2&amp;quot;,42.68333333333333],PARAMETER[&amp;quot;Latitude_Of_Origin&amp;quot;,41.0],UNIT[&amp;quot;Meter&amp;quot;,1.0],AUTHORITY[&amp;quot;EPSG&amp;quot;,26986]]&lt;/WKT&gt;&lt;XOrigin&gt;-36530900&lt;/XOrigin&gt;&lt;YOrigin&gt;-28803200&lt;/YOrigin&gt;&lt;XYScale&gt;122610652.81195112&lt;/XYScale&gt;&lt;ZOrigin&gt;-100000&lt;/ZOrigin&gt;&lt;ZScale&gt;10000&lt;/ZScale&gt;&lt;MOrigin&gt;-100000&lt;/MOrigin&gt;&lt;MScale&gt;10000&lt;/MScale&gt;&lt;XYTolerance&gt;0.001&lt;/XYTolerance&gt;&lt;ZTolerance&gt;0.001&lt;/ZTolerance&gt;&lt;MTolerance&gt;0.001&lt;/MTolerance&gt;&lt;HighPrecision&gt;true&lt;/HighPrecision&gt;&lt;WKID&gt;26986&lt;/WKID&gt;&lt;LatestWKID&gt;26986&lt;/LatestWKID&gt;&lt;/ProjectedCoordinateSystem&gt;</peXml><csUnits Sync="TRUE">Linear Unit: Meter (1.000000)</csUnits></coordRef><lineage><Process ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Data Management Tools.tbx\Rename" Date="20241125" Time="135659">Rename E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M000TaxPar E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar FeatureClass</Process><Process ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20241125" Time="135705">FeatureClassToFeatureClass E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\L3_SHP_M245_Raynham M245TaxPar_CY24_FY25 # "SHAPE_Leng "SHAPE_Leng" false true true 8 Double 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,SHAPE_Length,-1,-1;SHAPE_Area "SHAPE_Area" false true true 8 Double 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,SHAPE_Area,-1,-1;MAP_PAR_ID "MAP_PAR_ID" true true false 26 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,MAP_PAR_ID,-1,-1;LOC_ID "LOC_ID" true false false 18 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,LOC_ID,-1,-1;POLY_TYPE "POLY_TYPE" true false false 15 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,POLY_TYPE,-1,-1;MAP_NO "MAP_NO" true true false 4 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,MAP_NO,-1,-1;SOURCE "SOURCE" true false false 15 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,SOURCE,-1,-1;PLAN_ID "PLAN_ID" true true false 40 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,PLAN_ID,-1,-1;LAST_EDIT "LAST_EDIT" true false false 4 Long 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,LAST_EDIT,-1,-1;BND_CHK "BND_CHK" true true false 2 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,BND_CHK,-1,-1;NO_MATCH "NO_MATCH" true false false 1 Text 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,NO_MATCH,-1,-1;TOWN_ID "TOWN_ID" true true false 2 Short 0 0 ,First,#,E:\MassGIS\Parcels\data\M245_Raynham\CY24_FY25\SDE\M245_parcels_CY24_FY25_sde.gdb\M245TaxPar,TOWN_ID,-1,-1" #</Process></lineage></DataProperties><ArcGISProfile>FGDC</ArcGISProfile><SyncDate>20241125</SyncDate><SyncTime>13570500</SyncTime><ModDate>20241125</ModDate><ModTime>13570500</ModTime><scaleRange><minScale>625000</minScale><maxScale>5000</maxScale></scaleRange></Esri><idinfo><descript><abstract>Assessor's parcel data for town of Raynham, MA. Developed from existing digital data.
+Geometry and attributes updated September 2020</abstract><langdata>English</langdata><supplinf>(OPTIONAL)</supplinf></descript><accconst>This digital parcel data layer is considered to be in the public domain and will become accessible for download and display from the MassGIS website:  http://www.mass.gov/mgis</accconst><useconst>This data may be appropriate for planning purposes.  It should not be utilized where legal and surveyed property boundaries are required.</useconst><native>This parcel data is submitted to MassGIS in a file geodatabase.  It will be incorporated into the MassGIS SDE database, and may be converted into other GIS data types for future distribution. </native><datacred>Applied Geographics, Boston, MA; CGIS Mapping, Marion, MA; Town of Raynham Assessor's Office, Raynham, MA.</datacred><natvform>File geodatabase feature class</natvform><ptcontac><cntinfo><cntperp><cntper>Priya Sankalia</cntper><cntorg>Applied Geographics, Inc.</cntorg></cntperp><cntpos>Project Manager</cntpos><cntaddr><address>24 School St., Suite 500</address><city>Boston</city><state>MA</state><postal>02108</postal><country>USA</country></cntaddr><cntvoice>617-447-2400</cntvoice><cnttdd>(OPTIONAL)</cnttdd><cntfax>(OPTIONAL)</cntfax><cntemail>psankalia@appgeo.com</cntemail><hours>(OPTIONAL)</hours><cntinst>(OPTIONAL)</cntinst></cntinfo></ptcontac><citation><citeinfo><title>Data for town of Raynham, MA, complying with Level 3 of MassGIS digital parcel standard</title><origin>Applied Geographics, Inc., Boston, MA</origin><origin>Town of Raynham, MA, Assessor's Office</origin><pubdate>Unknown</pubdate><pubtime>Unknown</pubtime></citeinfo></citation><keywords><theme><themekey>Parcels</themekey><themekey>Tax</themekey><themekey>Level 3</themekey><themekey>MassGIS</themekey><themekey>ROW</themekey><themekey>Right Of Way</themekey><themekey>Water</themekey><themekey>Property</themekey></theme><place><placekey>Raynham</placekey><placekey>Massachusetts</placekey></place></keywords><timeperd><current>ground condition</current><timeinfo><sngdate><caldate>January 2019</caldate></sngdate></timeinfo></timeperd><status><progress>Complete</progress><update>Annually</update></status><spdom><bounding><westbc>794717 ft</westbc><eastbc>766981 ft</eastbc><northbc>2821955 ft</northbc><southbc>2782790 ft</southbc></bounding></spdom></idinfo><dataqual><logic>This parcel layer contains discrete, non-overlapping polygons for each property.  Adjacent polygons with common ownership and a single tax record have been retained in the "OthLeg" layer that accompanies this TaxPar layer, and dissolved into single parcels in this TaxPar layer. Some non-adjacent parcels may be represented by multi-part polygons where they share common ownership and a single tax record.  Public right of ways exist as polygons, not null space.  Linework associated with private ROWs are retained in the "OthLeg" layer.  Water polygons also representing parcel boundaries have been retained in this TaxPar layer.  Additional water features that are not considered parcel boundaries may have been placed in the "Misc" layer that accompanies this TaxPar layer.  Easements and other similar non-fee taxable boundaries exist in the 'OthLeg" layer, not the TaxPar layer.</logic><attracc><attraccr>Total number of parcels in M245TaxPar = 5143
+Total number of assessor records in M245Assess = 5525
+(number of assessor records found where LOC_ID is NULL: 30)
+
+HIGHER VALUE PROPERTY
+---------------------
+Required match rate where BLDG_VAL or OTHER_VAL &gt; $1000: 99.8% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &gt; $1000: 4746
+Minimum number of these 4746 records that must link to parcels to pass QA: 4737
+Actual number of these 4746 records that link to tax parcels: 4742
+Observed match rate for assessor records where BLDG_VAL or OTHER_VAL &gt; $1000: 99.92%
+High value match rate passes QA.
+
+LOWER VALUE PROPERTY
+--------------------
+Required match rate where BLDG_VAL or OTHER_VAL &lt;= $1000: 97.0% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &lt; $1000: 779
+Minimum number of these 779 records that must link to parcels to pass QA: 756
+Actual number of these 779 records that link to tax parcels: 753
+Observed match rate for assessor records where BLDG_VAL and OTHER_VAL &lt;= $1000: 96.66%
+
+**** Lower value property match rate of 96.66% is below 97.0%.  Does not pass QA.
+
+
+# Checking match rate of parcels to assessor list...
+===========================================================================
+Required match rate for 5143 parcels: 99.0% 
+Total number of parcels with "TAX" or "FEE" POLY_TYPE and NO_MATCH = "N": 5096 
+Minimum number of these 5096 parcels that must link to assessor records to pass QA: 5046
+Actual number of these 5096 parcels that link to assessor records: 5054
+Observed match rate for "FEE"/"TAX" parcels to assessor table: 99.18%
+Parcel to assessor match rate passes QA.</attraccr></attracc><posacc><horizpa><horizpar>Data compiled or reviewed for horizontal accuracy ove the MassGIS color orthos from 2008/2009; these orthos are known to be +/- 10' horizontal; however, this data set cannot be used to reach authoritative conclusions about the horizontal accuracy of the boundaries depicted.  That work requires a licensed land surveyor.</horizpar></horizpa></posacc><lineage><srcinfo><srcscale>Unknown</srcscale><typesrc>ESRI ArcGIS personal geodatabase</typesrc><srctime><timeinfo><sngdate><caldate>September 2019</caldate></sngdate></timeinfo><srccurr>ground condition</srccurr></srctime><srccitea>MassGIS Level II digital parcel polygons</srccitea><srccontr>Source data is MassGIS Level II-compliant digital parcel file, in ESRI personal geodatabase format. </srccontr></srcinfo><procstep><procdesc>Existing Level II parcel data was converted to MassGIS Level 3 template geodatabase and additional data layers and tables were added.</procdesc><procsv>ESRI ArcGIS 10.0</procsv></procstep><procstep><procdesc>Spatial accuracy of data was verified using the parcel standard guidelines; town boundary was verified to be coincident with MassGIS Town Boundary layer.  Polygon topology was updated and validated.</procdesc><procsv>ESRI ArcGIS 10.0</procsv></procstep><procstep><procsv>ESRI ArcGIS 10.0</procsv><procdesc>Multi-part polygons were created where necessary; internal polygon boundaries were dissolved where necessary; polygons representing legal boundaries such as easements or private right-of-ways were created.  LOC_ID was updated</procdesc></procstep><procstep><procsv>ESRI ArcGIS 10.0</procsv><procdesc>Updates were made to the Level II data to reflect the most current version of the town's tax maps as of March 2011, for the town's FY 2012.  CAMA data was matched against parcel data to produce a mismatch report which was reconciled with the help of the town Assessor.  Final QAQC tools were run.</procdesc></procstep><procstep><procdesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2017 for the town's FY 2018. CAMA data was matched against parcel data to  produce a mismatch report which was reconciled with the help of the town. Final QA/QC tool was run.</procdesc><proccont><cntinfo><cntaddr><address>24 School St</address><addrtype>mailing and physical address</addrtype><address>Suite 500</address><city>Boston</city><state>MA</state><postal>02108</postal><country>USA</country></cntaddr><cntperp><cntper>Priya Sankalia</cntper><cntorg>Applied Geographics, Inc</cntorg></cntperp><cntpos>Project Manager</cntpos><cntvoice>617-447-2400</cntvoice><cntemail>psankalia@appgeo.com</cntemail></cntinfo></proccont><procsv>10.4.1</procsv><procdate>September 2018</procdate></procstep><procstep><procdesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2019 for the town's FY 2020. CAMA data was matched against parcel data to  produce a mismatch report which was reconciled with the help of the town. Final QA/QC tool was run.</procdesc><procsv>ArcGIS 10.6.1</procsv><procdate>September 2019</procdate></procstep><procstep><procdesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2020 for the town's FY 2021. CAMA data was matched against parcel data to  produce a mismatch report which was reconciled with the help of the town. Final QA/QC tool was run.</procdesc><procsv>ArcGIS 10.7</procsv><procdate>September 2020</procdate></procstep></lineage></dataqual><spdoinfo><indspref>Parcel ID, LOC_ID</indspref><direct>Vector</direct><ptvctinf><esriterm Name="M245TaxPar_CY24_FY25"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom code="4" Sync="TRUE"></efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">0</efeacnt><spindex Sync="TRUE">FALSE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf></spdoinfo><eainfo><detailed Name="M245TaxPar_CY24_FY25"><enttyp><enttypl Sync="TRUE">M245TaxPar_CY24_FY25</enttypl><enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">0</enttypc></enttyp><attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">SHAPE</attrlabl><attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Feature geometry.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Coordinates defining the features.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">SHAPE_Leng</attrlabl><attalias Sync="TRUE">SHAPE_Leng</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">SHAPE_Area</attrlabl><attalias Sync="TRUE">SHAPE_Area</attalias><attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">19</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Area of feature in internal units squared.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv></attr><attr><attrlabl Sync="TRUE">MAP_PAR_ID</attrlabl><attalias Sync="TRUE">MAP_PAR_ID</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">26</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Parcel ID that appears on the assessor map.</attrdef><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs></attr><attr><attrlabl Sync="TRUE">LOC_ID</attrlabl><attalias Sync="TRUE">LOC_ID</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">18</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Concatenation of X and Y coordinates of a point inside the polygon.</attrdef></attr><attr><attrlabl Sync="TRUE">POLY_TYPE</attrlabl><attalias Sync="TRUE">POLY_TYPE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">15</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Identifies the kind of polygon in the tax parcel layer.</attrdef><attrdomv><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>FEE</edomv><edomvd>Standard fee-ownership property.</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>TAX</edomv><edomvd>Dissolved "FEE" parcels with common ownership (tax record)</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>WATER</edomv><edomvd>Water feature with boundary coincident with a parcel</edomvd></edom><edom><edomv>ROW</edomv><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomvd>Right-of-way that does not overlap tax parcel polygons.</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>RAIL ROW</edomv><edomvd>Railroad Right-of-way with an associated link to assessor table</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>PRIV ROW</edomv><edomvd>Private ROW that does not overlap onto other taxable parcels and is not an easement.</edomvd></edom></attrdomv></attr><attr><attrlabl Sync="TRUE">MAP_NO</attrlabl><attalias Sync="TRUE">MAP_NO</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Map number of assessor's map sheet which feature appears on.</attrdef></attr><attr><attrlabl Sync="TRUE">SOURCE</attrlabl><attalias Sync="TRUE">SOURCE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">15</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Boundary feature source</attrdef><attrdomv><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>ASSESS</edomv><edomvd>Assessor Map</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>SUBDIV</edomv><edomvd>Subdivision Plan</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>ANR</edomv><edomvd>Subdivision approval not required</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>ROAD LAYOUT</edomv><edomvd>Road layout</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>OTHER</edomv><edomvd>Other source</edomvd></edom></attrdomv></attr><attr><attrlabl Sync="TRUE">PLAN_ID</attrlabl><attalias Sync="TRUE">PLAN_ID</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">40</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Identifying information for plan used to update digital file.</attrdef></attr><attr><attrlabl Sync="TRUE">LAST_EDIT</attrlabl><attalias Sync="TRUE">LAST_EDIT</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">10</attwidth><atprecis Sync="TRUE">10</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Date this parcel polygon was last edited.</attrdef></attr><attr><attrlabl Sync="TRUE">TOWN_ID</attrlabl><attalias Sync="TRUE">TOWN_ID</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">5</attwidth><atprecis Sync="TRUE">5</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">BND_CHK</attrlabl><attalias Sync="TRUE">BND_CHK</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">2</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdef>Identifies parcel boundaries with a discrepancy when compared to orthoimage base map.</attrdef><attrdomv><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>CC</edomv><edomvd>Discrepancy checked by compiler and is correct.</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>NR</edomv><edomvd>Discrepancy needs review.</edomvd></edom><edom><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds><edomv>OK</edomv><edomvd>Compilation discrepancy is acceptable. (only entered by MassGIS)</edomvd></edom></attrdomv></attr><attr><attrlabl Sync="TRUE">NO_MATCH</attrlabl><attalias Sync="TRUE">NO_MATCH</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">1</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef>Identifies parcels to be excluded from level 3 match rate calculation requirements</attrdef><attrdefs>MassGIS Standard for Digital Parcel Files - v2.0</attrdefs><attrdomv><edom><edomv>N</edomv><edomvd>Polygon not excluded from matching to assessor record</edomvd><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds></edom><edom><edomv>Y</edomv><edomvd>Polygon excluded from match to assessor database</edomvd><edomvds>Massachusetts Office of Geographic Information (MassGIS)</edomvds></edom></attrdomv></attr></detailed><overview><dsoverv>Tax parcel polygons for Raynham, MA. This data set contains polygons which delineate property ownership in the town of Raynham, according to the assessor's tax maps as of March 2011. It is formatted in compliance with the MassGIS Standard for Digital Parcel Files, Version 2.0. This data set is considered to be MassGIS Level III-compliant and is derived from an upgrade of the previous Level II-compliant version of this same data set.</dsoverv><eaover>For a full description of the features and attributes contained in this data, please refer to the MassGIS Standard for Digital Parcel Files - v2.0.
+
+http://www.mass.gov/mgis/standards.htm#Parstandard</eaover></overview></eainfo><spref><horizsys><cordsysn><projcsn>NAD 1983 StatePlane Massachusetts Mainland FIPS 2001 Feet</projcsn></cordsysn><geodetic><horizdn>North American Datum of 1983</horizdn></geodetic></horizsys></spref><distinfo><distrib><cntinfo><cntorgp><cntorg>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</cntorg></cntorgp><cntaddr><addrtype>mailing and physical address</addrtype><address>One Ashburton Place - Rm 1601</address><city>Boston</city><state>MA</state><postal>02108</postal><country>USA</country></cntaddr><cntvoice>617-619-5641</cntvoice><cntemail>neil.macgaffey@state.ma.us</cntemail><hours>standard business hours, M-F</hours></cntinfo></distrib><distliab>This parcel data is in the public domain and should not be redistributed for a fee beyond reproduction costs.</distliab><stdorder><digform><digtopt><onlinopt><computer><networka><networkr>http://www.mass.gov/mgis/parcels.htm</networkr></networka></computer><accinstr>Click on the "Download this layer" link to access all digital parcels.</accinstr></onlinopt></digtopt></digform></stdorder><custom>Upon compliance with level 3 of the MassGIS Standard for Digital Parcel Files, this data will be made available for download on the MassGIS website:  http://www.mass.gov/mgis/parcels.htm
+
+</custom><techpreq>GIS software</techpreq><resdesc>Assessor's parcel data for town of Raynham, MA. Developed from existing digital data. Raynham.gdb.</resdesc></distinfo><metainfo><metd>September 2020</metd><langmeta>English</langmeta><metstdn>FGDC Content Standards for Digital Geospatial Metadata</metstdn><metac>None</metac><metuc>None</metuc></metainfo><mdLang><languageCode value="eng"/><countryCode value="USA" Sync="TRUE"/></mdLang><mdHrLv><ScopeCd value="005"/></mdHrLv><mdDateSt Sync="TRUE">20241125</mdDateSt><mdStanName>ArcGIS Metadata</mdStanName><mdStanVer>1.0</mdStanVer><distInfo><distributor><distorCont><rpOrgName>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</rpOrgName><rpCntInfo><cntPhone><voiceNum>617-619-5641</voiceNum></cntPhone><cntAddress><delPoint>One Ashburton Place - Rm 1601</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country><eMailAdd>neil.macgaffey@state.ma.us</eMailAdd></cntAddress><cntHours>standard business hours, M-F</cntHours></rpCntInfo><role><RoleCd value="005"/></role></distorCont><distorOrdPrc><ordInstr>Custom Order Process: Upon compliance with level 3 of the MassGIS Standard for Digital Parcel Files, this data will be made available for download on the MassGIS website: http://www.mass.gov/mgis/parcels.htm; Technical Prerequisites: GIS software</ordInstr></distorOrdPrc><distorTran><onLineSrc><orDesc>Assessor's parcel data for town of Raynham, MA. Developed from existing digital data. Raynham.gdb.</orDesc></onLineSrc></distorTran></distributor><distTranOps><onLineSrc><linkage>http://www.mass.gov/mgis/parcels.htm</linkage><orDesc>Click on the "Download this layer" link to access all digital parcels.</orDesc></onLineSrc><transSize Sync="TRUE">0.000</transSize></distTranOps><distFormat><formatName Sync="TRUE">Shapefile</formatName></distFormat></distInfo><dataIdInfo><idCitation><resTitle Sync="FALSE">Data for town of Raynham, MA, complying with Level 3 of MassGIS digital parcel standard</resTitle><citRespParty><rpOrgName>Town of Raynham, MA, Assessor's Office</rpOrgName><role><RoleCd value="006"/></role></citRespParty><citRespParty><rpOrgName>Applied Geographics, Inc., Boston, MA</rpOrgName><role><RoleCd value="006"/></role></citRespParty><presForm><PresFormCd value="005"/></presForm><date><pubDate>2024-11-19T00:00:00</pubDate></date></idCitation><idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Assessor's parcel data for the town of Raynham, MA. Developed from existing digital data. Geotmetry and attribute updates November 2024.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs><idCredit>Applied Geographics division for Sanborn Mapping, Boston, MA; CGIS Mapping, Marion, MA; Town of Raynham Assessor's Office, Raynham, MA.</idCredit><idStatus><ProgCd value="001"/></idStatus><resMaint><maintFreq><MaintFreqCd value="008"/></maintFreq></resMaint><placeKeys><keyword>Raynham</keyword><keyword>Massachusetts</keyword></placeKeys><themeKeys><keyword>ROW</keyword><keyword>Right Of Way</keyword><keyword>Water</keyword><keyword>Level 3</keyword><keyword>MassGIS</keyword><keyword>Tax</keyword><keyword>Property</keyword><keyword>Parcels</keyword></themeKeys><searchKeys><keyword>ROW</keyword><keyword>Right Of Way</keyword><keyword>Water</keyword><keyword>Level 3</keyword><keyword>MassGIS</keyword><keyword>Tax</keyword><keyword>Raynham</keyword><keyword>Property</keyword><keyword>Massachusetts</keyword><keyword>Parcels</keyword></searchKeys><resConst><LegConsts><accessConsts><RestrictCd value="008"/></accessConsts><othConsts>Access constraints: This digital parcel data layer is considered to be in the public domain and will become accessible for download and display from the MassGIS website: http://www.mass.gov/mgis</othConsts></LegConsts></resConst><resConst><LegConsts><useConsts><RestrictCd value="008"/></useConsts><othConsts>Use constraints: This data may be appropriate for planning purposes. It should not be utilized where legal and surveyed property boundaries are required.</othConsts></LegConsts></resConst><resConst><Consts><useLimit>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;This parcel data is in the public domain and should not be redistributed for a fee beyond reproduction costs.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</useLimit></Consts></resConst><spatRpType><SpatRepTypCd value="001"/></spatRpType><dataLang><languageCode value="eng" country="USA"/><countryCode value="USA" Sync="TRUE"/></dataLang><envirDesc Sync="TRUE"> Version 6.2 (Build 9200) ; Esri ArcGIS 10.9.1.28388</envirDesc><dataExt><geoEle><GeoBndBox esriExtentType="search"><westBL Sync="TRUE">-71.093055</westBL><eastBL Sync="TRUE">-70.990341</eastBL><southBL Sync="TRUE">41.882964</southBL><northBL Sync="TRUE">41.990850</northBL><exTypeCode Sync="TRUE">1</exTypeCode></GeoBndBox></geoEle></dataExt><dataExt><exDesc>ground condition</exDesc><tempEle><TempExtent><exTemp><TM_Instant><tmPosition>April 13, 2011</tmPosition></TM_Instant></exTemp></TempExtent></tempEle></dataExt><suppInfo>(OPTIONAL)</suppInfo><descKeys><thesaName uuidref="723f6998-058e-11dc-8314-0800200c9a66"/><keyword Sync="TRUE">002</keyword></descKeys><idPurp>Assessor's parcel data for city of Raynham, MA. </idPurp><dataChar><CharSetCd value="004"/></dataChar><idPoC><rpOrgName>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</rpOrgName><rpCntInfo><cntPhone><voiceNum tddtty="">617-619-5641</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place - Rm 1601</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country><eMailAdd>neil.macgaffey@state.ma.us</eMailAdd></cntAddress><cntHours>standard business hours, M-F</cntHours></rpCntInfo><role><RoleCd value="005"/></role><displayName>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</displayName></idPoC><idPoC><rpOrgName>Applied Geographics, Inc., Boston, MA</rpOrgName><role><RoleCd value="006"/></role><displayName>Applied Geographics, Inc., Boston, MA</displayName></idPoC><tpCat><TopicCatCd value="003"/></tpCat><tpCat><TopicCatCd value="015"/></tpCat></dataIdInfo><mdConst><LegConsts><accessConsts><RestrictCd value="008"/></accessConsts><useConsts><RestrictCd value="008"/></useConsts><othConsts>Access constraints: None</othConsts></LegConsts></mdConst><mdConst><LegConsts><accessConsts><RestrictCd value="008"/></accessConsts><useConsts><RestrictCd value="008"/></useConsts><othConsts>Access constraints: None</othConsts></LegConsts></mdConst><dqInfo><dqScope><scpLvl><ScopeCd value="005"/></scpLvl></dqScope><report type="DQConcConsis" dimension=""><measDesc>This parcel layer contains discrete, non-overlapping polygons for each property. Adjacent polygons with common ownership and a single tax record have been retained in the "OthLeg" layer that accompanies this TaxPar layer, and dissolved into single parcels in this TaxPar layer. Some non-adjacent parcels may be represented by multi-part polygons where they share common ownership and a single tax record. Public right of ways exist as polygons, not null space. Linework associated with private ROWs are retained in the "OthLeg" layer. Water polygons also representing parcel boundaries have been retained in this TaxPar layer. Additional water features that are not considered parcel boundaries may have been placed in the "Misc" layer that accompanies this TaxPar layer. Easements and other similar non-fee taxable boundaries exist in the 'OthLeg" layer, not the TaxPar layer.</measDesc></report><report type="DQQuanAttAcc" dimension=""><measDesc>Total number of parcels = 5025 Total number of records in assessor table = 5352 Total records where BLDG_VAL or OTHER_VAL &gt; $1000: 4394 Of these, total records with valid LOC_ID that join to tax parcels: 4387 Match rate for parcels where BLDG_VAL or OTHER_VAL &gt; $1000: 99.8 pct Total records where BLDG_VAL or OTHER_VAL &lt; $1000: 958 Of these, total records with valid LOC_ID join to tax parcels: 933 Match rate for parcels where BLDG_VAL or OTHER_VAL &lt;= $1000: 97.4 pct Total number of parcels with "TAX" or "FEE" POLY_TYPE = 4992 Of these, 4943 join to assessor list. Match rate for "FEE"/"TAX" parcels to assessor table: 99.0 pct</measDesc></report><report type="DQAbsExtPosAcc" dimension=""><measDesc>Data compiled or reviewed for horizontal accuracy ove the MassGIS color orthos from 2008/2009; these orthos are known to be +/- 10' horizontal; however, this data set cannot be used to reach authoritative conclusions about the horizontal accuracy of the boundaries depicted. That work requires a licensed land surveyor.</measDesc></report><dataLineage><prcStep><stepDesc>Existing Level II parcel data was converted to MassGIS Level 3 template geodatabase and additional data layers and tables were added.</stepDesc></prcStep><prcStep><stepDesc>Multi-part polygons were created where necessary; internal polygon boundaries were dissolved where necessary; polygons representing legal boundaries such as easements or private right-of-ways were created. LOC_ID was updated</stepDesc></prcStep><prcStep><stepDesc>Spatial accuracy of data was verified using the parcel standard guidelines; town boundary was verified to be coincident with MassGIS Town Boundary layer. Polygon topology was updated and validated.</stepDesc></prcStep><prcStep><stepDesc>Updates were made to the Level II data to reflect the most current version of the town's tax maps as of March 2011, for the town's FY 2012. CAMA data was matched against parcel data to produce a mismatch report which was reconciled with the help of the town Assessor. Final QAQC tools were run.</stepDesc></prcStep><dataSource type=""><srcDesc>Source data is MassGIS Level II-compliant digital parcel file, in ESRI personal geodatabase format.</srcDesc><srcScale><equScale><rfDenom>0</rfDenom></equScale></srcScale></dataSource><prcStep><stepDesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2022, for the town's FY 2023. CAMA data was matched against parcel data to produce a mismatch report which was reconciled with the help of the town Assessor. Final QAQC tools were run.</stepDesc><stepDateTm>2022-08-15T00:00:00</stepDateTm></prcStep><prcStep><stepDesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2023, for the town's FY 2024. CAMA data was matched against parcel data to produce a mismatch report which was reconciled with the help of the town Assessor. Final QAQC tools were run.</stepDesc><stepDateTm>2023-09-26T00:00:00</stepDateTm></prcStep><prcStep><stepDesc>Updates were made to the Level III data to reflect the most current version of the town's tax maps as of January 2024, for the town's FY 2025. CAMA data was matched against parcel data to produce a mismatch report which was reconciled with the help of the town Assessor. Final QAQC tools were run.</stepDesc><stepDateTm>2024-11-19T00:00:00</stepDateTm></prcStep></dataLineage><report type="" dimension=""><measDesc>Total number of parcels in M245TaxPar = 5160
+Total number of assessor records in M245Assess = 5539
+(number of assessor records found where LOC_ID is NULL: 25)
+
+HIGHER VALUE PROPERTY
+---------------------
+Required match rate where BLDG_VAL or OTHER_VAL &gt; $1000: 99.8% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &gt; $1000: 4820
+Minimum number of these 4820 records that must link to parcels to pass QA: 4811
+Actual number of these 4820 records that link to tax parcels: 4816
+Observed match rate for assessor records where BLDG_VAL or OTHER_VAL &gt; $1000: 99.92%
+High value match rate passes QA.
+
+LOWER VALUE PROPERTY
+--------------------
+Required match rate where BLDG_VAL or OTHER_VAL &lt;= $1000: 97.0% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &lt; $1000: 719
+Minimum number of these 719 records that must link to parcels to pass QA: 698
+Actual number of these 719 records that link to tax parcels: 697
+Observed match rate for assessor records where BLDG_VAL and OTHER_VAL &lt;= $1000: 96.94%
+
+**** Lower value property match rate of 96.94% is below 97.0%.  Does not pass QA.
+
+
+# Checking match rate of parcels to assessor list...
+===========================================================================
+Required match rate for 5160 parcels: 99.0% 
+Total number of parcels with "TAX" or "FEE" POLY_TYPE and NO_MATCH = "N": 5108 
+Minimum number of these 5108 parcels that must link to assessor records to pass QA: 5057
+Actual number of these 5108 parcels that link to assessor records: 5067
+Observed match rate for "FEE"/"TAX" parcels to assessor table: 99.20%
+Parcel to assessor match rate passes QA.</measDesc><evalMethDesc>MassGIS QA tool version 6.1</evalMethDesc></report><report type="DQQuanAttAcc" dimension=""><measDesc>Total number of parcels in M245TaxPar = 5156
+Total number of assessor records in M245Assess = 5535
+(number of assessor records found where LOC_ID is NULL: 25)
+
+HIGHER VALUE PROPERTY
+---------------------
+Required match rate where BLDG_VAL or OTHER_VAL &gt; $1000: 99.8% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &gt; $1000: 4843
+Minimum number of these 4843 records that must link to parcels to pass QA: 4834
+Actual number of these 4843 records that link to tax parcels: 4839
+Observed match rate for assessor records where BLDG_VAL or OTHER_VAL &gt; $1000: 99.92%
+High value match rate passes QA.
+
+LOWER VALUE PROPERTY
+--------------------
+Required match rate where BLDG_VAL or OTHER_VAL &lt;= $1000: 97.0% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &lt; $1000: 692
+Minimum number of these 692 records that must link to parcels to pass QA: 672
+Actual number of these 692 records that link to tax parcels: 670
+Observed match rate for assessor records where BLDG_VAL and OTHER_VAL &lt;= $1000: 96.82%
+
+**** Lower value property match rate of 96.82% is below 97.0%.  Does not pass QA.
+
+
+# Checking match rate of parcels to assessor list...
+===========================================================================
+Required match rate for 5156 parcels: 99.0% 
+Total number of parcels with "TAX" or "FEE" POLY_TYPE and NO_MATCH = "N": 5104 
+Minimum number of these 5104 parcels that must link to assessor records to pass QA: 5053
+Actual number of these 5104 parcels that link to assessor records: 5064
+Observed match rate for "FEE"/"TAX" parcels to assessor table: 99.22%
+Parcel to assessor match rate passes QA.</measDesc><evalMethDesc>MassGIS QA tool V6.1</evalMethDesc><evalMethType><EvalMethTypeCd value="001"/></evalMethType></report><report type="DQQuanAttAcc" dimension="horizontal"><measDesc>Total number of parcels in M245TaxPar = 5183
+Total number of assessor records in M245Assess = 5561
+(number of assessor records found where LOC_ID is NULL: 25)
+
+HIGHER VALUE PROPERTY
+---------------------
+Required match rate where BLDG_VAL or OTHER_VAL &gt; $1000: 99.8% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &gt; $1000: 4841
+Minimum number of these 4841 records that must link to parcels to pass QA: 4832
+Actual number of these 4841 records that link to tax parcels: 4837
+Observed match rate for assessor records where BLDG_VAL or OTHER_VAL &gt; $1000: 99.92%
+High value match rate passes QA.
+
+LOWER VALUE PROPERTY
+--------------------
+Required match rate where BLDG_VAL or OTHER_VAL &lt;= $1000: 97.0% 
+Number of assessor records identified where BLDG_VAL or OTHER_VAL &lt; $1000: 720
+Minimum number of these 720 records that must link to parcels to pass QA: 699
+Actual number of these 720 records that link to tax parcels: 698
+Observed match rate for assessor records where BLDG_VAL and OTHER_VAL &lt;= $1000: 96.94%
+
+**** Lower value property match rate of 96.94% is below 97.0%.  Does not pass QA.
+
+
+# Checking match rate of parcels to assessor list...
+===========================================================================
+Required match rate for 5183 parcels: 99.0% 
+Total number of parcels with "TAX" or "FEE" POLY_TYPE and NO_MATCH = "N": 5131 
+Minimum number of these 5131 parcels that must link to assessor records to pass QA: 5080
+Actual number of these 5131 parcels that link to assessor records: 5090
+Observed match rate for "FEE"/"TAX" parcels to assessor table: 99.20%
+Parcel to assessor match rate passes QA.</measDesc><evalMethDesc>Mass GIS QA tool 6.1</evalMethDesc><evalMethType><EvalMethTypeCd value="001"/></evalMethType></report></dqInfo><spatRepInfo><VectSpatRep><geometObjs Name="M245TaxPar_CY24_FY25"><geoObjTyp><GeoObjTypCd value="002" Sync="TRUE"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">0</geoObjCnt></geometObjs><topLvl><TopoLevCd value="001" Sync="TRUE"></TopoLevCd></topLvl></VectSpatRep></spatRepInfo><refSysInfo><RefSystem><refSysID><identCode code="26986">Parcel ID, LOC_ID</identCode><idCodeSpace Sync="TRUE">EPSG</idCodeSpace><idVersion Sync="TRUE">2.1(3.0.1)</idVersion></refSysID></RefSystem></refSysInfo><Binary><Enclosure><Descript>original metadata</Descript><Data SourceMetadata="yes" OriginalFileName="source_metadata.xml" SourceMetadataDigest="97c99fb86af9dd7e5dff28dfd34e76" EsriPropertyType="Base64" SourceMetadataSchema="fgdc">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxtZXRhZGF0YSB4bWw6bGFu
+Zz0iZW4iPg0KICA8RXNyaT4NCiAgICA8Q3JlYURhdGU+MjAxMTA2MDc8L0NyZWFEYXRlPg0KICAg
+IDxDcmVhVGltZT4xMTE2MDUwMDwvQ3JlYVRpbWU+DQogICAgPEFyY0dJU0Zvcm1hdD4xLjA8L0Fy
+Y0dJU0Zvcm1hdD4NCiAgICA8U3luY09uY2U+RkFMU0U8L1N5bmNPbmNlPg0KICAgIDxEYXRhUHJv
+cGVydGllcz4NCiAgICAgIDxsaW5lYWdlPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJD
+OlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xE
+YXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XEFkZEZpZWxkIiBEYXRlPSIyMDEwMTExMCIgVGltZT0i
+MTI0MTA1IiBOYW1lPSIiIGV4cG9ydD0iIj5BZGRGaWVsZCBDOlxQUk9KRUNUU1xwYXJjZWx0ZXN0
+XGx2bDNfdGVtcGxhdGVcbHZsM190ZW1wbGF0ZV9mZ2RiLmdkYlxNMDAwVGF4UGFyIE1BUF9QQVJf
+SUQgVEVYVCAjICMgMjYgIyBOVUxMQUJMRSBOT05fUkVRVUlSRUQgIzwvUHJvY2Vzcz4NCiAgICAg
+ICAgPFByb2Nlc3MgVG9vbFNvdXJjZT0iQzpcUHJvZ3JhbSBGaWxlc1xBcmNHSVNcRGVza3RvcDEw
+LjBcQXJjVG9vbGJveFxUb29sYm94ZXNcRGF0YSBNYW5hZ2VtZW50IFRvb2xzLnRieFxBZGRGaWVs
+ZCIgRGF0ZT0iMjAxMDExMTAiIFRpbWU9IjEyNDEwNiIgTmFtZT0iIiBleHBvcnQ9IiI+QWRkRmll
+bGQgQzpcUFJPSkVDVFNccGFyY2VsdGVzdFxsdmwzX3RlbXBsYXRlXGx2bDNfdGVtcGxhdGVfZmdk
+Yi5nZGJcTTAwMFRheFBhciBMT0NfSUQgVEVYVCAjICMgMTggIyBOVUxMQUJMRSBOT05fUkVRVUlS
+RUQgIzwvUHJvY2Vzcz4NCiAgICAgICAgPFByb2Nlc3MgVG9vbFNvdXJjZT0iQzpcUHJvZ3JhbSBG
+aWxlc1xBcmNHSVNcRGVza3RvcDEwLjBcQXJjVG9vbGJveFxUb29sYm94ZXNcRGF0YSBNYW5hZ2Vt
+ZW50IFRvb2xzLnRieFxBZGRGaWVsZCIgRGF0ZT0iMjAxMDExMTAiIFRpbWU9IjEyNDEwNiIgTmFt
+ZT0iIiBleHBvcnQ9IiI+QWRkRmllbGQgQzpcUFJPSkVDVFNccGFyY2VsdGVzdFxsdmwzX3RlbXBs
+YXRlXGx2bDNfdGVtcGxhdGVfZmdkYi5nZGJcTTAwMFRheFBhciBQT0xZX1RZUEUgVEVYVCAjICMg
+MTUgIyBOVUxMQUJMRSBOT05fUkVRVUlSRUQgUE9MWVRZUEVfRE9NPC9Qcm9jZXNzPg0KICAgICAg
+ICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xEZXNrdG9wMTAu
+MFxBcmNUb29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XEFkZEZpZWxk
+IiBEYXRlPSIyMDEwMTExMCIgVGltZT0iMTI0MTA3IiBOYW1lPSIiIGV4cG9ydD0iIj5BZGRGaWVs
+ZCBDOlxQUk9KRUNUU1xwYXJjZWx0ZXN0XGx2bDNfdGVtcGxhdGVcbHZsM190ZW1wbGF0ZV9mZ2Ri
+LmdkYlxNMDAwVGF4UGFyIE1BUF9OTyBURVhUICMgIyA0ICMgTlVMTEFCTEUgTk9OX1JFUVVJUkVE
+ICM8L1Byb2Nlc3M+DQogICAgICAgIDxQcm9jZXNzIFRvb2xTb3VyY2U9IkM6XFByb2dyYW0gRmls
+ZXNcQXJjR0lTXERlc2t0b3AxMC4wXEFyY1Rvb2xib3hcVG9vbGJveGVzXERhdGEgTWFuYWdlbWVu
+dCBUb29scy50YnhcQWRkRmllbGQiIERhdGU9IjIwMTAxMTEwIiBUaW1lPSIxMjQxMDgiIE5hbWU9
+IiIgZXhwb3J0PSIiPkFkZEZpZWxkIEM6XFBST0pFQ1RTXHBhcmNlbHRlc3RcbHZsM190ZW1wbGF0
+ZVxsdmwzX3RlbXBsYXRlX2ZnZGIuZ2RiXE0wMDBUYXhQYXIgU09VUkNFIFRFWFQgIyAjIDE1ICMg
+TlVMTEFCTEUgTk9OX1JFUVVJUkVEIFNPVVJDRV9ET008L1Byb2Nlc3M+DQogICAgICAgIDxQcm9j
+ZXNzIFRvb2xTb3VyY2U9IkM6XFByb2dyYW0gRmlsZXNcQXJjR0lTXERlc2t0b3AxMC4wXEFyY1Rv
+b2xib3hcVG9vbGJveGVzXERhdGEgTWFuYWdlbWVudCBUb29scy50YnhcQWRkRmllbGQiIERhdGU9
+IjIwMTAxMTEwIiBUaW1lPSIxMjQxMDkiIE5hbWU9IiIgZXhwb3J0PSIiPkFkZEZpZWxkIEM6XFBS
+T0pFQ1RTXHBhcmNlbHRlc3RcbHZsM190ZW1wbGF0ZVxsdmwzX3RlbXBsYXRlX2ZnZGIuZ2RiXE0w
+MDBUYXhQYXIgUExBTl9JRCBURVhUICMgIyA0MCAjIE5VTExBQkxFIE5PTl9SRVFVSVJFRCAjPC9Q
+cm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFy
+Y0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9v
+bHMudGJ4XEFkZEZpZWxkIiBEYXRlPSIyMDEwMTExMCIgVGltZT0iMTI0MTEwIiBOYW1lPSIiIGV4
+cG9ydD0iIj5BZGRGaWVsZCBDOlxQUk9KRUNUU1xwYXJjZWx0ZXN0XGx2bDNfdGVtcGxhdGVcbHZs
+M190ZW1wbGF0ZV9mZ2RiLmdkYlxNMDAwVGF4UGFyIExBU1RfRURJVCBMT05HICMgIyA4ICMgTlVM
+TEFCTEUgTk9OX1JFUVVJUkVEICM8L1Byb2Nlc3M+DQogICAgICAgIDxQcm9jZXNzIFRvb2xTb3Vy
+Y2U9IkM6XFByb2dyYW0gRmlsZXNcQXJjR0lTXERlc2t0b3AxMC4wXEFyY1Rvb2xib3hcVG9vbGJv
+eGVzXERhdGEgTWFuYWdlbWVudCBUb29scy50YnhcQWRkRmllbGQiIERhdGU9IjIwMTAxMTEwIiBU
+aW1lPSIxMjQxMTEiIE5hbWU9IiIgZXhwb3J0PSIiPkFkZEZpZWxkIEM6XFBST0pFQ1RTXHBhcmNl
+bHRlc3RcbHZsM190ZW1wbGF0ZVxsdmwzX3RlbXBsYXRlX2ZnZGIuZ2RiXE0wMDBUYXhQYXIgQk5E
+X0NISyBURVhUICMgIyAyICMgTlVMTEFCTEUgTk9OX1JFUVVJUkVEIEJORF9DSEtfRE9NPC9Qcm9j
+ZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFyY0dJ
+U1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMu
+dGJ4XEFkZEZpZWxkIiBEYXRlPSIyMDEwMTExMCIgVGltZT0iMTI0MTEyIiBOYW1lPSIiIGV4cG9y
+dD0iIj5BZGRGaWVsZCBDOlxQUk9KRUNUU1xwYXJjZWx0ZXN0XGx2bDNfdGVtcGxhdGVcbHZsM190
+ZW1wbGF0ZV9mZ2RiLmdkYlxNMDAwVGF4UGFyIE5PX01BVENIIFRFWFQgIyAjIDEgIyBOVUxMQUJM
+RSBOT05fUkVRVUlSRUQgTk9fTUFUQ0hfRE9NPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBU
+b29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94
+XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XENvcHlGZWF0dXJlcyIgRGF0ZT0i
+MjAxMTA0MTEiIFRpbWU9IjEyNTk1MSI+Q29weUZlYXR1cmVzIFE6XGNsaWVudHNcYzYxOC5NYXNz
+R0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxTdGFuZGFyZHNcUGFyY2Vs
+X1RlbXBsYXRlXHYxMFxsdmwzX3RlbXBsYXRlX2ZnZGJfVmVyTWFyY2gyOFxsdmwzX3RlbXBsYXRl
+X2ZnZGJfVmVyTWFyY2gyOC5nZGJcTTAwMFRheFBhciBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wy
+MDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcQmVya2xleVxGcm9tX0Ns
+YXVzXFBpbG90XDIwMTEwMzExXEJlcmtsZXlfUGlsb3RfTWFzc0dJU19MZXZlbDNfVXBncmFkZVxC
+ZXJrbGV5LmdkYlxNMDAwVGF4UGFyICMgMCAwIDA8L1Byb2Nlc3M+DQogICAgICAgIDxQcm9jZXNz
+IFRvb2xTb3VyY2U9IkM6XFByb2dyYW0gRmlsZXNcQXJjR0lTXERlc2t0b3AxMC4wXEFyY1Rvb2xi
+b3hcVG9vbGJveGVzXERhdGEgTWFuYWdlbWVudCBUb29scy50YnhcQ29weUZlYXR1cmVzIiBEYXRl
+PSIyMDExMDQxMSIgVGltZT0iMTQ1MTAzIj5Db3B5RmVhdHVyZXMgUTpcY2xpZW50c1xjNjE4Lk1h
+c3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJlcmtsZXlc
+RnJvbV9DbGF1c1xQaWxvdFwyMDExMDMxMVxCZXJrbGV5X1BpbG90X01hc3NHSVNfTGV2ZWwzX1Vw
+Z3JhZGVcQmVya2xleS5nZGJcTTAwMFRheFBhciBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEw
+LTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcQmVya2xleVxXb3JraW5nXE1l
+dGFkYXRhLmdkYlxNMDAwVGF4UGFyICMgMCAwIDA8L1Byb2Nlc3M+DQogICAgICAgIDxQcm9jZXNz
+IFRvb2xTb3VyY2U9IkM6XFByb2dyYW0gRmlsZXMgKHg4NilcQXJjR0lTXERlc2t0b3AxMC4wXEFy
+Y1Rvb2xib3hcVG9vbGJveGVzXENvbnZlcnNpb24gVG9vbHMudGJ4XEZlYXR1cmVDbGFzc1RvRmVh
+dHVyZUNsYXNzIiBEYXRlPSIyMDExMDQxMyIgVGltZT0iMTEwOTI4Ij5GZWF0dXJlQ2xhc3NUb0Zl
+YXR1cmVDbGFzcyBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFy
+Y2VsX0NvbXBsaWFuY2VcVG93bnNcQmVya2xleVxXb3JraW5nXE1ldGFkYXRhLmdkYlxNMDAwVGF4
+UGFyIFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29t
+cGxpYW5jZVxUb3duc1xCZXJrbGV5XERlbGl2ZXJ5XE0wMDAuZ2RiIE0wMDBUYXhQYXIgIyAiTUFQ
+X1BBUl9JRCAiTUFQX1BBUl9JRCIgdHJ1ZSB0cnVlIGZhbHNlIDI2IFRleHQgMCAwICxGaXJzdCwj
+LFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxp
+YW5jZVxUb3duc1xCZXJrbGV5XFdvcmtpbmdcTWV0YWRhdGEuZ2RiXE0wMDBUYXhQYXIsTUFQX1BB
+Ul9JRCwtMSwtMTtMT0NfSUQgIkxPQ19JRCIgdHJ1ZSB0cnVlIGZhbHNlIDE4IFRleHQgMCAwICxG
+aXJzdCwjLFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxf
+Q29tcGxpYW5jZVxUb3duc1xCZXJrbGV5XFdvcmtpbmdcTWV0YWRhdGEuZ2RiXE0wMDBUYXhQYXIs
+TE9DX0lELC0xLC0xO1BPTFlfVFlQRSAiUE9MWV9UWVBFIiB0cnVlIHRydWUgZmFsc2UgMTUgVGV4
+dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJ
+X1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJlcmtsZXlcV29ya2luZ1xNZXRhZGF0YS5nZGJcTTAw
+MFRheFBhcixQT0xZX1RZUEUsLTEsLTE7TUFQX05PICJNQVBfTk8iIHRydWUgdHJ1ZSBmYWxzZSA0
+IFRleHQgMCAwICxGaXJzdCwjLFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZl
+bElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xCZXJrbGV5XFdvcmtpbmdcTWV0YWRhdGEuZ2Ri
+XE0wMDBUYXhQYXIsTUFQX05PLC0xLC0xO1NPVVJDRSAiU09VUkNFIiB0cnVlIHRydWUgZmFsc2Ug
+MTUgVGV4dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxl
+dmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJlcmtsZXlcV29ya2luZ1xNZXRhZGF0YS5n
+ZGJcTTAwMFRheFBhcixTT1VSQ0UsLTEsLTE7UExBTl9JRCAiUExBTl9JRCIgdHJ1ZSB0cnVlIGZh
+bHNlIDQwIFRleHQgMCAwICxGaXJzdCwjLFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2
+MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xCZXJrbGV5XFdvcmtpbmdcTWV0YWRh
+dGEuZ2RiXE0wMDBUYXhQYXIsUExBTl9JRCwtMSwtMTtMQVNUX0VESVQgIkxBU1RfRURJVCIgdHJ1
+ZSB0cnVlIGZhbHNlIDQgTG9uZyAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNc
+MjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJlcmtsZXlcV29ya2lu
+Z1xNZXRhZGF0YS5nZGJcTTAwMFRheFBhcixMQVNUX0VESVQsLTEsLTE7Qk5EX0NISyAiQk5EX0NI
+SyIgdHJ1ZSB0cnVlIGZhbHNlIDIgVGV4dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1h
+c3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJlcmtsZXlc
+V29ya2luZ1xNZXRhZGF0YS5nZGJcTTAwMFRheFBhcixCTkRfQ0hLLC0xLC0xO05PX01BVENIICJO
+T19NQVRDSCIgdHJ1ZSB0cnVlIGZhbHNlIDEgVGV4dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xj
+NjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXEJl
+cmtsZXlcV29ya2luZ1xNZXRhZGF0YS5nZGJcTTAwMFRheFBhcixOT19NQVRDSCwtMSwtMTtTSEFQ
+RV9MZW5ndGggIlNIQVBFX0xlbmd0aCIgZmFsc2UgdHJ1ZSB0cnVlIDggRG91YmxlIDAgMCAsRmly
+c3QsIyxROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0Nv
+bXBsaWFuY2VcVG93bnNcQmVya2xleVxXb3JraW5nXE1ldGFkYXRhLmdkYlxNMDAwVGF4UGFyLFNI
+QVBFX0xlbmd0aCwtMSwtMTtTSEFQRV9BcmVhICJTSEFQRV9BcmVhIiBmYWxzZSB0cnVlIHRydWUg
+OCBEb3VibGUgMCAwICxGaXJzdCwjLFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5M
+ZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xCZXJrbGV5XFdvcmtpbmdcTWV0YWRhdGEu
+Z2RiXE0wMDBUYXhQYXIsU0hBUEVfQXJlYSwtMSwtMSIgIzwvUHJvY2Vzcz4NCiAgICAgICAgPFBy
+b2Nlc3MgVG9vbFNvdXJjZT0iQzpcUHJvZ3JhbSBGaWxlc1xBcmNHSVNcRGVza3RvcDEwLjBcQXJj
+VG9vbGJveFxUb29sYm94ZXNcRGF0YSBNYW5hZ2VtZW50IFRvb2xzLnRieFxDb3B5RmVhdHVyZXMi
+IERhdGU9IjIwMTEwNDEzIiBUaW1lPSIxNjE4MzUiPkNvcHlGZWF0dXJlcyBROlxjbGllbnRzXGM2
+MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcQmVy
+a2xleVxEZWxpdmVyeVxNMDI3X3BhcmNlbHNGWTEyLmdkYlxNMDI3VGF4UGFyIFE6XGNsaWVudHNc
+YzYxOC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xS
+YXluaGFtXERlbGl2ZXJ5XFJheW5oYW1NZXRhZGF0YS5nZGJcTTAyN1RheFBhciAjIDAgMCAwPC9Q
+cm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFy
+Y0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9v
+bHMudGJ4XERlbGV0ZUZlYXR1cmVzIiBEYXRlPSIyMDExMDQxMyIgVGltZT0iMTYxOTEyIj5EZWxl
+dGVGZWF0dXJlcyBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFy
+Y2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtTWV0YWRhdGEuZ2Ri
+XE0wMjdUYXhQYXI8L1Byb2Nlc3M+DQogICAgICAgIDxQcm9jZXNzIFRvb2xTb3VyY2U9IkM6XFBy
+b2dyYW0gRmlsZXMgKHg4NilcQXJjR0lTXERlc2t0b3AxMC4wXEFyY1Rvb2xib3hcVG9vbGJveGVz
+XERhdGEgTWFuYWdlbWVudCBUb29scy50YnhcRGVsZXRlRmVhdHVyZXMiIERhdGU9IjIwMTEwNTEw
+IiBUaW1lPSIwOTIxMTEiPkRlbGV0ZUZlYXR1cmVzIFE6XGNsaWVudHNcYzYxOC5NYXNzR0lTXDIw
+MTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xSYXluaGFtXERlbGl2ZXJ5
+XFJheW5oYW1NZXRhZGF0YS5nZGJcTTI0NVRheFBhcjwvUHJvY2Vzcz4NCiAgICAgICAgPFByb2Nl
+c3MgVG9vbFNvdXJjZT0iQzpcUHJvZ3JhbSBGaWxlcyAoeDg2KVxBcmNHSVNcRGVza3RvcDEwLjBc
+QXJjVG9vbGJveFxUb29sYm94ZXNcRGF0YSBNYW5hZ2VtZW50IFRvb2xzLnRieFxDb3B5RmVhdHVy
+ZXMiIERhdGU9IjIwMTEwNTEwIiBUaW1lPSIwOTMzMDQiPkNvcHlGZWF0dXJlcyBROlxjbGllbnRz
+XGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNc
+UmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtTWV0YWRhdGEuZ2RiXE0yNDVUYXhQYXIgUTpcY2xpZW50
+c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25z
+XFJheW5oYW1cRGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhciAjIDAgMCAwPC9Qcm9jZXNz
+Pg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xE
+ZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xDb252ZXJzaW9uIFRvb2xzLnRieFxGZWF0
+dXJlQ2xhc3NUb0ZlYXR1cmVDbGFzcyIgRGF0ZT0iMjAxMTA2MDciIFRpbWU9IjEwNTQzNSI+RmVh
+dHVyZUNsYXNzVG9GZWF0dXJlQ2xhc3MgUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYw
+LkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXFJheW5oYW1cRGVsaXZlcnlcUmF5bmhh
+bS5nZGJcTTI0NVRheFBhciBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJ
+SUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxXb3JraW5nXEZpbmFsRGVsaXZlcnlX
+b3JrXE0yNDVSYXluaGFtX2x2bDMuZ2RiIFRheFBhciAjICJNQVBfUEFSX0lEICJNQVBfUEFSX0lE
+IiB0cnVlIHRydWUgZmFsc2UgMjYgVGV4dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1h
+c3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXFJheW5oYW1c
+RGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhcixNQVBfUEFSX0lELC0xLC0xO0xPQ19JRCAi
+TE9DX0lEIiB0cnVlIHRydWUgZmFsc2UgMTggVGV4dCAwIDAgLEZpcnN0LCMsUTpcY2xpZW50c1xj
+NjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXFJh
+eW5oYW1cRGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhcixMT0NfSUQsLTEsLTE7UE9MWV9U
+WVBFICJQT0xZX1RZUEUiIHRydWUgdHJ1ZSBmYWxzZSAxNSBUZXh0IDAgMCAsRmlyc3QsIyxROlxj
+bGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2Vc
+VG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtLmdkYlxNMjQ1VGF4UGFyLFBPTFlfVFlQRSwt
+MSwtMTtNQVBfTk8gIk1BUF9OTyIgdHJ1ZSB0cnVlIGZhbHNlIDQgVGV4dCAwIDAgLEZpcnN0LCMs
+UTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21wbGlh
+bmNlXFRvd25zXFJheW5oYW1cRGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhcixNQVBfTk8s
+LTEsLTE7U09VUkNFICJTT1VSQ0UiIHRydWUgdHJ1ZSBmYWxzZSAxNSBUZXh0IDAgMCAsRmlyc3Qs
+IyxROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBs
+aWFuY2VcVG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtLmdkYlxNMjQ1VGF4UGFyLFNPVVJD
+RSwtMSwtMTtQTEFOX0lEICJQTEFOX0lEIiB0cnVlIHRydWUgZmFsc2UgNDAgVGV4dCAwIDAgLEZp
+cnN0LCMsUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9D
+b21wbGlhbmNlXFRvd25zXFJheW5oYW1cRGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhcixQ
+TEFOX0lELC0xLC0xO0xBU1RfRURJVCAiTEFTVF9FRElUIiB0cnVlIHRydWUgZmFsc2UgNCBMb25n
+IDAgMCAsRmlyc3QsIyxROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2ZWxJSUlf
+UGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtLmdkYlxNMjQ1
+VGF4UGFyLExBU1RfRURJVCwtMSwtMTtCTkRfQ0hLICJCTkRfQ0hLIiB0cnVlIHRydWUgZmFsc2Ug
+MiBUZXh0IDAgMCAsRmlyc3QsIyxROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAyNjAuTGV2
+ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXluaGFtLmdk
+YlxNMjQ1VGF4UGFyLEJORF9DSEssLTEsLTE7Tk9fTUFUQ0ggIk5PX01BVENIIiB0cnVlIHRydWUg
+ZmFsc2UgMSBUZXh0IDAgMCAsRmlyc3QsIyxROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEwLTAy
+NjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxEZWxpdmVyeVxSYXlu
+aGFtLmdkYlxNMjQ1VGF4UGFyLE5PX01BVENILC0xLC0xO1NoYXBlX0xlbmd0aCAiU2hhcGVfTGVu
+Z3RoIiBmYWxzZSB0cnVlIHRydWUgOCBEb3VibGUgMCAwICxGaXJzdCwjLFE6XGNsaWVudHNcYzYx
+OC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xSYXlu
+aGFtXERlbGl2ZXJ5XFJheW5oYW0uZ2RiXE0yNDVUYXhQYXIsU2hhcGVfTGVuZ3RoLC0xLC0xO1No
+YXBlX0FyZWEgIlNoYXBlX0FyZWEiIGZhbHNlIHRydWUgdHJ1ZSA4IERvdWJsZSAwIDAgLEZpcnN0
+LCMsUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYwLkxldmVsSUlJX1BhcmNlbF9Db21w
+bGlhbmNlXFRvd25zXFJheW5oYW1cRGVsaXZlcnlcUmF5bmhhbS5nZGJcTTI0NVRheFBhcixTaGFw
+ZV9BcmVhLC0xLC0xIiAjPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJD
+OlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xE
+YXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XERlbGV0ZUZlYXR1cmVzIiBEYXRlPSIyMDExMDYwNyIg
+VGltZT0iMTA1NTE5Ij5EZWxldGVGZWF0dXJlcyBROlxjbGllbnRzXGM2MTguTWFzc0dJU1wyMDEw
+LTAyNjAuTGV2ZWxJSUlfUGFyY2VsX0NvbXBsaWFuY2VcVG93bnNcUmF5bmhhbVxXb3JraW5nXEZp
+bmFsRGVsaXZlcnlXb3JrXE0yNDVSYXluaGFtX2x2bDMuZ2RiXFRheFBhcjwvUHJvY2Vzcz4NCiAg
+ICAgICAgPFByb2Nlc3MgVG9vbFNvdXJjZT0iQzpcUHJvZ3JhbSBGaWxlc1xBcmNHSVNcRGVza3Rv
+cDEwLjBcQXJjVG9vbGJveFxUb29sYm94ZXNcRGF0YSBNYW5hZ2VtZW50IFRvb2xzLnRieFxDYWxj
+dWxhdGVGaWVsZCIgRGF0ZT0iMjAxMTA2MDciIFRpbWU9IjExMDAzNSI+Q2FsY3VsYXRlRmllbGQg
+VGF4UGFyIEJORF9DSEsgTlVMTCBWQiAjPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29s
+U291cmNlPSJDOlxQcm9ncmFtIEZpbGVzXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRv
+b2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XFByb2plY3QiIERhdGU9IjIwMTEwNjA3
+IiBUaW1lPSIxMTE2MTQiPlByb2plY3QgUTpcY2xpZW50c1xjNjE4Lk1hc3NHSVNcMjAxMC0wMjYw
+LkxldmVsSUlJX1BhcmNlbF9Db21wbGlhbmNlXFRvd25zXFJheW5oYW1cV29ya2luZ1xGaW5hbERl
+bGl2ZXJ5V29ya1xNMjQ1UmF5bmhhbV9sdmwzLmdkYlxNMjQ1VGF4UGFyIFE6XGNsaWVudHNcYzYx
+OC5NYXNzR0lTXDIwMTAtMDI2MC5MZXZlbElJSV9QYXJjZWxfQ29tcGxpYW5jZVxUb3duc1xSYXlu
+aGFtXFdvcmtpbmdcRmluYWxEZWxpdmVyeVdvcmtcTTI0NVJheW5oYW1fbHZsMy5nZGJcTTI0NVRh
+eFBhcl9Qcm9qZWN0IFBST0pDU1snTkFEXzE5ODNfU3RhdGVQbGFuZV9NYXNzYWNodXNldHRzX01h
+aW5sYW5kX0ZJUFNfMjAwMV9GZWV0JyxHRU9HQ1NbJ0dDU19Ob3J0aF9BbWVyaWNhbl8xOTgzJyxE
+QVRVTVsnRF9Ob3J0aF9BbWVyaWNhbl8xOTgzJyxTUEhFUk9JRFsnR1JTXzE5ODAnLDYzNzgxMzcu
+MCwyOTguMjU3MjIyMTAxXV0sUFJJTUVNWydHcmVlbndpY2gnLDAuMF0sVU5JVFsnRGVncmVlJyww
+LjAxNzQ1MzI5MjUxOTk0MzNdXSxQUk9KRUNUSU9OWydMYW1iZXJ0X0NvbmZvcm1hbF9Db25pYydd
+LFBBUkFNRVRFUlsnRmFsc2VfRWFzdGluZycsNjU2MTY2LjY2NjY2NjY2NjVdLFBBUkFNRVRFUlsn
+RmFsc2VfTm9ydGhpbmcnLDI0NjA2MjUuMF0sUEFSQU1FVEVSWydDZW50cmFsX01lcmlkaWFuJywt
+NzEuNV0sUEFSQU1FVEVSWydTdGFuZGFyZF9QYXJhbGxlbF8xJyw0MS43MTY2NjY2NjY2NjY2N10s
+UEFSQU1FVEVSWydTdGFuZGFyZF9QYXJhbGxlbF8yJyw0Mi42ODMzMzMzMzMzMzMzM10sUEFSQU1F
+VEVSWydMYXRpdHVkZV9PZl9PcmlnaW4nLDQxLjBdLFVOSVRbJ0Zvb3RfVVMnLDAuMzA0ODAwNjA5
+NjAxMjE5Ml1dICMgUFJPSkNTWydOQURfMTk4M19TdGF0ZVBsYW5lX01hc3NhY2h1c2V0dHNfTWFp
+bmxhbmRfRklQU18yMDAxJyxHRU9HQ1NbJ0dDU19Ob3J0aF9BbWVyaWNhbl8xOTgzJyxEQVRVTVsn
+RF9Ob3J0aF9BbWVyaWNhbl8xOTgzJyxTUEhFUk9JRFsnR1JTXzE5ODAnLDYzNzgxMzcuMCwyOTgu
+MjU3MjIyMTAxXV0sUFJJTUVNWydHcmVlbndpY2gnLDAuMF0sVU5JVFsnRGVncmVlJywwLjAxNzQ1
+MzI5MjUxOTk0MzNdXSxQUk9KRUNUSU9OWydMYW1iZXJ0X0NvbmZvcm1hbF9Db25pYyddLFBBUkFN
+RVRFUlsnRmFsc2VfRWFzdGluZycsMjAwMDAwLjBdLFBBUkFNRVRFUlsnRmFsc2VfTm9ydGhpbmcn
+LDc1MDAwMC4wXSxQQVJBTUVURVJbJ0NlbnRyYWxfTWVyaWRpYW4nLC03MS41XSxQQVJBTUVURVJb
+J1N0YW5kYXJkX1BhcmFsbGVsXzEnLDQxLjcxNjY2NjY2NjY2NjY3XSxQQVJBTUVURVJbJ1N0YW5k
+YXJkX1BhcmFsbGVsXzInLDQyLjY4MzMzMzMzMzMzMzMzXSxQQVJBTUVURVJbJ0xhdGl0dWRlX09m
+X09yaWdpbicsNDEuMF0sVU5JVFsnTWV0ZXInLDEuMF1dPC9Qcm9jZXNzPg0KICAgICAgICA8UHJv
+Y2VzcyBUb29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzICh4ODYpXEFyY0dJU1xEZXNrdG9wMTAu
+MFxBcmNUb29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XENhbGN1bGF0
+ZUZpZWxkIiBEYXRlPSIyMDExMTExNyIgVGltZT0iMTU0NDI0Ij5DYWxjdWxhdGVGaWVsZCBNMjQ1
+VGF4UGFyIFNPVVJDRSAiQVNTRVNTIiBWQiAjPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBU
+b29sU291cmNlPSJDOlxQcm9ncmFtIEZpbGVzICh4ODYpXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNU
+b29sYm94XFRvb2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XENhbGN1bGF0ZUZpZWxk
+IiBEYXRlPSIyMDExMTExNyIgVGltZT0iMTU0NDQ2Ij5DYWxjdWxhdGVGaWVsZCBNMjQ1VGF4UGFy
+IFBMQU5fSUQgbnVsbCBWQiAjPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNl
+PSJDOlxQcm9ncmFtIEZpbGVzICh4ODYpXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRv
+b2xib3hlc1xEYXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XENhbGN1bGF0ZUZpZWxkIiBEYXRlPSIy
+MDExMTExNyIgVGltZT0iMTU0NTA1Ij5DYWxjdWxhdGVGaWVsZCBNMjQ1VGF4UGFyIEJORF9DSEsg
+Ik9LIiBWQiAjPC9Qcm9jZXNzPg0KICAgICAgICA8UHJvY2VzcyBUb29sU291cmNlPSJDOlxQcm9n
+cmFtIEZpbGVzICh4ODYpXEFyY0dJU1xEZXNrdG9wMTAuMFxBcmNUb29sYm94XFRvb2xib3hlc1xE
+YXRhIE1hbmFnZW1lbnQgVG9vbHMudGJ4XENhbGN1bGF0ZUZpZWxkIiBEYXRlPSIyMDExMTExNyIg
+VGltZT0iMTU0NTI4Ij5DYWxjdWxhdGVGaWVsZCBNMjQ1VGF4UGFyIE1BUF9QQVJfSUQgbnVsbCBW
+QiAjPC9Qcm9jZXNzPg0KICAgICAgPC9saW5lYWdlPg0KICAgIDwvRGF0YVByb3BlcnRpZXM+DQog
+ICAgPEFyY0dJU1Byb2ZpbGU+TkFQPC9BcmNHSVNQcm9maWxlPg0KICAgIDxTeW5jRGF0ZT4yMDEx
+MDYwNzwvU3luY0RhdGU+DQogICAgPFN5bmNUaW1lPjEwNTQzMjAwPC9TeW5jVGltZT4NCiAgICA8
+TW9kRGF0ZT4yMDExMDYwNzwvTW9kRGF0ZT4NCiAgICA8TW9kVGltZT4xMDU0MzIwMDwvTW9kVGlt
+ZT4NCiAgPC9Fc3JpPg0KICA8ZGF0YUlkSW5mbz4NCiAgICA8aWRQdXJwPihSRVFVSVJFRCk8L2lk
+UHVycD4NCiAgICA8aWRBYnM+Jmx0O0RJViBTVFlMRT0idGV4dC1hbGlnbjpMZWZ0OyImZ3Q7Jmx0
+O0RJViZndDsmbHQ7RElWJmd0OyZsdDtQJmd0OyZsdDtTUEFOJmd0OyhSRVFVSVJFRCkmbHQ7L1NQ
+QU4mZ3Q7Jmx0Oy9QJmd0OyZsdDsvRElWJmd0OyZsdDsvRElWJmd0OyZsdDsvRElWJmd0OzwvaWRB
+YnM+DQogICAgPGlkQ3JlZGl0PihSRVFVSVJFRCk8L2lkQ3JlZGl0Pg0KICAgIDxpZENpdGF0aW9u
+Pg0KICAgICAgPHJlc1RpdGxlPihSRVFVSVJFRCk8L3Jlc1RpdGxlPg0KICAgICAgPHByZXNGb3Jt
+Pg0KICAgICAgICA8UHJlc0Zvcm1DZCB2YWx1ZT0iMDA1IiAvPg0KICAgICAgPC9wcmVzRm9ybT4N
+CiAgICA8L2lkQ2l0YXRpb24+DQogICAgPHNlYXJjaEtleXM+DQogICAgICA8a2V5d29yZD5MZXZl
+bCAzPC9rZXl3b3JkPg0KICAgICAgPGtleXdvcmQ+RGlnaXRhbCBUYXggUGFyY2Vsczwva2V5d29y
+ZD4NCiAgICAgIDxrZXl3b3JkPlJPVyAoUmlnaHQgT2YgV2F5KTwva2V5d29yZD4NCiAgICAgIDxr
+ZXl3b3JkPldhdGVyPC9rZXl3b3JkPg0KICAgICAgPGtleXdvcmQ+TWFzc0dJUzwva2V5d29yZD4N
+CiAgICA8L3NlYXJjaEtleXM+DQogICAgPHJlc0NvbnN0Pg0KICAgICAgPENvbnN0cz4NCiAgICAg
+ICAgPHVzZUxpbWl0PihSRVFVSVJFRCk8L3VzZUxpbWl0Pg0KICAgICAgPC9Db25zdHM+DQogICAg
+PC9yZXNDb25zdD4NCiAgICA8ZGF0YUxhbmc+DQogICAgICA8bGFuZ3VhZ2VDb2RlIHZhbHVlPSJl
+biIgY291bnRyeT0iVVMiIC8+DQogICAgPC9kYXRhTGFuZz4NCiAgICA8ZGVzY0tleXM+DQogICAg
+ICA8dGhlc2FOYW1lIHV1aWRyZWY9IjcyM2Y2OTk4LTA1OGUtMTFkYy04MzE0LTA4MDAyMDBjOWE2
+NiIgLz4NCiAgICA8L2Rlc2NLZXlzPg0KICAgIDxzcGF0UnBUeXBlPg0KICAgICAgPFNwYXRSZXBU
+eXBDZCB2YWx1ZT0iMDAxIiAvPg0KICAgIDwvc3BhdFJwVHlwZT4NCiAgICA8ZGF0YUV4dD4NCiAg
+ICAgIDxnZW9FbGU+DQogICAgICAgIDxHZW9CbmRCb3ggZXNyaUV4dGVudFR5cGU9InNlYXJjaCIg
+Lz4NCiAgICAgIDwvZ2VvRWxlPg0KICAgIDwvZGF0YUV4dD4NCiAgPC9kYXRhSWRJbmZvPg0KICA8
+aWRpbmZvPg0KICAgIDxkZXNjcmlwdD4NCiAgICAgIDxhYnN0cmFjdD5Bc3Nlc3NvcidzIHBhcmNl
+bCBkYXRhIGZvciB0b3duIG9mIFJheW5oYW0sIE1BLiBEZXZlbG9wZWQgZnJvbSBleGlzdGluZyBk
+aWdpdGFsIGRhdGEuPC9hYnN0cmFjdD4NCiAgICAgIDxsYW5nZGF0YT5FbmdsaXNoPC9sYW5nZGF0
+YT4NCiAgICAgIDxzdXBwbGluZj4oT1BUSU9OQUwpPC9zdXBwbGluZj4NCiAgICA8L2Rlc2NyaXB0
+Pg0KICAgIDxhY2Njb25zdD5UaGlzIGRpZ2l0YWwgcGFyY2VsIGRhdGEgbGF5ZXIgaXMgY29uc2lk
+ZXJlZCB0byBiZSBpbiB0aGUgcHVibGljIGRvbWFpbiBhbmQgd2lsbCBiZWNvbWUgYWNjZXNzaWJs
+ZSBmb3IgZG93bmxvYWQgYW5kIGRpc3BsYXkgZnJvbSB0aGUgTWFzc0dJUyB3ZWJzaXRlOiAgaHR0
+cDovL3d3dy5tYXNzLmdvdi9tZ2lzPC9hY2Njb25zdD4NCiAgICA8dXNlY29uc3Q+VGhpcyBkYXRh
+IG1heSBiZSBhcHByb3ByaWF0ZSBmb3IgcGxhbm5pbmcgcHVycG9zZXMuICBJdCBzaG91bGQgbm90
+IGJlIHV0aWxpemVkIHdoZXJlIGxlZ2FsIGFuZCBzdXJ2ZXllZCBwcm9wZXJ0eSBib3VuZGFyaWVz
+IGFyZSByZXF1aXJlZC48L3VzZWNvbnN0Pg0KICAgIDxuYXRpdmU+VGhpcyBwYXJjZWwgZGF0YSBp
+cyBzdWJtaXR0ZWQgdG8gTWFzc0dJUyBpbiBhIGZpbGUgZ2VvZGF0YWJhc2UuICBJdCB3aWxsIGJl
+IGluY29ycG9yYXRlZCBpbnRvIHRoZSBNYXNzR0lTIFNERSBkYXRhYmFzZSwgYW5kIG1heSBiZSBj
+b252ZXJ0ZWQgaW50byBvdGhlciBHSVMgZGF0YSB0eXBlcyBmb3IgZnV0dXJlIGRpc3RyaWJ1dGlv
+bi4gPC9uYXRpdmU+DQogICAgPGRhdGFjcmVkPkFwcGxpZWQgR2VvZ3JhcGhpY3MsIEJvc3Rvbiwg
+TUE7IENHSVMgTWFwcGluZywgTWFyaW9uLCBNQTsgVG93biBvZiBSYXluaGFtIEFzc2Vzc29yJ3Mg
+T2ZmaWNlLCBSYXluaGFtLCBNQS48L2RhdGFjcmVkPg0KICAgIDxuYXR2Zm9ybT5GaWxlIGdlb2Rh
+dGFiYXNlIGZlYXR1cmUgY2xhc3M8L25hdHZmb3JtPg0KICAgIDxwdGNvbnRhYz4NCiAgICAgIDxj
+bnRpbmZvPg0KICAgICAgICA8Y250cGVycD4NCiAgICAgICAgICA8Y250cGVyPlByaXlhIFNhbmth
+bGlhPC9jbnRwZXI+DQogICAgICAgICAgPGNudG9yZz5BcHBsaWVkIEdlb2dyYXBoaWNzLCBJbmMu
+PC9jbnRvcmc+DQogICAgICAgIDwvY250cGVycD4NCiAgICAgICAgPGNudHBvcz5Qcm9qZWN0IE1h
+bmFnZXI8L2NudHBvcz4NCiAgICAgICAgPGNudGFkZHI+DQogICAgICAgICAgPGFkZHJlc3M+MjQg
+U2Nob29sIFN0LiwgU3VpdGUgNTAwPC9hZGRyZXNzPg0KICAgICAgICAgIDxjaXR5PkJvc3Rvbjwv
+Y2l0eT4NCiAgICAgICAgICA8c3RhdGU+TUE8L3N0YXRlPg0KICAgICAgICAgIDxwb3N0YWw+MDIx
+MDg8L3Bvc3RhbD4NCiAgICAgICAgICA8Y291bnRyeT5VU0E8L2NvdW50cnk+DQogICAgICAgIDwv
+Y250YWRkcj4NCiAgICAgICAgPGNudHZvaWNlPjYxNy00NDctMjQwMDwvY250dm9pY2U+DQogICAg
+ICAgIDxjbnR0ZGQ+KE9QVElPTkFMKTwvY250dGRkPg0KICAgICAgICA8Y250ZmF4PihPUFRJT05B
+TCk8L2NudGZheD4NCiAgICAgICAgPGNudGVtYWlsPnBzYW5rYWxpYUBhcHBnZW8uY29tPC9jbnRl
+bWFpbD4NCiAgICAgICAgPGhvdXJzPihPUFRJT05BTCk8L2hvdXJzPg0KICAgICAgICA8Y250aW5z
+dD4oT1BUSU9OQUwpPC9jbnRpbnN0Pg0KICAgICAgPC9jbnRpbmZvPg0KICAgIDwvcHRjb250YWM+
+DQogICAgPGNpdGF0aW9uPg0KICAgICAgPGNpdGVpbmZvPg0KICAgICAgICA8dGl0bGU+RGF0YSBm
+b3IgdG93biBvZiBSYXluaGFtLCBNQSwgY29tcGx5aW5nIHdpdGggTGV2ZWwgMyBvZiBNYXNzR0lT
+IGRpZ2l0YWwgcGFyY2VsIHN0YW5kYXJkPC90aXRsZT4NCiAgICAgICAgPG9yaWdpbj5BcHBsaWVk
+IEdlb2dyYXBoaWNzLCBJbmMuLCBCb3N0b24sIE1BPC9vcmlnaW4+DQogICAgICAgIDxvcmlnaW4+
+VG93biBvZiBSYXluaGFtLCBNQSwgQXNzZXNzb3IncyBPZmZpY2U8L29yaWdpbj4NCiAgICAgICAg
+PHB1YmRhdGU+VW5rbm93bjwvcHViZGF0ZT4NCiAgICAgICAgPHB1YnRpbWU+VW5rbm93bjwvcHVi
+dGltZT4NCiAgICAgIDwvY2l0ZWluZm8+DQogICAgPC9jaXRhdGlvbj4NCiAgICA8a2V5d29yZHM+
+DQogICAgICA8dGhlbWU+DQogICAgICAgIDx0aGVtZWtleT5QYXJjZWxzPC90aGVtZWtleT4NCiAg
+ICAgICAgPHRoZW1la2V5PlRheDwvdGhlbWVrZXk+DQogICAgICAgIDx0aGVtZWtleT5MZXZlbCAz
+PC90aGVtZWtleT4NCiAgICAgICAgPHRoZW1la2V5Pk1hc3NHSVM8L3RoZW1la2V5Pg0KICAgICAg
+ICA8dGhlbWVrZXk+Uk9XPC90aGVtZWtleT4NCiAgICAgICAgPHRoZW1la2V5PlJpZ2h0IE9mIFdh
+eTwvdGhlbWVrZXk+DQogICAgICAgIDx0aGVtZWtleT5XYXRlcjwvdGhlbWVrZXk+DQogICAgICAg
+IDx0aGVtZWtleT5Qcm9wZXJ0eTwvdGhlbWVrZXk+DQogICAgICA8L3RoZW1lPg0KICAgICAgPHBs
+YWNlPg0KICAgICAgICA8cGxhY2VrZXk+UmF5bmhhbTwvcGxhY2VrZXk+DQogICAgICAgIDxwbGFj
+ZWtleT5NYXNzYWNodXNldHRzPC9wbGFjZWtleT4NCiAgICAgIDwvcGxhY2U+DQogICAgPC9rZXl3
+b3Jkcz4NCiAgICA8dGltZXBlcmQ+DQogICAgICA8Y3VycmVudD5ncm91bmQgY29uZGl0aW9uPC9j
+dXJyZW50Pg0KICAgICAgPHRpbWVpbmZvPg0KICAgICAgICA8c25nZGF0ZT4NCiAgICAgICAgICA8
+Y2FsZGF0ZT5BcHJpbCAxMywgMjAxMTwvY2FsZGF0ZT4NCiAgICAgICAgPC9zbmdkYXRlPg0KICAg
+ICAgPC90aW1laW5mbz4NCiAgICA8L3RpbWVwZXJkPg0KICAgIDxzdGF0dXM+DQogICAgICA8cHJv
+Z3Jlc3M+Q29tcGxldGU8L3Byb2dyZXNzPg0KICAgICAgPHVwZGF0ZT5Bbm51YWxseTwvdXBkYXRl
+Pg0KICAgIDwvc3RhdHVzPg0KICAgIDxzcGRvbT4NCiAgICAgIDxib3VuZGluZz4NCiAgICAgICAg
+PHdlc3RiYz43OTQ3MTcgZnQ8L3dlc3RiYz4NCiAgICAgICAgPGVhc3RiYz43NjY5ODEgZnQ8L2Vh
+c3RiYz4NCiAgICAgICAgPG5vcnRoYmM+MjgyMTk1NSBmdDwvbm9ydGhiYz4NCiAgICAgICAgPHNv
+dXRoYmM+Mjc4Mjc5MCBmdDwvc291dGhiYz4NCiAgICAgIDwvYm91bmRpbmc+DQogICAgPC9zcGRv
+bT4NCiAgPC9pZGluZm8+DQogIDxkYXRhcXVhbD4NCiAgICA8bG9naWM+VGhpcyBwYXJjZWwgbGF5
+ZXIgY29udGFpbnMgZGlzY3JldGUsIG5vbi1vdmVybGFwcGluZyBwb2x5Z29ucyBmb3IgZWFjaCBw
+cm9wZXJ0eS4gIEFkamFjZW50IHBvbHlnb25zIHdpdGggY29tbW9uIG93bmVyc2hpcCBhbmQgYSBz
+aW5nbGUgdGF4IHJlY29yZCBoYXZlIGJlZW4gcmV0YWluZWQgaW4gdGhlICJPdGhMZWciIGxheWVy
+IHRoYXQgYWNjb21wYW5pZXMgdGhpcyBUYXhQYXIgbGF5ZXIsIGFuZCBkaXNzb2x2ZWQgaW50byBz
+aW5nbGUgcGFyY2VscyBpbiB0aGlzIFRheFBhciBsYXllci4gU29tZSBub24tYWRqYWNlbnQgcGFy
+Y2VscyBtYXkgYmUgcmVwcmVzZW50ZWQgYnkgbXVsdGktcGFydCBwb2x5Z29ucyB3aGVyZSB0aGV5
+IHNoYXJlIGNvbW1vbiBvd25lcnNoaXAgYW5kIGEgc2luZ2xlIHRheCByZWNvcmQuICBQdWJsaWMg
+cmlnaHQgb2Ygd2F5cyBleGlzdCBhcyBwb2x5Z29ucywgbm90IG51bGwgc3BhY2UuICBMaW5ld29y
+ayBhc3NvY2lhdGVkIHdpdGggcHJpdmF0ZSBST1dzIGFyZSByZXRhaW5lZCBpbiB0aGUgIk90aExl
+ZyIgbGF5ZXIuICBXYXRlciBwb2x5Z29ucyBhbHNvIHJlcHJlc2VudGluZyBwYXJjZWwgYm91bmRh
+cmllcyBoYXZlIGJlZW4gcmV0YWluZWQgaW4gdGhpcyBUYXhQYXIgbGF5ZXIuICBBZGRpdGlvbmFs
+IHdhdGVyIGZlYXR1cmVzIHRoYXQgYXJlIG5vdCBjb25zaWRlcmVkIHBhcmNlbCBib3VuZGFyaWVz
+IG1heSBoYXZlIGJlZW4gcGxhY2VkIGluIHRoZSAiTWlzYyIgbGF5ZXIgdGhhdCBhY2NvbXBhbmll
+cyB0aGlzIFRheFBhciBsYXllci4gIEVhc2VtZW50cyBhbmQgb3RoZXIgc2ltaWxhciBub24tZmVl
+IHRheGFibGUgYm91bmRhcmllcyBleGlzdCBpbiB0aGUgJ090aExlZyIgbGF5ZXIsIG5vdCB0aGUg
+VGF4UGFyIGxheWVyLjwvbG9naWM+DQogICAgPGF0dHJhY2M+DQogICAgICA8YXR0cmFjY3I+VG90
+YWwgbnVtYmVyIG9mIHBhcmNlbHMgPSA1MDI1DQpUb3RhbCBudW1iZXIgb2YgcmVjb3JkcyBpbiBh
+c3Nlc3NvciB0YWJsZSA9IDUzNTINCg0KVG90YWwgcmVjb3JkcyB3aGVyZSBCTERHX1ZBTCBvciBP
+VEhFUl9WQUwgJmd0OyAkMTAwMDogNDM5NA0KT2YgdGhlc2UsIHRvdGFsIHJlY29yZHMgd2l0aCB2
+YWxpZCBMT0NfSUQgdGhhdCBqb2luIHRvIHRheCBwYXJjZWxzOiA0Mzg3DQpNYXRjaCByYXRlIGZv
+ciBwYXJjZWxzIHdoZXJlIEJMREdfVkFMIG9yIE9USEVSX1ZBTCAmZ3Q7ICQxMDAwOiA5OS44IHBj
+dA0KDQpUb3RhbCByZWNvcmRzIHdoZXJlIEJMREdfVkFMIG9yIE9USEVSX1ZBTCAmbHQ7ICQxMDAw
+OiA5NTgNCk9mIHRoZXNlLCB0b3RhbCByZWNvcmRzIHdpdGggdmFsaWQgTE9DX0lEIGpvaW4gdG8g
+dGF4IHBhcmNlbHM6IDkzMw0KTWF0Y2ggcmF0ZSBmb3IgcGFyY2VscyB3aGVyZSBCTERHX1ZBTCBv
+ciBPVEhFUl9WQUwgJmx0Oz0gJDEwMDA6IDk3LjQgcGN0DQoNClRvdGFsIG51bWJlciBvZiBwYXJj
+ZWxzIHdpdGggIlRBWCIgb3IgIkZFRSIgUE9MWV9UWVBFID0gNDk5Mg0KT2YgdGhlc2UsIDQ5NDMg
+am9pbiB0byBhc3Nlc3NvciBsaXN0Lg0KTWF0Y2ggcmF0ZSBmb3IgIkZFRSIvIlRBWCIgcGFyY2Vs
+cyB0byBhc3Nlc3NvciB0YWJsZTogOTkuMCBwY3QNCjwvYXR0cmFjY3I+DQogICAgPC9hdHRyYWNj
+Pg0KICAgIDxwb3NhY2M+DQogICAgICA8aG9yaXpwYT4NCiAgICAgICAgPGhvcml6cGFyPkRhdGEg
+Y29tcGlsZWQgb3IgcmV2aWV3ZWQgZm9yIGhvcml6b250YWwgYWNjdXJhY3kgb3ZlIHRoZSBNYXNz
+R0lTIGNvbG9yIG9ydGhvcyBmcm9tIDIwMDgvMjAwOTsgdGhlc2Ugb3J0aG9zIGFyZSBrbm93biB0
+byBiZSArLy0gMTAnIGhvcml6b250YWw7IGhvd2V2ZXIsIHRoaXMgZGF0YSBzZXQgY2Fubm90IGJl
+IHVzZWQgdG8gcmVhY2ggYXV0aG9yaXRhdGl2ZSBjb25jbHVzaW9ucyBhYm91dCB0aGUgaG9yaXpv
+bnRhbCBhY2N1cmFjeSBvZiB0aGUgYm91bmRhcmllcyBkZXBpY3RlZC4gIFRoYXQgd29yayByZXF1
+aXJlcyBhIGxpY2Vuc2VkIGxhbmQgc3VydmV5b3IuPC9ob3JpenBhcj4NCiAgICAgIDwvaG9yaXpw
+YT4NCiAgICA8L3Bvc2FjYz4NCiAgICA8bGluZWFnZT4NCiAgICAgIDxzcmNpbmZvPg0KICAgICAg
+ICA8c3Jjc2NhbGU+VW5rbm93bjwvc3Jjc2NhbGU+DQogICAgICAgIDx0eXBlc3JjPkVTUkkgQXJj
+R0lTIHBlcnNvbmFsIGdlb2RhdGFiYXNlPC90eXBlc3JjPg0KICAgICAgICA8c3JjdGltZT4NCiAg
+ICAgICAgICA8dGltZWluZm8+DQogICAgICAgICAgICA8c25nZGF0ZT4NCiAgICAgICAgICAgICAg
+PGNhbGRhdGU+TWFyY2ggMjAxMTwvY2FsZGF0ZT4NCiAgICAgICAgICAgIDwvc25nZGF0ZT4NCiAg
+ICAgICAgICA8L3RpbWVpbmZvPg0KICAgICAgICAgIDxzcmNjdXJyPmdyb3VuZCBjb25kaXRpb248
+L3NyY2N1cnI+DQogICAgICAgIDwvc3JjdGltZT4NCiAgICAgICAgPHNyY2NpdGVhPk1hc3NHSVMg
+TGV2ZWwgSUkgZGlnaXRhbCBwYXJjZWwgcG9seWdvbnM8L3NyY2NpdGVhPg0KICAgICAgICA8c3Jj
+Y29udHI+U291cmNlIGRhdGEgaXMgTWFzc0dJUyBMZXZlbCBJSS1jb21wbGlhbnQgZGlnaXRhbCBw
+YXJjZWwgZmlsZSwgaW4gRVNSSSBwZXJzb25hbCBnZW9kYXRhYmFzZSBmb3JtYXQuIDwvc3JjY29u
+dHI+DQogICAgICA8L3NyY2luZm8+DQogICAgICA8cHJvY3N0ZXA+DQogICAgICAgIDxwcm9jZGVz
+Yz5FeGlzdGluZyBMZXZlbCBJSSBwYXJjZWwgZGF0YSB3YXMgY29udmVydGVkIHRvIE1hc3NHSVMg
+TGV2ZWwgMyB0ZW1wbGF0ZSBnZW9kYXRhYmFzZSBhbmQgYWRkaXRpb25hbCBkYXRhIGxheWVycyBh
+bmQgdGFibGVzIHdlcmUgYWRkZWQuPC9wcm9jZGVzYz4NCiAgICAgICAgPHByb2Nzdj5FU1JJIEFy
+Y0dJUyAxMC4wPC9wcm9jc3Y+DQogICAgICA8L3Byb2NzdGVwPg0KICAgICAgPHByb2NzdGVwPg0K
+ICAgICAgICA8cHJvY2Rlc2M+U3BhdGlhbCBhY2N1cmFjeSBvZiBkYXRhIHdhcyB2ZXJpZmllZCB1
+c2luZyB0aGUgcGFyY2VsIHN0YW5kYXJkIGd1aWRlbGluZXM7IHRvd24gYm91bmRhcnkgd2FzIHZl
+cmlmaWVkIHRvIGJlIGNvaW5jaWRlbnQgd2l0aCBNYXNzR0lTIFRvd24gQm91bmRhcnkgbGF5ZXIu
+ICBQb2x5Z29uIHRvcG9sb2d5IHdhcyB1cGRhdGVkIGFuZCB2YWxpZGF0ZWQuPC9wcm9jZGVzYz4N
+CiAgICAgICAgPHByb2Nzdj5FU1JJIEFyY0dJUyAxMC4wPC9wcm9jc3Y+DQogICAgICA8L3Byb2Nz
+dGVwPg0KICAgICAgPHByb2NzdGVwPg0KICAgICAgICA8cHJvY3N2PkVTUkkgQXJjR0lTIDEwLjA8
+L3Byb2Nzdj4NCiAgICAgICAgPHByb2NkZXNjPk11bHRpLXBhcnQgcG9seWdvbnMgd2VyZSBjcmVh
+dGVkIHdoZXJlIG5lY2Vzc2FyeTsgaW50ZXJuYWwgcG9seWdvbiBib3VuZGFyaWVzIHdlcmUgZGlz
+c29sdmVkIHdoZXJlIG5lY2Vzc2FyeTsgcG9seWdvbnMgcmVwcmVzZW50aW5nIGxlZ2FsIGJvdW5k
+YXJpZXMgc3VjaCBhcyBlYXNlbWVudHMgb3IgcHJpdmF0ZSByaWdodC1vZi13YXlzIHdlcmUgY3Jl
+YXRlZC4gIExPQ19JRCB3YXMgdXBkYXRlZDwvcHJvY2Rlc2M+DQogICAgICA8L3Byb2NzdGVwPg0K
+ICAgICAgPHByb2NzdGVwPg0KICAgICAgICA8cHJvY3N2PkVTUkkgQXJjR0lTIDEwLjA8L3Byb2Nz
+dj4NCiAgICAgICAgPHByb2NkZXNjPlVwZGF0ZXMgd2VyZSBtYWRlIHRvIHRoZSBMZXZlbCBJSSBk
+YXRhIHRvIHJlZmxlY3QgdGhlIG1vc3QgY3VycmVudCB2ZXJzaW9uIG9mIHRoZSB0b3duJ3MgdGF4
+IG1hcHMgYXMgb2YgTWFyY2ggMjAxMSwgZm9yIHRoZSB0b3duJ3MgRlkgMjAxMi4gIENBTUEgZGF0
+YSB3YXMgbWF0Y2hlZCBhZ2FpbnN0IHBhcmNlbCBkYXRhIHRvIHByb2R1Y2UgYSBtaXNtYXRjaCBy
+ZXBvcnQgd2hpY2ggd2FzIHJlY29uY2lsZWQgd2l0aCB0aGUgaGVscCBvZiB0aGUgdG93biBBc3Nl
+c3Nvci4gIEZpbmFsIFFBUUMgdG9vbHMgd2VyZSBydW4uPC9wcm9jZGVzYz4NCiAgICAgIDwvcHJv
+Y3N0ZXA+DQogICAgPC9saW5lYWdlPg0KICA8L2RhdGFxdWFsPg0KICA8c3Bkb2luZm8+DQogICAg
+PGluZHNwcmVmPlBhcmNlbCBJRCwgTE9DX0lEPC9pbmRzcHJlZj4NCiAgICA8ZGlyZWN0PlZlY3Rv
+cjwvZGlyZWN0Pg0KICAgIDxwdHZjdGluZj4NCiAgICAgIDxlc3JpdGVybSBOYW1lPSJUYXhQYXIi
+IC8+DQogICAgPC9wdHZjdGluZj4NCiAgPC9zcGRvaW5mbz4NCiAgPG1kTGFuZz4NCiAgICA8bGFu
+Z3VhZ2VDb2RlIHZhbHVlPSJlbiIgLz4NCiAgPC9tZExhbmc+DQogIDxtZEhyTHY+DQogICAgPFNj
+b3BlQ2QgdmFsdWU9IjAwNSIgLz4NCiAgPC9tZEhyTHY+DQogIDxyZWZTeXNJbmZvPg0KICAgIDxS
+ZWZTeXN0ZW0+DQogICAgICA8cmVmU3lzSUQ+DQogICAgICAgIDxpZGVudENvZGUgY29kZT0iMjY5
+ODYiIC8+DQogICAgICA8L3JlZlN5c0lEPg0KICAgIDwvUmVmU3lzdGVtPg0KICA8L3JlZlN5c0lu
+Zm8+DQogIDxzcGF0UmVwSW5mbz4NCiAgICA8VmVjdFNwYXRSZXA+DQogICAgICA8dG9wTHZsPg0K
+ICAgICAgICA8VG9wb0xldkNkIHZhbHVlPSIwMDEiIC8+DQogICAgICA8L3RvcEx2bD4NCiAgICAg
+IDxnZW9tZXRPYmpzPg0KICAgICAgICA8Z2VvT2JqVHlwPg0KICAgICAgICAgIDxHZW9PYmpUeXBD
+ZCB2YWx1ZT0iMDAyIiAvPg0KICAgICAgICA8L2dlb09ialR5cD4NCiAgICAgIDwvZ2VvbWV0T2Jq
+cz4NCiAgICA8L1ZlY3RTcGF0UmVwPg0KICA8L3NwYXRSZXBJbmZvPg0KICA8ZWFpbmZvPg0KICAg
+IDxkZXRhaWxlZCBOYW1lPSJUYXhQYXIiPg0KICAgICAgPGVudHR5cD4NCiAgICAgICAgPGVudHR5
+cGw+TTI0NVRheFBhcjwvZW50dHlwbD4NCiAgICAgIDwvZW50dHlwPg0KICAgICAgPGF0dHI+DQog
+ICAgICAgIDxhdHRyZGVmPlBhcmNlbCBJRCB0aGF0IGFwcGVhcnMgb24gdGhlIGFzc2Vzc29yIG1h
+cC48L2F0dHJkZWY+DQogICAgICAgIDxhdHRyZGVmcz5NYXNzR0lTIFN0YW5kYXJkIGZvciBEaWdp
+dGFsIFBhcmNlbCBGaWxlcyAtIHYyLjA8L2F0dHJkZWZzPg0KICAgICAgPC9hdHRyPg0KICAgICAg
+PGF0dHI+DQogICAgICAgIDxhdHRyZGVmcz5NYXNzR0lTIFN0YW5kYXJkIGZvciBEaWdpdGFsIFBh
+cmNlbCBGaWxlcyAtIHYyLjA8L2F0dHJkZWZzPg0KICAgICAgICA8YXR0cmRlZj5Db25jYXRlbmF0
+aW9uIG9mIFggYW5kIFkgY29vcmRpbmF0ZXMgb2YgYSBwb2ludCBpbnNpZGUgdGhlIHBvbHlnb24u
+PC9hdHRyZGVmPg0KICAgICAgPC9hdHRyPg0KICAgICAgPGF0dHI+DQogICAgICAgIDxhdHRyZGVm
+cz5NYXNzR0lTIFN0YW5kYXJkIGZvciBEaWdpdGFsIFBhcmNlbCBGaWxlcyAtIHYyLjA8L2F0dHJk
+ZWZzPg0KICAgICAgICA8YXR0cmRlZj5JZGVudGlmaWVzIHRoZSBraW5kIG9mIHBvbHlnb24gaW4g
+dGhlIHRheCBwYXJjZWwgbGF5ZXIuPC9hdHRyZGVmPg0KICAgICAgICA8YXR0cmRvbXY+DQogICAg
+ICAgICAgPGVkb20+DQogICAgICAgICAgICA8ZWRvbXZkcz5NYXNzYWNodXNldHRzIE9mZmljZSBv
+ZiBHZW9ncmFwaGljIEluZm9ybWF0aW9uIChNYXNzR0lTKTwvZWRvbXZkcz4NCiAgICAgICAgICAg
+IDxlZG9tdj5GRUU8L2Vkb212Pg0KICAgICAgICAgICAgPGVkb212ZD5TdGFuZGFyZCBmZWUtb3du
+ZXJzaGlwIHByb3BlcnR5LjwvZWRvbXZkPg0KICAgICAgICAgIDwvZWRvbT4NCiAgICAgICAgICA8
+ZWRvbT4NCiAgICAgICAgICAgIDxlZG9tdmRzPk1hc3NhY2h1c2V0dHMgT2ZmaWNlIG9mIEdlb2dy
+YXBoaWMgSW5mb3JtYXRpb24gKE1hc3NHSVMpPC9lZG9tdmRzPg0KICAgICAgICAgICAgPGVkb212
+PlRBWDwvZWRvbXY+DQogICAgICAgICAgICA8ZWRvbXZkPkRpc3NvbHZlZCAiRkVFIiBwYXJjZWxz
+IHdpdGggY29tbW9uIG93bmVyc2hpcCAodGF4IHJlY29yZCk8L2Vkb212ZD4NCiAgICAgICAgICA8
+L2Vkb20+DQogICAgICAgICAgPGVkb20+DQogICAgICAgICAgICA8ZWRvbXZkcz5NYXNzYWNodXNl
+dHRzIE9mZmljZSBvZiBHZW9ncmFwaGljIEluZm9ybWF0aW9uIChNYXNzR0lTKTwvZWRvbXZkcz4N
+CiAgICAgICAgICAgIDxlZG9tdj5XQVRFUjwvZWRvbXY+DQogICAgICAgICAgICA8ZWRvbXZkPldh
+dGVyIGZlYXR1cmUgd2l0aCBib3VuZGFyeSBjb2luY2lkZW50IHdpdGggYSBwYXJjZWw8L2Vkb212
+ZD4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAgICAgPGVkb20+DQogICAgICAgICAgICA8ZWRv
+bXY+Uk9XPC9lZG9tdj4NCiAgICAgICAgICAgIDxlZG9tdmRzPk1hc3NhY2h1c2V0dHMgT2ZmaWNl
+IG9mIEdlb2dyYXBoaWMgSW5mb3JtYXRpb24gKE1hc3NHSVMpPC9lZG9tdmRzPg0KICAgICAgICAg
+ICAgPGVkb212ZD5SaWdodC1vZi13YXkgdGhhdCBkb2VzIG5vdCBvdmVybGFwIHRheCBwYXJjZWwg
+cG9seWdvbnMuPC9lZG9tdmQ+DQogICAgICAgICAgPC9lZG9tPg0KICAgICAgICAgIDxlZG9tPg0K
+ICAgICAgICAgICAgPGVkb212ZHM+TWFzc2FjaHVzZXR0cyBPZmZpY2Ugb2YgR2VvZ3JhcGhpYyBJ
+bmZvcm1hdGlvbiAoTWFzc0dJUyk8L2Vkb212ZHM+DQogICAgICAgICAgICA8ZWRvbXY+UkFJTCBS
+T1c8L2Vkb212Pg0KICAgICAgICAgICAgPGVkb212ZD5SYWlscm9hZCBSaWdodC1vZi13YXkgd2l0
+aCBhbiBhc3NvY2lhdGVkIGxpbmsgdG8gYXNzZXNzb3IgdGFibGU8L2Vkb212ZD4NCiAgICAgICAg
+ICA8L2Vkb20+DQogICAgICAgICAgPGVkb20+DQogICAgICAgICAgICA8ZWRvbXZkcz5NYXNzYWNo
+dXNldHRzIE9mZmljZSBvZiBHZW9ncmFwaGljIEluZm9ybWF0aW9uIChNYXNzR0lTKTwvZWRvbXZk
+cz4NCiAgICAgICAgICAgIDxlZG9tdj5QUklWIFJPVzwvZWRvbXY+DQogICAgICAgICAgICA8ZWRv
+bXZkPlByaXZhdGUgUk9XIHRoYXQgZG9lcyBub3Qgb3ZlcmxhcCBvbnRvIG90aGVyIHRheGFibGUg
+cGFyY2VscyBhbmQgaXMgbm90IGFuIGVhc2VtZW50LjwvZWRvbXZkPg0KICAgICAgICAgIDwvZWRv
+bT4NCiAgICAgICAgPC9hdHRyZG9tdj4NCiAgICAgIDwvYXR0cj4NCiAgICAgIDxhdHRyPg0KICAg
+ICAgICA8YXR0cmRlZnM+TWFzc0dJUyBTdGFuZGFyZCBmb3IgRGlnaXRhbCBQYXJjZWwgRmlsZXMg
+LSB2Mi4wPC9hdHRyZGVmcz4NCiAgICAgICAgPGF0dHJkZWY+TWFwIG51bWJlciBvZiBhc3Nlc3Nv
+cidzIG1hcCBzaGVldCB3aGljaCBmZWF0dXJlIGFwcGVhcnMgb24uPC9hdHRyZGVmPg0KICAgICAg
+PC9hdHRyPg0KICAgICAgPGF0dHI+DQogICAgICAgIDxhdHRyZGVmcz5NYXNzR0lTIFN0YW5kYXJk
+IGZvciBEaWdpdGFsIFBhcmNlbCBGaWxlcyAtIHYyLjA8L2F0dHJkZWZzPg0KICAgICAgICA8YXR0
+cmRlZj5Cb3VuZGFyeSBmZWF0dXJlIHNvdXJjZTwvYXR0cmRlZj4NCiAgICAgICAgPGF0dHJkb212
+Pg0KICAgICAgICAgIDxlZG9tPg0KICAgICAgICAgICAgPGVkb212ZHM+TWFzc2FjaHVzZXR0cyBP
+ZmZpY2Ugb2YgR2VvZ3JhcGhpYyBJbmZvcm1hdGlvbiAoTWFzc0dJUyk8L2Vkb212ZHM+DQogICAg
+ICAgICAgICA8ZWRvbXY+QVNTRVNTPC9lZG9tdj4NCiAgICAgICAgICAgIDxlZG9tdmQ+QXNzZXNz
+b3IgTWFwPC9lZG9tdmQ+DQogICAgICAgICAgPC9lZG9tPg0KICAgICAgICAgIDxlZG9tPg0KICAg
+ICAgICAgICAgPGVkb212ZHM+TWFzc2FjaHVzZXR0cyBPZmZpY2Ugb2YgR2VvZ3JhcGhpYyBJbmZv
+cm1hdGlvbiAoTWFzc0dJUyk8L2Vkb212ZHM+DQogICAgICAgICAgICA8ZWRvbXY+U1VCRElWPC9l
+ZG9tdj4NCiAgICAgICAgICAgIDxlZG9tdmQ+U3ViZGl2aXNpb24gUGxhbjwvZWRvbXZkPg0KICAg
+ICAgICAgIDwvZWRvbT4NCiAgICAgICAgICA8ZWRvbT4NCiAgICAgICAgICAgIDxlZG9tdmRzPk1h
+c3NhY2h1c2V0dHMgT2ZmaWNlIG9mIEdlb2dyYXBoaWMgSW5mb3JtYXRpb24gKE1hc3NHSVMpPC9l
+ZG9tdmRzPg0KICAgICAgICAgICAgPGVkb212PkFOUjwvZWRvbXY+DQogICAgICAgICAgICA8ZWRv
+bXZkPlN1YmRpdmlzaW9uIGFwcHJvdmFsIG5vdCByZXF1aXJlZDwvZWRvbXZkPg0KICAgICAgICAg
+IDwvZWRvbT4NCiAgICAgICAgICA8ZWRvbT4NCiAgICAgICAgICAgIDxlZG9tdmRzPk1hc3NhY2h1
+c2V0dHMgT2ZmaWNlIG9mIEdlb2dyYXBoaWMgSW5mb3JtYXRpb24gKE1hc3NHSVMpPC9lZG9tdmRz
+Pg0KICAgICAgICAgICAgPGVkb212PlJPQUQgTEFZT1VUPC9lZG9tdj4NCiAgICAgICAgICAgIDxl
+ZG9tdmQ+Um9hZCBsYXlvdXQ8L2Vkb212ZD4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAgICAg
+PGVkb20+DQogICAgICAgICAgICA8ZWRvbXZkcz5NYXNzYWNodXNldHRzIE9mZmljZSBvZiBHZW9n
+cmFwaGljIEluZm9ybWF0aW9uIChNYXNzR0lTKTwvZWRvbXZkcz4NCiAgICAgICAgICAgIDxlZG9t
+dj5PVEhFUjwvZWRvbXY+DQogICAgICAgICAgICA8ZWRvbXZkPk90aGVyIHNvdXJjZTwvZWRvbXZk
+Pg0KICAgICAgICAgIDwvZWRvbT4NCiAgICAgICAgPC9hdHRyZG9tdj4NCiAgICAgIDwvYXR0cj4N
+CiAgICAgIDxhdHRyPg0KICAgICAgICA8YXR0cmRlZnM+TWFzc0dJUyBTdGFuZGFyZCBmb3IgRGln
+aXRhbCBQYXJjZWwgRmlsZXMgLSB2Mi4wPC9hdHRyZGVmcz4NCiAgICAgICAgPGF0dHJkZWY+SWRl
+bnRpZnlpbmcgaW5mb3JtYXRpb24gZm9yIHBsYW4gdXNlZCB0byB1cGRhdGUgZGlnaXRhbCBmaWxl
+LjwvYXR0cmRlZj4NCiAgICAgIDwvYXR0cj4NCiAgICAgIDxhdHRyPg0KICAgICAgICA8YXR0cmRl
+ZnM+TWFzc0dJUyBTdGFuZGFyZCBmb3IgRGlnaXRhbCBQYXJjZWwgRmlsZXMgLSB2Mi4wPC9hdHRy
+ZGVmcz4NCiAgICAgICAgPGF0dHJkZWY+RGF0ZSB0aGlzIHBhcmNlbCBwb2x5Z29uIHdhcyBsYXN0
+IGVkaXRlZC48L2F0dHJkZWY+DQogICAgICA8L2F0dHI+DQogICAgICA8YXR0cj4NCiAgICAgICAg
+PGF0dHJkZWZzPk1hc3NHSVMgU3RhbmRhcmQgZm9yIERpZ2l0YWwgUGFyY2VsIEZpbGVzIC0gdjIu
+MDwvYXR0cmRlZnM+DQogICAgICAgIDxhdHRyZGVmPklkZW50aWZpZXMgcGFyY2VsIGJvdW5kYXJp
+ZXMgd2l0aCBhIGRpc2NyZXBhbmN5IHdoZW4gY29tcGFyZWQgdG8gb3J0aG9pbWFnZSBiYXNlIG1h
+cC48L2F0dHJkZWY+DQogICAgICAgIDxhdHRyZG9tdj4NCiAgICAgICAgICA8ZWRvbT4NCiAgICAg
+ICAgICAgIDxlZG9tdmRzPk1hc3NhY2h1c2V0dHMgT2ZmaWNlIG9mIEdlb2dyYXBoaWMgSW5mb3Jt
+YXRpb24gKE1hc3NHSVMpPC9lZG9tdmRzPg0KICAgICAgICAgICAgPGVkb212PkNDPC9lZG9tdj4N
+CiAgICAgICAgICAgIDxlZG9tdmQ+RGlzY3JlcGFuY3kgY2hlY2tlZCBieSBjb21waWxlciBhbmQg
+aXMgY29ycmVjdC48L2Vkb212ZD4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAgICAgPGVkb20+
+DQogICAgICAgICAgICA8ZWRvbXZkcz5NYXNzYWNodXNldHRzIE9mZmljZSBvZiBHZW9ncmFwaGlj
+IEluZm9ybWF0aW9uIChNYXNzR0lTKTwvZWRvbXZkcz4NCiAgICAgICAgICAgIDxlZG9tdj5OUjwv
+ZWRvbXY+DQogICAgICAgICAgICA8ZWRvbXZkPkRpc2NyZXBhbmN5IG5lZWRzIHJldmlldy48L2Vk
+b212ZD4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAgICAgPGVkb20+DQogICAgICAgICAgICA8
+ZWRvbXZkcz5NYXNzYWNodXNldHRzIE9mZmljZSBvZiBHZW9ncmFwaGljIEluZm9ybWF0aW9uIChN
+YXNzR0lTKTwvZWRvbXZkcz4NCiAgICAgICAgICAgIDxlZG9tdj5PSzwvZWRvbXY+DQogICAgICAg
+ICAgICA8ZWRvbXZkPkNvbXBpbGF0aW9uIGRpc2NyZXBhbmN5IGlzIGFjY2VwdGFibGUuIChvbmx5
+IGVudGVyZWQgYnkgTWFzc0dJUyk8L2Vkb212ZD4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAg
+IDwvYXR0cmRvbXY+DQogICAgICA8L2F0dHI+DQogICAgICA8YXR0cj4NCiAgICAgICAgPGF0dHJk
+ZWY+SWRlbnRpZmllcyBwYXJjZWxzIHRvIGJlIGV4Y2x1ZGVkIGZyb20gbGV2ZWwgMyBtYXRjaCBy
+YXRlIGNhbGN1bGF0aW9uIHJlcXVpcmVtZW50czwvYXR0cmRlZj4NCiAgICAgICAgPGF0dHJkZWZz
+Pk1hc3NHSVMgU3RhbmRhcmQgZm9yIERpZ2l0YWwgUGFyY2VsIEZpbGVzIC0gdjIuMDwvYXR0cmRl
+ZnM+DQogICAgICAgIDxhdHRyZG9tdj4NCiAgICAgICAgICA8ZWRvbT4NCiAgICAgICAgICAgIDxl
+ZG9tdj5OPC9lZG9tdj4NCiAgICAgICAgICAgIDxlZG9tdmQ+UG9seWdvbiBub3QgZXhjbHVkZWQg
+ZnJvbSBtYXRjaGluZyB0byBhc3Nlc3NvciByZWNvcmQ8L2Vkb212ZD4NCiAgICAgICAgICAgIDxl
+ZG9tdmRzPk1hc3NhY2h1c2V0dHMgT2ZmaWNlIG9mIEdlb2dyYXBoaWMgSW5mb3JtYXRpb24gKE1h
+c3NHSVMpPC9lZG9tdmRzPg0KICAgICAgICAgIDwvZWRvbT4NCiAgICAgICAgICA8ZWRvbT4NCiAg
+ICAgICAgICAgIDxlZG9tdj5ZPC9lZG9tdj4NCiAgICAgICAgICAgIDxlZG9tdmQ+UG9seWdvbiBl
+eGNsdWRlZCBmcm9tIG1hdGNoIHRvIGFzc2Vzc29yIGRhdGFiYXNlPC9lZG9tdmQ+DQogICAgICAg
+ICAgICA8ZWRvbXZkcz5NYXNzYWNodXNldHRzIE9mZmljZSBvZiBHZW9ncmFwaGljIEluZm9ybWF0
+aW9uIChNYXNzR0lTKTwvZWRvbXZkcz4NCiAgICAgICAgICA8L2Vkb20+DQogICAgICAgIDwvYXR0
+cmRvbXY+DQogICAgICA8L2F0dHI+DQogICAgPC9kZXRhaWxlZD4NCiAgICA8b3ZlcnZpZXc+DQog
+ICAgICA8ZHNvdmVydj5UYXggcGFyY2VsIHBvbHlnb25zIGZvciBSYXluaGFtLCBNQS4gVGhpcyBk
+YXRhIHNldCBjb250YWlucyBwb2x5Z29ucyB3aGljaCBkZWxpbmVhdGUgcHJvcGVydHkgb3duZXJz
+aGlwIGluIHRoZSB0b3duIG9mIFJheW5oYW0sIGFjY29yZGluZyB0byB0aGUgYXNzZXNzb3IncyB0
+YXggbWFwcyBhcyBvZiBNYXJjaCAyMDExLiBJdCBpcyBmb3JtYXR0ZWQgaW4gY29tcGxpYW5jZSB3
+aXRoIHRoZSBNYXNzR0lTIFN0YW5kYXJkIGZvciBEaWdpdGFsIFBhcmNlbCBGaWxlcywgVmVyc2lv
+biAyLjAuIFRoaXMgZGF0YSBzZXQgaXMgY29uc2lkZXJlZCB0byBiZSBNYXNzR0lTIExldmVsIElJ
+SS1jb21wbGlhbnQgYW5kIGlzIGRlcml2ZWQgZnJvbSBhbiB1cGdyYWRlIG9mIHRoZSBwcmV2aW91
+cyBMZXZlbCBJSS1jb21wbGlhbnQgdmVyc2lvbiBvZiB0aGlzIHNhbWUgZGF0YSBzZXQuPC9kc292
+ZXJ2Pg0KICAgICAgPGVhb3Zlcj5Gb3IgYSBmdWxsIGRlc2NyaXB0aW9uIG9mIHRoZSBmZWF0dXJl
+cyBhbmQgYXR0cmlidXRlcyBjb250YWluZWQgaW4gdGhpcyBkYXRhLCBwbGVhc2UgcmVmZXIgdG8g
+dGhlIE1hc3NHSVMgU3RhbmRhcmQgZm9yIERpZ2l0YWwgUGFyY2VsIEZpbGVzIC0gdjIuMC4NCg0K
+aHR0cDovL3d3dy5tYXNzLmdvdi9tZ2lzL3N0YW5kYXJkcy5odG0jUGFyc3RhbmRhcmQ8L2Vhb3Zl
+cj4NCiAgICA8L292ZXJ2aWV3Pg0KICA8L2VhaW5mbz4NCiAgPHNwcmVmPg0KICAgIDxob3JpenN5
+cz4NCiAgICAgIDxjb3Jkc3lzbj4NCiAgICAgICAgPHByb2pjc24+TkFEIDE5ODMgU3RhdGVQbGFu
+ZSBNYXNzYWNodXNldHRzIE1haW5sYW5kIEZJUFMgMjAwMSBGZWV0PC9wcm9qY3NuPg0KICAgICAg
+PC9jb3Jkc3lzbj4NCiAgICAgIDxnZW9kZXRpYz4NCiAgICAgICAgPGhvcml6ZG4+Tm9ydGggQW1l
+cmljYW4gRGF0dW0gb2YgMTk4MzwvaG9yaXpkbj4NCiAgICAgIDwvZ2VvZGV0aWM+DQogICAgPC9o
+b3JpenN5cz4NCiAgPC9zcHJlZj4NCiAgPGRpc3RpbmZvPg0KICAgIDxkaXN0cmliPg0KICAgICAg
+PGNudGluZm8+DQogICAgICAgIDxjbnRvcmdwPg0KICAgICAgICAgIDxjbnRvcmc+TWFzc2FjaHVz
+ZXR0cyBPZmZpY2Ugb2YgR2VvZ3JhcGhpYyBJbmZvcm1hdGlvbiwgQ29tbW9ud2VhbHRoIG9mIE1h
+c3NhY2h1c2V0dHM8L2NudG9yZz4NCiAgICAgICAgPC9jbnRvcmdwPg0KICAgICAgICA8Y250YWRk
+cj4NCiAgICAgICAgICA8YWRkcnR5cGU+bWFpbGluZyBhbmQgcGh5c2ljYWwgYWRkcmVzczwvYWRk
+cnR5cGU+DQogICAgICAgICAgPGFkZHJlc3M+T25lIEFzaGJ1cnRvbiBQbGFjZSAtIFJtIDE2MDE8
+L2FkZHJlc3M+DQogICAgICAgICAgPGNpdHk+Qm9zdG9uPC9jaXR5Pg0KICAgICAgICAgIDxzdGF0
+ZT5NQTwvc3RhdGU+DQogICAgICAgICAgPHBvc3RhbD4wMjEwODwvcG9zdGFsPg0KICAgICAgICAg
+IDxjb3VudHJ5PlVTQTwvY291bnRyeT4NCiAgICAgICAgPC9jbnRhZGRyPg0KICAgICAgICA8Y250
+dm9pY2U+NjE3LTYxOS01NjQxPC9jbnR2b2ljZT4NCiAgICAgICAgPGNudGVtYWlsPm5laWwubWFj
+Z2FmZmV5QHN0YXRlLm1hLnVzPC9jbnRlbWFpbD4NCiAgICAgICAgPGhvdXJzPnN0YW5kYXJkIGJ1
+c2luZXNzIGhvdXJzLCBNLUY8L2hvdXJzPg0KICAgICAgPC9jbnRpbmZvPg0KICAgIDwvZGlzdHJp
+Yj4NCiAgICA8ZGlzdGxpYWI+VGhpcyBwYXJjZWwgZGF0YSBpcyBpbiB0aGUgcHVibGljIGRvbWFp
+biBhbmQgc2hvdWxkIG5vdCBiZSByZWRpc3RyaWJ1dGVkIGZvciBhIGZlZSBiZXlvbmQgcmVwcm9k
+dWN0aW9uIGNvc3RzLjwvZGlzdGxpYWI+DQogICAgPHN0ZG9yZGVyPg0KICAgICAgPGRpZ2Zvcm0+
+DQogICAgICAgIDxkaWd0b3B0Pg0KICAgICAgICAgIDxvbmxpbm9wdD4NCiAgICAgICAgICAgIDxj
+b21wdXRlcj4NCiAgICAgICAgICAgICAgPG5ldHdvcmthPg0KICAgICAgICAgICAgICAgIDxuZXR3
+b3Jrcj5odHRwOi8vd3d3Lm1hc3MuZ292L21naXMvcGFyY2Vscy5odG08L25ldHdvcmtyPg0KICAg
+ICAgICAgICAgICA8L25ldHdvcmthPg0KICAgICAgICAgICAgPC9jb21wdXRlcj4NCiAgICAgICAg
+ICAgIDxhY2NpbnN0cj5DbGljayBvbiB0aGUgIkRvd25sb2FkIHRoaXMgbGF5ZXIiIGxpbmsgdG8g
+YWNjZXNzIGFsbCBkaWdpdGFsIHBhcmNlbHMuPC9hY2NpbnN0cj4NCiAgICAgICAgICA8L29ubGlu
+b3B0Pg0KICAgICAgICA8L2RpZ3RvcHQ+DQogICAgICA8L2RpZ2Zvcm0+DQogICAgPC9zdGRvcmRl
+cj4NCiAgICA8Y3VzdG9tPlVwb24gY29tcGxpYW5jZSB3aXRoIGxldmVsIDMgb2YgdGhlIE1hc3NH
+SVMgU3RhbmRhcmQgZm9yIERpZ2l0YWwgUGFyY2VsIEZpbGVzLCB0aGlzIGRhdGEgd2lsbCBiZSBt
+YWRlIGF2YWlsYWJsZSBmb3IgZG93bmxvYWQgb24gdGhlIE1hc3NHSVMgd2Vic2l0ZTogIGh0dHA6
+Ly93d3cubWFzcy5nb3YvbWdpcy9wYXJjZWxzLmh0bQ0KDQo8L2N1c3RvbT4NCiAgICA8dGVjaHBy
+ZXE+R0lTIHNvZnR3YXJlPC90ZWNocHJlcT4NCiAgICA8cmVzZGVzYz5Bc3Nlc3NvcidzIHBhcmNl
+bCBkYXRhIGZvciB0b3duIG9mIFJheW5oYW0sIE1BLiBEZXZlbG9wZWQgZnJvbSBleGlzdGluZyBk
+aWdpdGFsIGRhdGEuIFJheW5oYW0uZ2RiLjwvcmVzZGVzYz4NCiAgPC9kaXN0aW5mbz4NCiAgPG1l
+dGFpbmZvPg0KICAgIDxtZXRkPkFwcmlsIDEzLCAyMDExPC9tZXRkPg0KICAgIDxsYW5nbWV0YT5F
+bmdsaXNoPC9sYW5nbWV0YT4NCiAgICA8bWV0c3Rkbj5GR0RDIENvbnRlbnQgU3RhbmRhcmRzIGZv
+ciBEaWdpdGFsIEdlb3NwYXRpYWwgTWV0YWRhdGE8L21ldHN0ZG4+DQogICAgPG1ldGFjPk5vbmU8
+L21ldGFjPg0KICAgIDxtZXR1Yz5Ob25lPC9tZXR1Yz4NCiAgPC9tZXRhaW5mbz4NCjwvbWV0YWRh
+dGE+</Data></Enclosure></Binary><mdHrLvName Sync="TRUE">dataset</mdHrLvName><mdChar><CharSetCd value="004"/></mdChar><mdContact><rpOrgName>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</rpOrgName><rpCntInfo><cntPhone><voiceNum tddtty="">617-619-5641</voiceNum></cntPhone><cntAddress addressType="both"><delPoint>One Ashburton Place - Rm 1601</delPoint><city>Boston</city><adminArea>MA</adminArea><postCode>02108</postCode><country>US</country><eMailAdd>neil.macgaffey@state.ma.us</eMailAdd></cntAddress><cntHours>standard business hours, M-F</cntHours></rpCntInfo><role><RoleCd value="005"/></role><displayName>Massachusetts Office of Geographic Information, Commonwealth of Massachusetts</displayName></mdContact><mdMaint><maintFreq><MaintFreqCd value="008"/></maintFreq></mdMaint></metadata>

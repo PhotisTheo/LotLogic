@@ -1,77 +1,9 @@
-# Python
-*.py[cod]
-*$py.class
-*.so
-.Python
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual Environment
-venv/
-env/
-ENV/
-.venv
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-/media
-/staticfiles
-/static
-
-# Environment variables
 .env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+*.sqlite3
+db.sqlite3
+__pycache__/
 .DS_Store
-
-# Testing
-.coverage
-.pytest_cache/
-htmlcov/
-.tox/
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Backup files
-*.bak
-*.backup
-/tmp/
-*.json.backup
-
-# GIS Data - Exclude all GIS data files (too large for git)
-gisdata/
-!gisdata/README.md
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
+leads/.DS_Store
+photos/.DS_Store
+venv/
+*.pyc
