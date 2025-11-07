@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd leadcrm && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --timeout 120 --log-level info",
+    "startCommand": "cd leadcrm/leadcrm && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --timeout 120 --log-level info",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10,
     "healthcheckPath": "/admin/login/",
