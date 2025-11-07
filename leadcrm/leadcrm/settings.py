@@ -32,12 +32,20 @@ if ENV_PATH.exists():
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-l4o@)j!2=pry&273q7ltf&fz==2e0esa-e&1eawy2vqcmx7884"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-l4o@)j!2=pry&273q7ltf&fz==2e0esa-e&1eawy2vqcmx7884")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = ["*"]
+# Get RAILWAY_STATIC_URL from Railway environment
+RAILWAY_STATIC_URL = os.getenv("RAILWAY_STATIC_URL", "")
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS = [RAILWAY_STATIC_URL.replace("https://", "").replace("http://", ""), ".railway.app", "localhost", "127.0.0.1"]
+else:
+    ALLOWED_HOSTS = [".railway.app", "localhost", "127.0.0.1"]
+
+# CSRF trusted origins for Railway
+CSRF_TRUSTED_ORIGINS = [RAILWAY_STATIC_URL] if RAILWAY_STATIC_URL else []
 
 
 # Application definition
@@ -56,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Serve static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
