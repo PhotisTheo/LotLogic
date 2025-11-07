@@ -1,0 +1,7 @@
+{
+  "BOSTON_TAXPAR": {
+    "downloaded_at": "2025-11-07T22:00:00Z",
+    "source_url": "https://bostonopendata-boston.opendata.arcgis.com/datasets/property-assessment-parcels.zip",
+    "slug": "BOSTON_TAXPAR"
+  }
+}
