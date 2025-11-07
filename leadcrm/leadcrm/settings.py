@@ -295,12 +295,18 @@ if USE_S3:
 
     # Static files location in S3
     AWS_STATIC_LOCATION = "static"
-    STATICFILES_STORAGE = "leadcrm.storage_backends.StaticStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "leadcrm.storage_backends.MediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "leadcrm.storage_backends.StaticStorage",
+        },
+    }
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/"
 
     # Media files location in S3
     AWS_MEDIA_LOCATION = "media"
-    DEFAULT_FILE_STORAGE = "leadcrm.storage_backends.MediaStorage"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/"
 else:
     # Local storage fallback
