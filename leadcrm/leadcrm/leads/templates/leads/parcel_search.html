@@ -2027,6 +2027,34 @@
           queuedBackgroundSearches: 0,
         });
       }
+
+      // Batch large requests to avoid 400 errors
+      const BATCH_SIZE = 1000;
+      if (parcels.length > BATCH_SIZE) {
+        console.log(`Batching ${parcels.length} parcels into chunks of ${BATCH_SIZE}`);
+        const batches = [];
+        for (let i = 0; i < parcels.length; i += BATCH_SIZE) {
+          batches.push(parcels.slice(i, i + BATCH_SIZE));
+        }
+
+        // Fetch all batches in parallel
+        return Promise.all(batches.map(batch => fetchParcelFlagsForParcels(batch)))
+          .then(results => {
+            // Merge all results
+            const merged = {
+              flags: {},
+              autoLienSearchEnabled: results[0]?.autoLienSearchEnabled ?? true,
+              queuedBackgroundSearches: 0,
+            };
+            results.forEach(result => {
+              Object.assign(merged.flags, result.flags);
+              merged.queuedBackgroundSearches += result.queuedBackgroundSearches || 0;
+            });
+            console.log(`Merged ${results.length} batches: ${Object.keys(merged.flags).length} parcels with flags`);
+            return merged;
+          });
+      }
+
       const payload = {
         parcels: parcels.map(parcel => ({
           town_id: parcel.town_id,
