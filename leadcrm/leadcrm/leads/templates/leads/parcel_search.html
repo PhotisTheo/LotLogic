@@ -1171,10 +1171,20 @@
   var selectedBostonNeighborhoodSlug = "";
   var bostonNeighborhoodSelectEl = null;
   var bostonNeighborhoodContainerEl = null;
+  var townGeojsonCache = new Map();
+  var townGeojsonRequests = new Map();
+  var bostonNeighborhoodPolygonIndex = new Map();
+  var bostonNeighborhoodBBoxIndex = new Map();
+  var bostonNeighborhoodPolygonsDirty = true;
   var townLoadingOverlay = document.getElementById('townLoadingOverlay');
   var townLoadingMessageEl = document.getElementById('townLoadingMessage');
   var parcelLoadingOverlayCenter = document.getElementById('parcelLoadingOverlayCenter');
   var parcelLoadingMessageEl = document.getElementById('parcelLoadingMessage');
+
+  function getCsrfToken() {
+    const tokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    return tokenInput && tokenInput.value ? tokenInput.value : '';
+  }
 
   function updateTownLoadingMessage(message) {
     if (townLoadingMessageEl && message) {
@@ -1254,6 +1264,16 @@
         .then(payload => {
           if (payload.geojson) {
             bostonNeighborhoodGeoJSON = payload.geojson;
+            bostonNeighborhoodPolygonsDirty = true;
+            bostonNeighborhoodPolygonIndex.clear();
+          }
+          bostonNeighborhoodBBoxIndex.clear();
+          if (Array.isArray(payload.neighborhoods)) {
+            payload.neighborhoods.forEach(item => {
+              if (item && item.slug && item.bbox) {
+                bostonNeighborhoodBBoxIndex.set(item.slug, item.bbox);
+              }
+            });
           }
           return payload.neighborhoods || [];
         })
@@ -1265,6 +1285,79 @@
         });
     }
     return bostonNeighborhoodsPromise;
+  }
+
+  function ensureBostonNeighborhoodPolygonIndex() {
+    if (!bostonNeighborhoodGeoJSON || !bostonNeighborhoodPolygonsDirty) {
+      return;
+    }
+    bostonNeighborhoodPolygonIndex.clear();
+    const features = Array.isArray(bostonNeighborhoodGeoJSON.features) ? bostonNeighborhoodGeoJSON.features : [];
+    features.forEach(feature => {
+      if (!feature || !feature.geometry) {
+        return;
+      }
+      const slug = feature.properties?.slug || feature.properties?.Slug;
+      if (!slug) {
+        return;
+      }
+      const polygons = extractPolygonsFromGeometry(feature.geometry);
+      if (polygons.length > 0) {
+        bostonNeighborhoodPolygonIndex.set(slug, polygons);
+      }
+    });
+    bostonNeighborhoodPolygonsDirty = false;
+  }
+
+  function extractPolygonsFromGeometry(geometry) {
+    if (!geometry || !geometry.coordinates) {
+      return [];
+    }
+    if (geometry.type === 'Polygon') {
+      const ring = geometry.coordinates[0] || [];
+      return ring.length ? [ring] : [];
+    }
+    if (geometry.type === 'MultiPolygon') {
+      return geometry.coordinates
+        .map(polygon => (Array.isArray(polygon) && polygon[0]) || [])
+        .filter(ring => ring.length > 0);
+    }
+    return [];
+  }
+
+  function pointInPolygon(lng, lat, polygon) {
+    if (!polygon || polygon.length < 3) {
+      return false;
+    }
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = Number(polygon[i][0]);
+      const yi = Number(polygon[i][1]);
+      const xj = Number(polygon[j][0]);
+      const yj = Number(polygon[j][1]);
+      const intersects = (yi > lat) !== (yj > lat) &&
+        (lng < ((xj - xi) * (lat - yi)) / ((yj - yi) || 1e-9) + xi);
+      if (intersects) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  function isPointInBostonNeighborhood(lat, lng, slug) {
+    if (!slug) {
+      return true;
+    }
+    ensureBostonNeighborhoodPolygonIndex();
+    const polygons = bostonNeighborhoodPolygonIndex.get(slug);
+    if (polygons && polygons.length > 0) {
+      return polygons.some(ring => pointInPolygon(lng, lat, ring));
+    }
+    const bbox = bostonNeighborhoodBBoxIndex.get(slug);
+    if (bbox) {
+      return lng >= bbox.west && lng <= bbox.east && lat >= bbox.south && lat <= bbox.north;
+    }
+    return false;
   }
 
   function removeBostonNeighborhoodLayer() {
@@ -1673,6 +1766,303 @@
   }
 </script>
 <script>
+    function fetchTownGeojson(townId, options = {}) {
+      const key = String(townId || '');
+      if (!key) {
+        return Promise.reject(new Error('Missing town id'));
+      }
+      if (!options.force && townGeojsonCache.has(key)) {
+        return Promise.resolve(townGeojsonCache.get(key));
+      }
+      if (townGeojsonRequests.has(key)) {
+        return townGeojsonRequests.get(key);
+      }
+      const request = fetch(`/api/town-geojson/${key}/`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(response => {
+          if (!response.ok) {
+            const error = new Error(`HTTP ${response.status}`);
+            error.status = response.status;
+            throw error;
+          }
+          return response.json();
+        })
+        .then(data => {
+          townGeojsonCache.set(key, data);
+          return data;
+        })
+        .finally(() => {
+          townGeojsonRequests.delete(key);
+        });
+      townGeojsonRequests.set(key, request);
+      return request;
+    }
+
+    function geometryToLatLng(geometry) {
+      if (!geometry || !geometry.coordinates) {
+        return [];
+      }
+      let ring = null;
+      if (geometry.type === 'Polygon') {
+        ring = geometry.coordinates[0] || [];
+      } else if (geometry.type === 'MultiPolygon') {
+        ring = geometry.coordinates[0] && geometry.coordinates[0][0];
+      }
+      if (!Array.isArray(ring)) {
+        return [];
+      }
+      const latLng = ring
+        .map(pair => [Number(pair[1]), Number(pair[0])])
+        .filter(pair => Number.isFinite(pair[0]) && Number.isFinite(pair[1]));
+      if (latLng.length >= 2) {
+        const first = latLng[0];
+        const last = latLng[latLng.length - 1];
+        if (first[0] === last[0] && first[1] === last[1]) {
+          latLng.pop();
+        }
+      }
+      return latLng;
+    }
+
+    function calculateLatLngCentroid(latLngCoords) {
+      if (!Array.isArray(latLngCoords) || latLngCoords.length === 0) {
+        return null;
+      }
+      let sumLat = 0;
+      let sumLng = 0;
+      latLngCoords.forEach(([lat, lng]) => {
+        sumLat += lat;
+        sumLng += lng;
+      });
+      return {
+        lat: sumLat / latLngCoords.length,
+        lng: sumLng / latLngCoords.length,
+      };
+    }
+
+    function parseMassGisDate(value) {
+      if (!value) {
+        return null;
+      }
+      const text = String(value).trim();
+      if (!text) {
+        return null;
+      }
+      let parsed = null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        parsed = new Date(text);
+      } else if (/^\d{8}$/.test(text)) {
+        parsed = new Date(Number(text.slice(0, 4)), Number(text.slice(4, 6)) - 1, Number(text.slice(6, 8)));
+      } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(text)) {
+        const [month, day, year] = text.split('/').map(Number);
+        parsed = new Date(year, month - 1, day);
+      } else if (/^\d{4}$/.test(text)) {
+        parsed = new Date(Number(text), 0, 1);
+      }
+      if (!parsed || Number.isNaN(parsed.getTime())) {
+        return null;
+      }
+      return parsed;
+    }
+
+    function convertGeojsonFeatureToParcel(feature) {
+      if (!feature || !feature.properties) {
+        return null;
+      }
+      const parcel = { ...feature.properties };
+      const geometryLatLng = geometryToLatLng(feature.geometry);
+      if (!geometryLatLng.length) {
+        return null;
+      }
+      parcel.geometry = geometryLatLng;
+      if (!parcel.centroid || typeof parcel.centroid.lat === 'undefined' || typeof parcel.centroid.lng === 'undefined') {
+        const centroid = calculateLatLngCentroid(geometryLatLng);
+        if (centroid) {
+          parcel.centroid = centroid;
+        }
+      }
+      parcel.has_lien = Boolean(parcel.has_lien);
+      parcel.has_legal_action = Boolean(parcel.has_legal_action);
+      return parcel;
+    }
+
+    function convertGeojsonToParcels(geojson) {
+      if (!geojson || !Array.isArray(geojson.features)) {
+        return [];
+      }
+      const converted = [];
+      geojson.features.forEach(feature => {
+        const parcel = convertGeojsonFeatureToParcel(feature);
+        if (parcel) {
+          converted.push(parcel);
+        }
+      });
+      return converted;
+    }
+
+    function shouldUseTownGeojson(filters, townId) {
+      if (!townId) {
+        return false;
+      }
+      if (String(townId) === '35' && !filters.neighborhood) {
+        return false;
+      }
+      return true;
+    }
+
+    function filterParcelsClientSide(parcels, viewportBounds, filters) {
+      if (!Array.isArray(parcels) || parcels.length === 0) {
+        return [];
+      }
+      const parseNumberFilter = (value) => {
+        if (value === undefined || value === null || value === '') {
+          return null;
+        }
+        const num = Number(value);
+        return Number.isFinite(num) ? num : null;
+      };
+
+      const minPrice = parseNumberFilter(filters.min_price);
+      const maxPrice = parseNumberFilter(filters.max_price);
+      const equityMin = parseNumberFilter(filters.equity_min);
+      const minYearsOwned = parseNumberFilter(filters.min_years_owned);
+      const absenteeFilter = filters.absentee ? String(filters.absentee).toLowerCase() : '';
+      const addressQuery = filters.address_contains ? String(filters.address_contains).toLowerCase() : '';
+      const propertyCategory = filters.property_category && filters.property_category !== 'any'
+        ? String(filters.property_category).toLowerCase()
+        : '';
+      const propertyType = filters.property_type && filters.property_type !== 'any'
+        ? String(filters.property_type)
+        : '';
+      const neighborhoodSlug = filters.neighborhood || '';
+
+      const normalizeNumber = (value) => {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : null;
+      };
+
+      return parcels.filter(parcel => {
+        const centroid = parcel.centroid || {};
+        const lat = normalizeNumber(centroid.lat);
+        const lng = normalizeNumber(centroid.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return false;
+        }
+        if (lat < viewportBounds.south || lat > viewportBounds.north || lng < viewportBounds.west || lng > viewportBounds.east) {
+          return false;
+        }
+        if (neighborhoodSlug) {
+          if (String(parcel.town_id) !== '35') {
+            return false;
+          }
+          if (!isPointInBostonNeighborhood(lat, lng, neighborhoodSlug)) {
+            return false;
+          }
+        }
+        if (addressQuery) {
+          const addressText = (parcel.address || '').toLowerCase();
+          if (!addressText.includes(addressQuery)) {
+            return false;
+          }
+        }
+        if (propertyCategory) {
+          const candidateCategory = (parcel.property_category || '').toLowerCase();
+          if (candidateCategory !== propertyCategory) {
+            return false;
+          }
+        }
+        if (propertyType) {
+          const desc = parcel.property_type || parcel.use_description || '';
+          if (desc !== propertyType) {
+            return false;
+          }
+        }
+        if (minPrice !== null) {
+          const totalValue = normalizeNumber(parcel.total_value);
+          if (totalValue === null || totalValue < minPrice) {
+            return false;
+          }
+        }
+        if (maxPrice !== null) {
+          const totalValue = normalizeNumber(parcel.total_value);
+          if (totalValue === null || totalValue > maxPrice) {
+            return false;
+          }
+        }
+        if (equityMin !== null) {
+          const equity = normalizeNumber(parcel.equity_percent);
+          if (equity === null || equity < equityMin) {
+            return false;
+          }
+        }
+        if (absenteeFilter) {
+          const isAbsentee = Boolean(parcel.absentee);
+          if (absenteeFilter === 'absentee' && !isAbsentee) {
+            return false;
+          }
+          if ((absenteeFilter === 'owner' || absenteeFilter === 'owner-occupied') && isAbsentee) {
+            return false;
+          }
+        }
+        if (minYearsOwned !== null && minYearsOwned > 0) {
+          const saleDate = parseMassGisDate(parcel.last_sale_date);
+          if (!saleDate) {
+            return false;
+          }
+          const ownedYears = (Date.now() - saleDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+          if (ownedYears < minYearsOwned) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    function fetchParcelFlagsForParcels(parcels) {
+      if (!Array.isArray(parcels) || parcels.length === 0) {
+        return Promise.resolve({
+          flags: {},
+          autoLienSearchEnabled: true,
+          queuedBackgroundSearches: 0,
+        });
+      }
+      const payload = {
+        parcels: parcels.map(parcel => ({
+          town_id: parcel.town_id,
+          loc_id: parcel.loc_id,
+          property_category: parcel.property_category,
+          owner: parcel.owner,
+          address: parcel.address,
+          town_name: parcel.town_name,
+        })),
+      };
+      const csrfToken = getCsrfToken();
+      return fetch('/api/parcel-flags/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.warn('Parcel flag fetch failed', error);
+          return {
+            flags: {},
+            autoLienSearchEnabled: true,
+            queuedBackgroundSearches: 0,
+          };
+        });
+    }
+
     function clearViewportParcels() {
       if (globalMap) {
         try {
@@ -3136,12 +3526,12 @@
           console.log(`  ${key}: ${value}`);
         }
 
+        const viewportBounds = { north, south, east, west };
         isLoadingParcels = true;
         const apiUrl = `/api/parcels-in-viewport/?${params}`;
         console.log('Loading parcels in viewport...', {north, south, east, west, zoom, filters});
         console.log('API URL:', apiUrl);
 
-        // Show loading indicator
         const loadingIndicator = document.getElementById('parcelLoadingIndicator');
         if (loadingIndicator) {
           loadingIndicator.classList.add('active');
@@ -3149,77 +3539,58 @@
         showParcelLoadingOverlay('Loading parcels…');
 
         let parcelLoadHadError = false;
+        let usedStaticGeojson = false;
 
         const hasPendingReload = () => Boolean(pendingViewportReload);
 
-        fetch(apiUrl)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const handleParcelResponse = (data, sourceLabel = 'api') => {
+          if (!data) {
+            return;
+          }
+
+          if (hasPendingReload()) {
+            console.log('Skipping viewport render due to pending reload request.');
+            return;
+          }
+
+          console.log(`Received ${data.count} parcels from ${sourceLabel.toUpperCase()}`);
+
+          window.parcelAutoLienSearchEnabled = Boolean(data.autoLienSearchEnabled);
+
+          if (Array.isArray(data.parcels)) {
+            data.parcels.forEach(parcel => {
+              parcel.detail_url = buildParcelDetailUrl(parcel);
+            });
+          }
+
+          if (data.count === 0) {
+            console.warn('No parcels returned. Check server logs for details.');
+            console.warn('Request params:', {north, south, east, west, filters});
+
+            const townInput = document.getElementById('id_town_id');
+            const resolvedTownId = townInput?.dataset?.resolvedTownId;
+            const neighborhoodSelect = document.getElementById('bostonNeighborhoodSelect');
+            const hasNeighborhood = neighborhoodSelect && neighborhoodSelect.value;
+
+            if (resolvedTownId === '35' && !hasNeighborhood) {
+              console.info('Boston detected without neighborhood - showing info message');
+              const infoDiv = document.createElement('div');
+              infoDiv.className = 'alert alert-info position-fixed top-50 start-50 translate-middle';
+              infoDiv.style.zIndex = '10000';
+              infoDiv.style.maxWidth = '400px';
+              infoDiv.innerHTML = `
+                <strong>Boston Neighborhood Required</strong>
+                <p class="mb-0 mt-2">Please select a specific Boston neighborhood from the dropdown above to view parcels. Boston is too large to display all at once.</p>
+              `;
+              document.body.appendChild(infoDiv);
+
+              setTimeout(() => {
+                infoDiv.remove();
+              }, 5000);
             }
-            return response.text();
-          })
-          .then(text => {
-            try {
-              return JSON.parse(text);
-            } catch (e) {
-              console.error('JSON parse error:', e);
-              console.error('Response text:', text.substring(0, 500));
-              throw new Error('Invalid JSON response from server');
-            }
-          })
-          .then(data => {
-            if (!data) {
-              return;
-            }
 
-            if (hasPendingReload()) {
-              console.log('Skipping viewport render due to pending reload request.');
-              return;
-            }
-
-            console.log(`Received ${data.count} parcels from API`);
-
-            window.parcelAutoLienSearchEnabled = Boolean(data.autoLienSearchEnabled);
-
-            if (Array.isArray(data.parcels)) {
-              data.parcels.forEach(parcel => {
-                parcel.detail_url = buildParcelDetailUrl(parcel);
-              });
-            }
-
-            if (data.count === 0) {
-              console.warn('No parcels returned. Check server logs for details.');
-              console.warn('Request params:', {north, south, east, west, filters});
-
-              // Check if this is Boston without a neighborhood selected
-              const townInput = document.getElementById('id_town_id');
-              const resolvedTownId = townInput?.dataset?.resolvedTownId;
-              const neighborhoodSelect = document.getElementById('bostonNeighborhoodSelect');
-              const hasNeighborhood = neighborhoodSelect && neighborhoodSelect.value;
-
-              // Boston town ID is 35
-              if (resolvedTownId === '35' && !hasNeighborhood) {
-                console.info('Boston detected without neighborhood - showing info message');
-                // Show a helpful message to the user
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'alert alert-info position-fixed top-50 start-50 translate-middle';
-                infoDiv.style.zIndex = '10000';
-                infoDiv.style.maxWidth = '400px';
-                infoDiv.innerHTML = `
-                  <strong>Boston Neighborhood Required</strong>
-                  <p class="mb-0 mt-2">Please select a specific Boston neighborhood from the dropdown above to view parcels. Boston is too large to display all at once.</p>
-                `;
-                document.body.appendChild(infoDiv);
-
-                // Auto-remove after 5 seconds
-                setTimeout(() => {
-                  infoDiv.remove();
-                }, 5000);
-              }
-
-              return;
-            }
+            return;
+          }
 
             // Debug: Check first parcel structure
             if (data.parcels && data.parcels.length > 0) {
@@ -3476,7 +3847,92 @@
                 loadParcelsInViewport();
               }, 15000); // 15 seconds delay
             }
-          })
+          };
+
+        const finalizeParcelLoad = (hadError) => {
+          isLoadingParcels = false;
+
+          if (!hadError && (forceReload || usedStaticGeojson)) {
+            hasLoadedFullCurrentTown = true;
+          }
+
+          if (pendingViewportReload) {
+            const reloadOptions = pendingViewportReload;
+            pendingViewportReload = null;
+            loadParcelsInViewport(reloadOptions);
+            return;
+          }
+
+          if (loadingIndicator) {
+            loadingIndicator.classList.remove('active');
+          }
+          if (!hadError) {
+            hideParcelLoadingOverlay(150);
+          }
+        };
+
+        const loadLegacyApi = () => {
+          return fetch(apiUrl)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+              }
+              return response.text();
+            })
+            .then(text => {
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                console.error('JSON parse error:', e);
+                console.error('Response text:', text.substring(0, 500));
+                throw new Error('Invalid JSON response from server');
+              }
+            })
+            .then(data => {
+              handleParcelResponse(data, 'api');
+              return data;
+            });
+        };
+
+        const loadStaticGeojson = () => {
+          if (!resolvedTownId) {
+            return Promise.reject(new Error('Town ID required for static load'));
+          }
+          return fetchTownGeojson(resolvedTownId)
+            .then(geojson => {
+              const allParcels = convertGeojsonToParcels(geojson);
+              const filteredParcels = filterParcelsClientSide(allParcels, viewportBounds, filters);
+              return fetchParcelFlagsForParcels(filteredParcels).then(flagPayload => {
+                const flags = flagPayload.flags || {};
+                filteredParcels.forEach(parcel => {
+                  const key = `${parcel.town_id}|${parcel.loc_id}`;
+                  const parcelFlags = flags[key];
+                  parcel.has_lien = Boolean(parcelFlags && parcelFlags.has_lien);
+                  parcel.has_legal_action = Boolean(parcelFlags && parcelFlags.has_legal_action);
+                });
+                const payload = {
+                  parcels: filteredParcels,
+                  count: filteredParcels.length,
+                  limit: filteredParcels.length,
+                  autoLienSearchEnabled: flagPayload.autoLienSearchEnabled !== false,
+                  queuedBackgroundSearches: flagPayload.queuedBackgroundSearches || 0,
+                };
+                handleParcelResponse(payload, 'static');
+                usedStaticGeojson = true;
+                return payload;
+              });
+            });
+        };
+
+        const useStaticGeojson = shouldUseTownGeojson(filters, resolvedTownId);
+        const loaderPromise = (useStaticGeojson
+          ? loadStaticGeojson().catch(error => {
+              console.warn('Static GeoJSON load failed, falling back to API', error);
+              usedStaticGeojson = false;
+              return loadLegacyApi();
+            })
+          : loadLegacyApi());
+        loaderPromise
           .catch(error => {
             console.error('Error loading viewport parcels:', error);
             parcelLoadHadError = true;
@@ -3484,25 +3940,7 @@
             hideParcelLoadingOverlay(2500);
           })
           .finally(() => {
-            isLoadingParcels = false;
-
-            if (!parcelLoadHadError && forceReload) {
-              hasLoadedFullCurrentTown = true;
-            }
-
-            if (pendingViewportReload) {
-              const reloadOptions = pendingViewportReload;
-              pendingViewportReload = null;
-              loadParcelsInViewport(reloadOptions);
-              return;
-            }
-
-            if (loadingIndicator) {
-              loadingIndicator.classList.remove('active');
-            }
-            if (!parcelLoadHadError) {
-              hideParcelLoadingOverlay(150);
-            }
+            finalizeParcelLoad(parcelLoadHadError);
           });
       }, debounceDelay);
     };

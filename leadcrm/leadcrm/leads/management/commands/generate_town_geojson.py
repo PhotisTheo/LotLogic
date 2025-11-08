@@ -28,8 +28,8 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.core.management.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 
@@ -68,12 +68,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from leads.services import (
             _get_massgis_town,
-            _ensure_massgis_dataset,
-            _find_taxpar_shapefile,
-            massgis_stateplane_to_wgs84,
             get_massgis_catalog,
         )
-        import shapefile
 
         towns_filter = options.get('towns')
         output_dir = Path(options['output_dir'])
@@ -102,7 +98,8 @@ class Command(BaseCommand):
         for town_id in town_ids:
             try:
                 town = _get_massgis_town(town_id)
-                output_file = output_dir / f"town_{town_id}_{town.name.replace(' ', '_')}.geojson"
+                safe_name = town.name.replace(' ', '_').replace('/', '_')
+                output_file = output_dir / f"town_{town_id}_{safe_name}.geojson"
 
                 # Skip if already exists and not forcing
                 if output_file.exists() and not force:
@@ -112,82 +109,44 @@ class Command(BaseCommand):
 
                 self.stdout.write(f"📍 Processing {town.name} (ID: {town_id})...")
 
-                # Get dataset and shapefile
-                dataset_dir = _ensure_massgis_dataset(town)
-                tax_par_path = _find_taxpar_shapefile(Path(dataset_dir))
+                parcels = self._load_parcels_for_town(town_id, limit)
 
-                # Read shapefile
-                sf = shapefile.Reader(str(tax_par_path))
-                field_names = [field[0] for field in sf.fields[1:]]
+                if not parcels:
+                    self.stdout.write(self.style.WARNING(f"⚠️  No parcels returned for {town.name}"))
+                    continue
 
-                # Build GeoJSON
                 features = []
-                parcel_count = 0
-
-                for shape_record in sf.iterShapeRecords():
-                    if limit and parcel_count >= limit:
-                        break
-
-                    shape = shape_record.shape
-                    record = shape_record.record
-
-                    # Skip invalid shapes
-                    if not shape or not hasattr(shape, 'points') or not shape.points:
+                for parcel in parcels:
+                    geometry_latlng = parcel.get('geometry') or []
+                    if not geometry_latlng:
                         continue
 
-                    # Convert coordinates from State Plane to WGS84
-                    wgs84_points = []
-                    for point in shape.points:
-                        try:
-                            lng, lat = massgis_stateplane_to_wgs84(point[0], point[1])
-                            wgs84_points.append([lng, lat])
-                        except Exception as e:
-                            logger.warning(f"Error converting coordinates for {town.name}: {e}")
-                            continue
+                    # Convert Leaflet-friendly [lat, lng] pairs back to GeoJSON [lng, lat]
+                    coordinates = [[
+                        [lng, lat] for lat, lng in geometry_latlng
+                    ]]
 
-                    if not wgs84_points:
-                        continue
+                    if coordinates[0] and coordinates[0][0] != coordinates[0][-1]:
+                        coordinates[0].append(list(coordinates[0][0]))
 
-                    # Close polygon if needed
-                    if wgs84_points[0] != wgs84_points[-1]:
-                        wgs84_points.append(wgs84_points[0])
+                    properties = dict(parcel)
+                    properties.pop('geometry', None)
 
-                    # Build properties from shapefile attributes
-                    properties = {}
-                    for i, field_name in enumerate(field_names):
-                        try:
-                            value = record[i]
-                            # Convert to JSON-serializable types
-                            if value is None:
-                                properties[field_name] = None
-                            elif isinstance(value, (str, int, float, bool)):
-                                properties[field_name] = value
-                            else:
-                                properties[field_name] = str(value)
-                        except (IndexError, Exception) as e:
-                            logger.warning(f"Error reading field {field_name}: {e}")
-                            continue
-
-                    # Add town metadata
-                    properties['town_id'] = town_id
-                    properties['town_name'] = town.name
-
-                    # Create GeoJSON feature
                     feature = {
                         "type": "Feature",
                         "geometry": {
                             "type": "Polygon",
-                            "coordinates": [wgs84_points]
+                            "coordinates": coordinates,
                         },
-                        "properties": properties
+                        "properties": properties,
                     }
-
                     features.append(feature)
-                    parcel_count += 1
 
-                sf.close()
+                parcel_count = len(features)
+                if parcel_count == 0:
+                    self.stdout.write(self.style.WARNING(f"⚠️  No valid parcel geometries for {town.name}"))
+                    continue
 
-                # Create GeoJSON FeatureCollection
                 geojson = {
                     "type": "FeatureCollection",
                     "features": features,
@@ -195,8 +154,8 @@ class Command(BaseCommand):
                         "town_id": town_id,
                         "town_name": town.name,
                         "parcel_count": parcel_count,
-                        "generated_by": "generate_town_geojson management command"
-                    }
+                        "generated_by": "generate_town_geojson management command",
+                    },
                 }
 
                 # Write to file
@@ -234,6 +193,158 @@ class Command(BaseCommand):
             self.stdout.write("\n📤 Uploading to S3...")
             uploaded = self._upload_to_s3(output_dir)
             self.stdout.write(self.style.SUCCESS(f"✅ Uploaded {uploaded} files to S3"))
+
+    def _load_parcels_for_town(self, town_id: int, limit: Optional[int]) -> list[dict]:
+        """Load all parcel records for a town using the same logic as the API."""
+        import shapefile
+        from collections import defaultdict
+
+        from leads.services import (
+            _clean_string,
+            _classify_use_code,
+            _compose_owner_address,
+            _ensure_massgis_dataset,
+            _find_taxpar_shapefile,
+            _format_address,
+            _get_massgis_town,
+            _get_use_description,
+            _is_absentee,
+            _load_assess_records,
+            _load_usecode_lookup,
+            _should_replace_assess_record,
+            _summarize_unit_records,
+            calculate_equity_metrics,
+            massgis_stateplane_to_wgs84,
+        )
+
+        town = _get_massgis_town(town_id)
+        dataset_dir = Path(_ensure_massgis_dataset(town))
+        tax_par_path = _find_taxpar_shapefile(dataset_dir)
+
+        sf = shapefile.Reader(str(tax_par_path))
+        field_names = [field[0] for field in sf.fields[1:]]
+
+        assess_records = _load_assess_records(str(dataset_dir))
+        usecode_lookup = _load_usecode_lookup(str(dataset_dir))
+
+        assess_index: dict[str, dict] = {}
+        unit_records_map: dict[str, list] = defaultdict(list)
+        for record in assess_records:
+            for key_name in ("LOC_ID", "MAP_PAR_ID", "PID", "GIS_ID"):
+                key_value = _clean_string(record.get(key_name))
+                if not key_value:
+                    continue
+                unit_records_map[key_value].append(record)
+                existing = assess_index.get(key_value)
+                if existing is None or _should_replace_assess_record(record, existing):
+                    assess_index[key_value] = record
+
+        parcels: list[dict] = []
+
+        for shape_record in sf.shapeRecords():
+            if limit is not None and len(parcels) >= limit:
+                break
+
+            shape = shape_record.shape
+            if not shape.points:
+                continue
+
+            attributes = dict(zip(field_names, shape_record.record))
+
+            assess_data = None
+            unit_records = None
+            lookup_keys = [
+                _clean_string(attributes.get("LOC_ID")),
+                _clean_string(attributes.get("MAP_PAR_ID")),
+            ]
+            for key in lookup_keys:
+                if key and key in assess_index:
+                    assess_data = assess_index[key]
+                    unit_records = unit_records_map.get(key)
+                    break
+
+            if assess_data:
+                attributes.update(assess_data)
+            if unit_records is None:
+                for key in lookup_keys:
+                    if key and unit_records_map.get(key):
+                        unit_records = unit_records_map[key]
+                        break
+
+            x_coords = [p[0] for p in shape.points]
+            y_coords = [p[1] for p in shape.points]
+            centroid_x = sum(x_coords) / len(x_coords)
+            centroid_y = sum(y_coords) / len(y_coords)
+            lng, lat = massgis_stateplane_to_wgs84(centroid_x, centroid_y)
+
+            site_addr = _clean_string(attributes.get("SITE_ADDR")) or _clean_string(attributes.get("LOC_ADDR"))
+            if not site_addr:
+                fallback_source = (
+                    _clean_string(attributes.get("MAP_PAR_ID"))
+                    or _clean_string(attributes.get("LOC_ID"))
+                )
+                if fallback_source:
+                    site_addr = f"Parcel {fallback_source}"
+                    attributes["SITE_ADDR"] = site_addr
+                else:
+                    continue
+
+            if not attributes.get("SITE_CITY"):
+                attributes["SITE_CITY"] = town.name.title()
+
+            polygon_coords = []
+            for point in shape.points:
+                point_lng, point_lat = massgis_stateplane_to_wgs84(point[0], point[1])
+                polygon_coords.append([point_lat, point_lng])
+
+            use_code = attributes.get("USE_CODE", "")
+            use_desc = _get_use_description(use_code, usecode_lookup)
+            property_category = _classify_use_code(use_code)
+            is_absentee = _is_absentee(attributes)
+            equity_percent, _, _, _, _, _ = calculate_equity_metrics(attributes)
+
+            parcel = {
+                "loc_id": attributes.get("LOC_ID", ""),
+                "town_id": town_id,
+                "town_name": town.name,
+                "address": _format_address(attributes),
+                "owner": attributes.get("OWNER1") or attributes.get("OWNER_NAME", "Unknown"),
+                "owner_address": _compose_owner_address(attributes),
+                "total_value": attributes.get("TOTAL_VAL"),
+                "land_value": attributes.get("LAND_VAL"),
+                "building_value": attributes.get("BLDG_VAL"),
+                "property_type": use_desc,
+                "property_category": property_category,
+                "use_code": use_code,
+                "use_description": use_desc,
+                "style": _clean_string(attributes.get("STYLE")),
+                "year_built": attributes.get("YEAR_BUILT"),
+                "units": attributes.get("UNITS"),
+                "lot_size": attributes.get("LOT_SIZE"),
+                "lot_units": _clean_string(attributes.get("LOT_UNITS")),
+                "zoning": _clean_string(attributes.get("ZONING")),
+                "zone": _clean_string(attributes.get("ZONE")),
+                "absentee": is_absentee,
+                "equity_percent": equity_percent,
+                "last_sale_price": attributes.get("LS_PRICE"),
+                "last_sale_date": _clean_string(attributes.get("LS_DATE")),
+                "site_city": _clean_string(attributes.get("SITE_CITY")) or _clean_string(attributes.get("CITY")),
+                "site_zip": _clean_string(attributes.get("SITE_ZIP")) or _clean_string(attributes.get("ZIP")),
+                "city": _clean_string(attributes.get("SITE_CITY")) or _clean_string(attributes.get("CITY")) or town.name.title(),
+                "zip": _clean_string(attributes.get("SITE_ZIP")) or _clean_string(attributes.get("ZIP")),
+                "value_display": None,
+                "centroid": {"lat": lat, "lng": lng},
+                "geometry": polygon_coords,
+                "units_detail": _summarize_unit_records(unit_records) if unit_records else None,
+            }
+
+            total_value = parcel.get("total_value")
+            if total_value:
+                parcel["value_display"] = f"${float(total_value):,.0f}"
+
+            parcels.append(parcel)
+
+        return parcels
 
     def _upload_to_s3(self, output_dir: Path) -> int:
         """Upload generated GeoJSON files to S3"""

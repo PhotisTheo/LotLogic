@@ -5671,6 +5671,142 @@ def parcels_in_viewport(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+@login_required
+@require_http_methods(["POST"])
+def parcel_flags(request):
+    """
+    Return lien/legal action flags (and trigger background searches) for a list of parcels.
+
+    This endpoint allows the frontend to load static GeoJSON while still receiving per-user
+    lien markers and automated search behavior.
+    """
+    from .models import LienRecord, LegalAction
+    from .background_lien_search import search_parcel_background, should_search_parcel
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON payload"}, status=400)
+
+    parcels = payload.get("parcels")
+    if not isinstance(parcels, list) or not parcels:
+        return JsonResponse({
+            "flags": {},
+            "autoLienSearchEnabled": True,
+            "queuedBackgroundSearches": 0,
+        })
+
+    normalized = []
+    for item in parcels:
+        try:
+            town_id = int(item.get("town_id"))
+        except (TypeError, ValueError):
+            continue
+        loc_id_raw = item.get("loc_id")
+        if not loc_id_raw:
+            continue
+        loc_id = str(loc_id_raw).strip()
+        if not loc_id:
+            continue
+        normalized.append({
+            "town_id": town_id,
+            "loc_id": loc_id,
+            "owner": item.get("owner"),
+            "address": item.get("address"),
+            "town_name": item.get("town_name"),
+            "property_category": item.get("property_category"),
+        })
+
+    if not normalized:
+        return JsonResponse({
+            "flags": {},
+            "autoLienSearchEnabled": True,
+            "queuedBackgroundSearches": 0,
+        })
+
+    auto_lien_search_enabled = len(normalized) <= LIEN_SEARCH_AUTO_THRESHOLD
+
+    # Build lookup for response flags
+    parcel_keys = [(parcel["town_id"], parcel["loc_id"]) for parcel in normalized]
+    flags = {
+        f"{town_id}|{loc_id}": {"has_lien": False, "has_legal_action": False}
+        for town_id, loc_id in parcel_keys
+    }
+
+    chunk_size = 400
+    liens_set = set()
+    actions_set = set()
+
+    for i in range(0, len(parcel_keys), chunk_size):
+        chunk = parcel_keys[i:i + chunk_size]
+        town_ids = {town for town, _ in chunk}
+        loc_ids = {loc for _, loc in chunk}
+
+        liens_qs = LienRecord.objects.filter(
+            created_by=request.user,
+            town_id__in=town_ids,
+            loc_id__in=loc_ids,
+        ).values_list('town_id', 'loc_id')
+        liens_set.update(liens_qs)
+
+        actions_qs = LegalAction.objects.filter(
+            town_id__in=town_ids,
+            loc_id__in=loc_ids,
+        ).filter(
+            Q(created_by=request.user) | Q(source__iexact="CourtListener")
+        ).values_list('town_id', 'loc_id')
+        actions_set.update(actions_qs)
+
+    for town_id, loc_id in liens_set:
+        key = f"{town_id}|{loc_id}"
+        flags.setdefault(key, {"has_lien": False, "has_legal_action": False})
+        flags[key]["has_lien"] = True
+
+    for town_id, loc_id in actions_set:
+        key = f"{town_id}|{loc_id}"
+        flags.setdefault(key, {"has_lien": False, "has_legal_action": False})
+        flags[key]["has_legal_action"] = True
+
+    def _infer_county(town_name: Optional[str]) -> Optional[str]:
+        if not town_name:
+            return None
+        town_lower = town_name.lower()
+        if town_lower in {"salem", "beverly", "peabody", "lynn", "gloucester", "marblehead", "danvers"}:
+            return "Essex"
+        if town_lower in {"boston", "cambridge", "somerville", "brookline", "chelsea", "revere", "winthrop"}:
+            return "Suffolk"
+        if town_lower in {"worcester", "shrewsbury", "westborough", "auburn", "millbury"}:
+            return "Worcester"
+        return None
+
+    searches_queued = 0
+    if auto_lien_search_enabled:
+        for parcel in normalized:
+            if parcel.get("property_category") != "Residential":
+                continue
+            town_id = parcel["town_id"]
+            loc_id = parcel["loc_id"]
+            if not should_search_parcel(request.user, town_id, loc_id):
+                continue
+            parcel_data = {
+                "owner_name": parcel.get("owner") or "",
+                "address": parcel.get("address") or "",
+                "town_name": parcel.get("town_name") or "",
+                "county": _infer_county(parcel.get("town_name")),
+            }
+            try:
+                if search_parcel_background(request.user, town_id, loc_id, parcel_data):
+                    searches_queued += 1
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Failed to queue background search for %s/%s: %s", town_id, loc_id, exc)
+
+    return JsonResponse({
+        "flags": flags,
+        "autoLienSearchEnabled": auto_lien_search_enabled,
+        "queuedBackgroundSearches": searches_queued,
+    })
+
+
 # ============================================================================
 # Lien Record Views
 # ============================================================================

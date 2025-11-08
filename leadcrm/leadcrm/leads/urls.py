@@ -136,6 +136,11 @@ urlpatterns = [
         name="parcels_in_viewport",
     ),
     path(
+        "api/parcel-flags/",
+        views.parcel_flags,
+        name="parcel_flags",
+    ),
+    path(
         "api/town-geojson/<int:town_id>/",
         views.town_geojson,
         name="town_geojson",
