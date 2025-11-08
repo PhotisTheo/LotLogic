@@ -34,12 +34,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db.utils import NotSupportedError
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from django.core.cache import cache
 
 # Core Django helpers + service imports for lead CRM views.
 # Request method guards for the various endpoints.
@@ -6075,6 +6076,12 @@ def town_geojson(request, town_id):
                 response['X-Served-From'] = 'static-geojson'
                 return response
 
+        # Attempt to serve from S3 (fastest path) if local files are unavailable
+        s3_response = _maybe_redirect_geojson_from_s3(static_file_name)
+        if s3_response:
+            logger.info(f"Redirecting GeoJSON request for {town.name} to S3")
+            return s3_response
+
         # SLOW PATH: GeoJSON not pre-generated, fall back to dynamic generation
         logger.warning(
             f"Pre-generated GeoJSON not found for {town.name} (town_id={town_id}). "
@@ -6101,3 +6108,66 @@ def town_geojson(request, town_id):
             "error": str(e),
             "town_id": town_id,
         }, status=500)
+
+
+def _maybe_redirect_geojson_from_s3(static_file_name: str) -> Optional[HttpResponseRedirect]:
+    from django.conf import settings
+
+    if not getattr(settings, "USE_S3", False):
+        return None
+
+    bucket = getattr(settings, "AWS_STORAGE_BUCKET_NAME", "")
+    if not bucket:
+        return None
+
+    s3_key = f"geojson/towns/{static_file_name}"
+    cache_key = f"geojson_s3_exists::{s3_key}"
+
+    cached = cache.get(cache_key)
+    if cached is False:
+        return None
+
+    domain = getattr(settings, "AWS_S3_CUSTOM_DOMAIN", "")
+    if domain:
+        base_url = f"https://{domain}"
+    else:
+        region = getattr(settings, "AWS_S3_REGION_NAME", "us-east-1")
+        base_url = f"https://{bucket}.s3.{region}.amazonaws.com"
+
+    s3_url = f"{base_url}/{s3_key}"
+
+    def _record_missing():
+        cache.set(cache_key, False, 300)
+
+    if cached is None:
+        try:
+            import boto3
+            from botocore.exceptions import ClientError
+
+            s3_client = boto3.client(
+                "s3",
+                aws_access_key_id=getattr(settings, "AWS_ACCESS_KEY_ID", None),
+                aws_secret_access_key=getattr(settings, "AWS_SECRET_ACCESS_KEY", None),
+                region_name=getattr(settings, "AWS_S3_REGION_NAME", "us-east-1"),
+            )
+            s3_client.head_object(Bucket=bucket, Key=s3_key)
+            cache.set(cache_key, True, 3600)
+        except ImportError:
+            logger.warning("boto3 not available; cannot verify GeoJSON on S3.")
+            return None
+        except ClientError as exc:
+            error_code = exc.response.get("Error", {}).get("Code")
+            if error_code in {"404", "NoSuchKey"}:
+                logger.info("GeoJSON %s not found in S3.", s3_key)
+                _record_missing()
+            else:
+                logger.warning("Error checking S3 for GeoJSON %s: %s", s3_key, exc)
+            return None
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Unexpected error checking S3 for GeoJSON %s: %s", s3_key, exc)
+            return None
+
+    response = HttpResponseRedirect(s3_url)
+    response['Cache-Control'] = 'public, max-age=31536000, immutable'
+    response['X-Served-From'] = 's3-geojson'
+    return response

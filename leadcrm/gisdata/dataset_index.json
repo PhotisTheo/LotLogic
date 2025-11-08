@@ -1,12 +1,1758 @@
 {
   "BOSTON_TAXPAR": {
     "downloaded_at": "2025-11-07T22:00:00Z",
+    "last_checked": "2025-11-08T22:03:52.331909+00:00",
     "slug": "BOSTON_TAXPAR",
-    "source_url": "https://bostonopendata-boston.opendata.arcgis.com/datasets/property-assessment-parcels.zip"
+    "source_url": "file:///Volumes/OWC%20Envoy%20Ultra/Websites/lead_CRM/gisdata/downloads/BOSTON_TAXPAR.zip"
+  },
+  "L3_SHP_M001_ABINGTON": {
+    "downloaded_at": "2025-11-08T22:01:46.141571+00:00",
+    "last_checked": "2025-11-08T22:01:46.141571+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M001_ABINGTON.zip"
+  },
+  "L3_SHP_M002_ACTON": {
+    "downloaded_at": "2025-11-08T22:01:52.172278+00:00",
+    "last_checked": "2025-11-08T22:01:52.172278+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M002_ACTON.zip"
+  },
+  "L3_SHP_M003_ACUSHNET": {
+    "downloaded_at": "2025-11-08T22:01:55.922929+00:00",
+    "last_checked": "2025-11-08T22:01:55.922929+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M003_ACUSHNET.zip"
+  },
+  "L3_SHP_M004_ADAMS": {
+    "downloaded_at": "2025-11-08T22:01:59.037737+00:00",
+    "last_checked": "2025-11-08T22:01:59.037737+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M004_ADAMS.zip"
+  },
+  "L3_SHP_M005_AGAWAM": {
+    "downloaded_at": "2025-11-08T22:02:03.695246+00:00",
+    "last_checked": "2025-11-08T22:02:03.695246+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M005_AGAWAM.zip"
+  },
+  "L3_SHP_M006_ALFORD": {
+    "downloaded_at": "2025-11-08T22:02:06.792421+00:00",
+    "last_checked": "2025-11-08T22:02:06.792421+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M006_ALFORD.zip"
+  },
+  "L3_SHP_M007_AMESBURY": {
+    "downloaded_at": "2025-11-08T22:02:07.661550+00:00",
+    "last_checked": "2025-11-08T22:02:07.661550+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M007_AMESBURY.zip"
+  },
+  "L3_SHP_M008_AMHERST": {
+    "downloaded_at": "2025-11-08T22:02:13.010717+00:00",
+    "last_checked": "2025-11-08T22:02:13.010717+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M008_AMHERST.zip"
+  },
+  "L3_SHP_M009_ANDOVER": {
+    "downloaded_at": "2025-11-08T22:02:18.717128+00:00",
+    "last_checked": "2025-11-08T22:02:18.717128+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M009_ANDOVER.zip"
+  },
+  "L3_SHP_M010_ARLINGTON": {
+    "downloaded_at": "2025-11-08T22:02:27.509692+00:00",
+    "last_checked": "2025-11-08T22:02:27.509692+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M010_ARLINGTON.zip"
+  },
+  "L3_SHP_M011_ASHBURNHAM": {
+    "downloaded_at": "2025-11-08T22:02:31.908349+00:00",
+    "last_checked": "2025-11-08T22:02:31.908349+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M011_ASHBURNHAM.zip"
+  },
+  "L3_SHP_M012_ASHBY": {
+    "downloaded_at": "2025-11-08T22:02:34.634193+00:00",
+    "last_checked": "2025-11-08T22:02:34.634193+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M012_ASHBY.zip"
+  },
+  "L3_SHP_M013_ASHFIELD": {
+    "downloaded_at": "2025-11-08T22:02:36.120946+00:00",
+    "last_checked": "2025-11-08T22:02:36.120946+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M013_ASHFIELD.zip"
+  },
+  "L3_SHP_M014_ASHLAND": {
+    "downloaded_at": "2025-11-08T22:02:39.483442+00:00",
+    "last_checked": "2025-11-08T22:02:39.483442+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M014_ASHLAND.zip"
+  },
+  "L3_SHP_M015_ATHOL": {
+    "downloaded_at": "2025-11-08T22:02:41.452693+00:00",
+    "last_checked": "2025-11-08T22:02:41.452693+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M015_ATHOL.zip"
+  },
+  "L3_SHP_M016_ATTLEBORO": {
+    "downloaded_at": "2025-11-08T22:02:47.352235+00:00",
+    "last_checked": "2025-11-08T22:02:47.352235+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M016_ATTLEBORO.zip"
+  },
+  "L3_SHP_M017_AUBURN": {
+    "downloaded_at": "2025-11-08T22:02:52.993007+00:00",
+    "last_checked": "2025-11-08T22:02:52.993007+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M017_AUBURN.zip"
+  },
+  "L3_SHP_M018_AVON": {
+    "downloaded_at": "2025-11-08T22:02:55.812205+00:00",
+    "last_checked": "2025-11-08T22:02:55.812205+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M018_AVON.zip"
+  },
+  "L3_SHP_M019_AYER": {
+    "downloaded_at": "2025-11-08T22:02:57.015572+00:00",
+    "last_checked": "2025-11-08T22:02:57.015572+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M019_AYER.zip"
+  },
+  "L3_SHP_M020_BARNSTABLE": {
+    "downloaded_at": "2025-11-08T22:03:03.585336+00:00",
+    "last_checked": "2025-11-08T22:03:03.585336+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M020_BARNSTABLE.zip"
+  },
+  "L3_SHP_M021_BARRE": {
+    "downloaded_at": "2025-11-08T22:03:12.088790+00:00",
+    "last_checked": "2025-11-08T22:03:12.088790+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M021_BARRE.zip"
+  },
+  "L3_SHP_M022_BECKET": {
+    "downloaded_at": "2025-11-08T22:03:15.072541+00:00",
+    "last_checked": "2025-11-08T22:03:15.072541+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M022_BECKET.zip"
+  },
+  "L3_SHP_M023_BEDFORD": {
+    "downloaded_at": "2025-11-08T22:03:16.888286+00:00",
+    "last_checked": "2025-11-08T22:03:16.888286+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M023_BEDFORD.zip"
+  },
+  "L3_SHP_M024_BELCHERTOWN": {
+    "downloaded_at": "2025-11-08T22:03:20.157987+00:00",
+    "last_checked": "2025-11-08T22:03:20.157987+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M024_BELCHERTOWN.zip"
+  },
+  "L3_SHP_M025_BELLINGHAM": {
+    "downloaded_at": "2025-11-08T22:03:24.484104+00:00",
+    "last_checked": "2025-11-08T22:03:24.484104+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M025_BELLINGHAM.zip"
+  },
+  "L3_SHP_M026_BELMONT": {
+    "downloaded_at": "2025-11-08T22:03:29.094388+00:00",
+    "last_checked": "2025-11-08T22:03:29.094388+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M026_BELMONT.zip"
+  },
+  "L3_SHP_M027_BERKLEY": {
+    "downloaded_at": "2025-11-08T22:03:32.210110+00:00",
+    "last_checked": "2025-11-08T22:03:32.210110+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M027_BERKLEY.zip"
+  },
+  "L3_SHP_M028_BERLIN": {
+    "downloaded_at": "2025-11-08T22:03:34.385633+00:00",
+    "last_checked": "2025-11-08T22:03:34.385633+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M028_BERLIN.zip"
+  },
+  "L3_SHP_M029_BERNARDSTON": {
+    "downloaded_at": "2025-11-08T22:03:35.726929+00:00",
+    "last_checked": "2025-11-08T22:03:35.726929+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M029_BERNARDSTON.zip"
+  },
+  "L3_SHP_M030_BEVERLY": {
+    "downloaded_at": "2025-11-08T22:03:37.336520+00:00",
+    "last_checked": "2025-11-08T22:03:37.336520+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M030_BEVERLY.zip"
+  },
+  "L3_SHP_M031_BILLERICA": {
+    "downloaded_at": "2025-11-08T22:03:41.600039+00:00",
+    "last_checked": "2025-11-08T22:03:41.600039+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M031_BILLERICA.zip"
+  },
+  "L3_SHP_M032_BLACKSTONE": {
+    "downloaded_at": "2025-11-08T22:03:48.109385+00:00",
+    "last_checked": "2025-11-08T22:03:48.109385+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M032_BLACKSTONE.zip"
+  },
+  "L3_SHP_M033_BLANDFORD": {
+    "downloaded_at": "2025-11-08T22:03:50.015329+00:00",
+    "last_checked": "2025-11-08T22:03:50.015329+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M033_BLANDFORD.zip"
+  },
+  "L3_SHP_M034_BOLTON": {
+    "downloaded_at": "2025-11-08T22:03:51.736622+00:00",
+    "last_checked": "2025-11-08T22:03:51.736622+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M034_BOLTON.zip"
+  },
+  "L3_SHP_M036_BOURNE": {
+    "downloaded_at": "2025-11-08T22:04:46.408861+00:00",
+    "last_checked": "2025-11-08T22:04:46.408861+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M036_BOURNE.zip"
+  },
+  "L3_SHP_M037_BOXBOROUGH": {
+    "downloaded_at": "2025-11-08T22:04:51.692690+00:00",
+    "last_checked": "2025-11-08T22:04:51.692690+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M037_BOXBOROUGH.zip"
+  },
+  "L3_SHP_M038_BOXFORD": {
+    "downloaded_at": "2025-11-08T22:04:53.136910+00:00",
+    "last_checked": "2025-11-08T22:04:53.136910+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M038_BOXFORD.zip"
+  },
+  "L3_SHP_M039_BOYLSTON": {
+    "downloaded_at": "2025-11-08T22:04:55.358694+00:00",
+    "last_checked": "2025-11-08T22:04:55.358694+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M039_BOYLSTON.zip"
+  },
+  "L3_SHP_M040_BRAINTREE": {
+    "downloaded_at": "2025-11-08T22:05:00.119340+00:00",
+    "last_checked": "2025-11-08T22:05:00.119340+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M040_BRAINTREE.zip"
+  },
+  "L3_SHP_M041_BREWSTER": {
+    "downloaded_at": "2025-11-08T22:05:08.137774+00:00",
+    "last_checked": "2025-11-08T22:05:08.137774+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M041_BREWSTER.zip"
+  },
+  "L3_SHP_M042_BRIDGEWATER": {
+    "downloaded_at": "2025-11-08T22:05:13.317650+00:00",
+    "last_checked": "2025-11-08T22:05:13.317650+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M042_BRIDGEWATER.zip"
+  },
+  "L3_SHP_M043_BRIMFIELD": {
+    "downloaded_at": "2025-11-08T22:05:16.577889+00:00",
+    "last_checked": "2025-11-08T22:05:16.577889+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M043_BRIMFIELD.zip"
+  },
+  "L3_SHP_M044_BROCKTON": {
+    "downloaded_at": "2025-11-08T22:05:18.826450+00:00",
+    "last_checked": "2025-11-08T22:05:18.826450+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M044_BROCKTON.zip"
   },
   "L3_SHP_M045_BROOKFIELD": {
     "downloaded_at": "2025-11-08T19:27:58.246965+00:00",
-    "last_checked": "2025-11-08T20:23:48.772273+00:00",
+    "last_checked": "2025-11-08T20:46:40.249665+00:00",
     "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M045_BROOKFIELD.zip"
+  },
+  "L3_SHP_M046_BROOKLINE": {
+    "downloaded_at": "2025-11-08T22:05:25.510806+00:00",
+    "last_checked": "2025-11-08T22:05:25.510806+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M046_BROOKLINE.zip"
+  },
+  "L3_SHP_M047_BUCKLAND": {
+    "downloaded_at": "2025-11-08T22:05:29.003165+00:00",
+    "last_checked": "2025-11-08T22:05:29.003165+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M047_BUCKLAND.zip"
+  },
+  "L3_SHP_M048_BURLINGTON": {
+    "downloaded_at": "2025-11-08T22:05:30.106463+00:00",
+    "last_checked": "2025-11-08T22:05:30.106463+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M048_BURLINGTON.zip"
+  },
+  "L3_SHP_M049_CAMBRIDGE": {
+    "downloaded_at": "2025-11-08T22:05:32.850068+00:00",
+    "last_checked": "2025-11-08T22:05:32.850068+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M049_CAMBRIDGE.zip"
+  },
+  "L3_SHP_M050_CANTON": {
+    "downloaded_at": "2025-11-08T22:05:38.120067+00:00",
+    "last_checked": "2025-11-08T22:05:38.120067+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M050_CANTON.zip"
+  },
+  "L3_SHP_M051_CARLISLE": {
+    "downloaded_at": "2025-11-08T22:05:41.519916+00:00",
+    "last_checked": "2025-11-08T22:05:41.519916+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M051_CARLISLE.zip"
+  },
+  "L3_SHP_M052_CARVER": {
+    "downloaded_at": "2025-11-08T22:05:44.366590+00:00",
+    "last_checked": "2025-11-08T22:05:44.366590+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M052_CARVER.zip"
+  },
+  "L3_SHP_M053_CHARLEMONT": {
+    "downloaded_at": "2025-11-08T22:05:46.747719+00:00",
+    "last_checked": "2025-11-08T22:05:46.747719+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M053_CHARLEMONT.zip"
+  },
+  "L3_SHP_M054_CHARLTON": {
+    "downloaded_at": "2025-11-08T22:05:48.819302+00:00",
+    "last_checked": "2025-11-08T22:05:48.819302+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M054_CHARLTON.zip"
+  },
+  "L3_SHP_M055_CHATHAM": {
+    "downloaded_at": "2025-11-08T22:05:52.566550+00:00",
+    "last_checked": "2025-11-08T22:05:52.566550+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M055_CHATHAM.zip"
+  },
+  "L3_SHP_M056_CHELMSFORD": {
+    "downloaded_at": "2025-11-08T22:05:59.724159+00:00",
+    "last_checked": "2025-11-08T22:05:59.724159+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M056_CHELMSFORD.zip"
+  },
+  "L3_SHP_M057_CHELSEA": {
+    "downloaded_at": "2025-11-08T22:06:06.078294+00:00",
+    "last_checked": "2025-11-08T22:06:06.078294+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M057_CHELSEA.zip"
+  },
+  "L3_SHP_M058_CHESHIRE": {
+    "downloaded_at": "2025-11-08T22:06:08.443385+00:00",
+    "last_checked": "2025-11-08T22:06:08.443385+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M058_CHESHIRE.zip"
+  },
+  "L3_SHP_M059_CHESTER": {
+    "downloaded_at": "2025-11-08T22:06:09.954563+00:00",
+    "last_checked": "2025-11-08T22:06:09.954563+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M059_CHESTER.zip"
+  },
+  "L3_SHP_M060_CHESTERFIELD": {
+    "downloaded_at": "2025-11-08T22:06:11.735407+00:00",
+    "last_checked": "2025-11-08T22:06:11.735407+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M060_CHESTERFIELD.zip"
+  },
+  "L3_SHP_M061_CHICOPEE": {
+    "downloaded_at": "2025-11-08T22:06:14.166893+00:00",
+    "last_checked": "2025-11-08T22:06:14.166893+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M061_CHICOPEE.zip"
+  },
+  "L3_SHP_M062_CHILMARK": {
+    "downloaded_at": "2025-11-08T22:06:19.336603+00:00",
+    "last_checked": "2025-11-08T22:06:19.336603+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M062_CHILMARK.zip"
+  },
+  "L3_SHP_M063_CLARKSBURG": {
+    "downloaded_at": "2025-11-08T22:06:20.980921+00:00",
+    "last_checked": "2025-11-08T22:06:20.980921+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M063_CLARKSBURG.zip"
+  },
+  "L3_SHP_M064_CLINTON": {
+    "downloaded_at": "2025-11-08T22:06:23.532416+00:00",
+    "last_checked": "2025-11-08T22:06:23.532416+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M064_CLINTON.zip"
+  },
+  "L3_SHP_M065_COHASSET": {
+    "downloaded_at": "2025-11-08T22:06:27.598309+00:00",
+    "last_checked": "2025-11-08T22:06:27.598309+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M065_COHASSET.zip"
+  },
+  "L3_SHP_M066_COLRAIN": {
+    "downloaded_at": "2025-11-08T22:06:29.964953+00:00",
+    "last_checked": "2025-11-08T22:06:29.964953+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M066_COLRAIN.zip"
+  },
+  "L3_SHP_M067_CONCORD": {
+    "downloaded_at": "2025-11-08T22:06:34.472318+00:00",
+    "last_checked": "2025-11-08T22:06:34.472318+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M067_CONCORD.zip"
+  },
+  "L3_SHP_M068_CONWAY": {
+    "downloaded_at": "2025-11-08T22:06:37.333117+00:00",
+    "last_checked": "2025-11-08T22:06:37.333117+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M068_CONWAY.zip"
+  },
+  "L3_SHP_M069_CUMMINGTON": {
+    "downloaded_at": "2025-11-08T22:06:38.750900+00:00",
+    "last_checked": "2025-11-08T22:06:38.750900+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M069_CUMMINGTON.zip"
+  },
+  "L3_SHP_M070_DALTON": {
+    "downloaded_at": "2025-11-08T22:06:40.310921+00:00",
+    "last_checked": "2025-11-08T22:06:40.310921+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M070_DALTON.zip"
+  },
+  "L3_SHP_M071_DANVERS": {
+    "downloaded_at": "2025-11-08T22:06:41.803584+00:00",
+    "last_checked": "2025-11-08T22:06:41.803584+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M071_DANVERS.zip"
+  },
+  "L3_SHP_M072_DARTMOUTH": {
+    "downloaded_at": "2025-11-08T22:06:47.458911+00:00",
+    "last_checked": "2025-11-08T22:06:47.458911+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M072_DARTMOUTH.zip"
+  },
+  "L3_SHP_M073_DEDHAM": {
+    "downloaded_at": "2025-11-08T22:06:56.131929+00:00",
+    "last_checked": "2025-11-08T22:06:56.131929+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M073_DEDHAM.zip"
+  },
+  "L3_SHP_M074_DEERFIELD": {
+    "downloaded_at": "2025-11-08T22:07:00.691648+00:00",
+    "last_checked": "2025-11-08T22:07:00.691648+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M074_DEERFIELD.zip"
+  },
+  "L3_SHP_M075_DENNIS": {
+    "downloaded_at": "2025-11-08T22:07:04.997109+00:00",
+    "last_checked": "2025-11-08T22:07:04.997109+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M075_DENNIS.zip"
+  },
+  "L3_SHP_M076_DIGHTON": {
+    "downloaded_at": "2025-11-08T22:07:09.390138+00:00",
+    "last_checked": "2025-11-08T22:07:09.390138+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M076_DIGHTON.zip"
+  },
+  "L3_SHP_M077_DOUGLAS": {
+    "downloaded_at": "2025-11-08T22:07:11.700158+00:00",
+    "last_checked": "2025-11-08T22:07:11.700158+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M077_DOUGLAS.zip"
+  },
+  "L3_SHP_M078_DOVER": {
+    "downloaded_at": "2025-11-08T22:07:13.911679+00:00",
+    "last_checked": "2025-11-08T22:07:13.911679+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M078_DOVER.zip"
+  },
+  "L3_SHP_M079_DRACUT": {
+    "downloaded_at": "2025-11-08T22:07:15.935013+00:00",
+    "last_checked": "2025-11-08T22:07:15.935013+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M079_DRACUT.zip"
+  },
+  "L3_SHP_M080_DUDLEY": {
+    "downloaded_at": "2025-11-08T22:07:20.204926+00:00",
+    "last_checked": "2025-11-08T22:07:20.204926+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M080_DUDLEY.zip"
+  },
+  "L3_SHP_M081_DUNSTABLE": {
+    "downloaded_at": "2025-11-08T22:07:23.142113+00:00",
+    "last_checked": "2025-11-08T22:07:23.142113+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M081_DUNSTABLE.zip"
+  },
+  "L3_SHP_M082_DUXBURY": {
+    "downloaded_at": "2025-11-08T22:07:27.655559+00:00",
+    "last_checked": "2025-11-08T22:07:27.655559+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M082_DUXBURY.zip"
+  },
+  "L3_SHP_M083_EASTBRIDGEWATER": {
+    "downloaded_at": "2025-11-08T22:07:34.678112+00:00",
+    "last_checked": "2025-11-08T22:07:34.678112+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M083_EASTBRIDGEWATER.zip"
+  },
+  "L3_SHP_M084_EASTBROOKFIELD": {
+    "downloaded_at": "2025-11-08T22:07:37.964178+00:00",
+    "last_checked": "2025-11-08T22:07:37.964178+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M084_EASTBROOKFIELD.zip"
+  },
+  "L3_SHP_M085_EASTLONGMEADOW": {
+    "downloaded_at": "2025-11-08T22:07:42.182512+00:00",
+    "last_checked": "2025-11-08T22:07:42.182512+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M085_EASTLONGMEADOW.zip"
+  },
+  "L3_SHP_M086_EASTHAM": {
+    "downloaded_at": "2025-11-08T22:07:48.254713+00:00",
+    "last_checked": "2025-11-08T22:07:48.254713+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M086_EASTHAM.zip"
+  },
+  "L3_SHP_M087_EASTHAMPTON": {
+    "downloaded_at": "2025-11-08T22:07:52.711143+00:00",
+    "last_checked": "2025-11-08T22:07:52.711143+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M087_EASTHAMPTON.zip"
+  },
+  "L3_SHP_M088_EASTON": {
+    "downloaded_at": "2025-11-08T22:07:57.486364+00:00",
+    "last_checked": "2025-11-08T22:07:57.486364+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M088_EASTON.zip"
+  },
+  "L3_SHP_M089_EDGARTOWN": {
+    "downloaded_at": "2025-11-08T22:08:03.382153+00:00",
+    "last_checked": "2025-11-08T22:08:03.382153+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M089_EDGARTOWN.zip"
+  },
+  "L3_SHP_M090_EGREMONT": {
+    "downloaded_at": "2025-11-08T22:08:06.578960+00:00",
+    "last_checked": "2025-11-08T22:08:06.578960+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M090_EGREMONT.zip"
+  },
+  "L3_SHP_M091_ERVING": {
+    "downloaded_at": "2025-11-08T22:08:07.845240+00:00",
+    "last_checked": "2025-11-08T22:08:07.845240+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M091_ERVING.zip"
+  },
+  "L3_SHP_M092_ESSEX": {
+    "downloaded_at": "2025-11-08T22:08:08.898250+00:00",
+    "last_checked": "2025-11-08T22:08:08.898250+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M092_ESSEX.zip"
+  },
+  "L3_SHP_M093_EVERETT": {
+    "downloaded_at": "2025-11-08T22:08:11.057360+00:00",
+    "last_checked": "2025-11-08T22:08:11.057360+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M093_EVERETT.zip"
+  },
+  "L3_SHP_M094_FAIRHAVEN": {
+    "downloaded_at": "2025-11-08T22:08:16.424513+00:00",
+    "last_checked": "2025-11-08T22:08:16.424513+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M094_FAIRHAVEN.zip"
+  },
+  "L3_SHP_M095_FALLRIVER": {
+    "downloaded_at": "2025-11-08T22:08:20.324907+00:00",
+    "last_checked": "2025-11-08T22:08:20.324907+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M095_FALLRIVER.zip"
+  },
+  "L3_SHP_M096_FALMOUTH": {
+    "downloaded_at": "2025-11-08T22:08:29.245713+00:00",
+    "last_checked": "2025-11-08T22:08:29.245713+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M096_FALMOUTH.zip"
+  },
+  "L3_SHP_M097_FITCHBURG": {
+    "downloaded_at": "2025-11-08T22:08:38.014238+00:00",
+    "last_checked": "2025-11-08T22:08:38.014238+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M097_FITCHBURG.zip"
+  },
+  "L3_SHP_M098_FLORIDA": {
+    "downloaded_at": "2025-11-08T22:08:41.934857+00:00",
+    "last_checked": "2025-11-08T22:08:41.934857+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M098_FLORIDA.zip"
+  },
+  "L3_SHP_M099_FOXBOROUGH": {
+    "downloaded_at": "2025-11-08T22:08:44.811890+00:00",
+    "last_checked": "2025-11-08T22:08:44.811890+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M099_FOXBOROUGH.zip"
+  },
+  "L3_SHP_M100_FRAMINGHAM": {
+    "downloaded_at": "2025-11-08T22:08:51.265253+00:00",
+    "last_checked": "2025-11-08T22:08:51.265253+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M100_FRAMINGHAM.zip"
+  },
+  "L3_SHP_M101_FRANKLIN": {
+    "downloaded_at": "2025-11-08T22:08:58.786321+00:00",
+    "last_checked": "2025-11-08T22:08:58.786321+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M101_FRANKLIN.zip"
+  },
+  "L3_SHP_M102_FREETOWN": {
+    "downloaded_at": "2025-11-08T22:09:04.274681+00:00",
+    "last_checked": "2025-11-08T22:09:04.274681+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M102_FREETOWN.zip"
+  },
+  "L3_SHP_M103_GARDNER": {
+    "downloaded_at": "2025-11-08T22:09:07.565030+00:00",
+    "last_checked": "2025-11-08T22:09:07.565030+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M103_GARDNER.zip"
+  },
+  "L3_SHP_M104_AQUINNAH": {
+    "downloaded_at": "2025-11-08T22:09:10.732659+00:00",
+    "last_checked": "2025-11-08T22:09:10.732659+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M104_AQUINNAH.zip"
+  },
+  "L3_SHP_M105_GEORGETOWN": {
+    "downloaded_at": "2025-11-08T22:09:11.900284+00:00",
+    "last_checked": "2025-11-08T22:09:11.900284+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M105_GEORGETOWN.zip"
+  },
+  "L3_SHP_M106_GILL": {
+    "downloaded_at": "2025-11-08T22:09:13.795562+00:00",
+    "last_checked": "2025-11-08T22:09:13.795562+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M106_GILL.zip"
+  },
+  "L3_SHP_M107_GLOUCESTER": {
+    "downloaded_at": "2025-11-08T22:09:16.903299+00:00",
+    "last_checked": "2025-11-08T22:09:16.903299+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M107_GLOUCESTER.zip"
+  },
+  "L3_SHP_M108_GOSHEN": {
+    "downloaded_at": "2025-11-08T22:09:22.751870+00:00",
+    "last_checked": "2025-11-08T22:09:22.751870+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M108_GOSHEN.zip"
+  },
+  "L3_SHP_M109_GOSNOLD": {
+    "downloaded_at": "2025-11-08T22:09:23.795680+00:00",
+    "last_checked": "2025-11-08T22:09:23.795680+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M109_GOSNOLD.zip"
+  },
+  "L3_SHP_M110_GRAFTON": {
+    "downloaded_at": "2025-11-08T22:09:27.505088+00:00",
+    "last_checked": "2025-11-08T22:09:27.505088+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M110_GRAFTON.zip"
+  },
+  "L3_SHP_M111_GRANBY": {
+    "downloaded_at": "2025-11-08T22:09:31.538417+00:00",
+    "last_checked": "2025-11-08T22:09:31.538417+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M111_GRANBY.zip"
+  },
+  "L3_SHP_M112_GRANVILLE": {
+    "downloaded_at": "2025-11-08T22:09:33.621208+00:00",
+    "last_checked": "2025-11-08T22:09:33.621208+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M112_GRANVILLE.zip"
+  },
+  "L3_SHP_M113_GREATBARRINGTON": {
+    "downloaded_at": "2025-11-08T22:09:35.181571+00:00",
+    "last_checked": "2025-11-08T22:09:35.181571+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M113_GREATBARRINGTON.zip"
+  },
+  "L3_SHP_M114_GREENFIELD": {
+    "downloaded_at": "2025-11-08T22:09:39.474538+00:00",
+    "last_checked": "2025-11-08T22:09:39.474538+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M114_GREENFIELD.zip"
+  },
+  "L3_SHP_M115_GROTON": {
+    "downloaded_at": "2025-11-08T22:09:45.004288+00:00",
+    "last_checked": "2025-11-08T22:09:45.004288+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M115_GROTON.zip"
+  },
+  "L3_SHP_M116_GROVELAND": {
+    "downloaded_at": "2025-11-08T22:09:48.062189+00:00",
+    "last_checked": "2025-11-08T22:09:48.062189+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M116_GROVELAND.zip"
+  },
+  "L3_SHP_M117_HADLEY": {
+    "downloaded_at": "2025-11-08T22:09:50.123340+00:00",
+    "last_checked": "2025-11-08T22:09:50.123340+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M117_HADLEY.zip"
+  },
+  "L3_SHP_M118_HALIFAX": {
+    "downloaded_at": "2025-11-08T22:09:53.774458+00:00",
+    "last_checked": "2025-11-08T22:09:53.774458+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M118_HALIFAX.zip"
+  },
+  "L3_SHP_M119_HAMILTON": {
+    "downloaded_at": "2025-11-08T22:09:55.328630+00:00",
+    "last_checked": "2025-11-08T22:09:55.328630+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M119_HAMILTON.zip"
+  },
+  "L3_SHP_M120_HAMPDEN": {
+    "downloaded_at": "2025-11-08T22:09:57.184801+00:00",
+    "last_checked": "2025-11-08T22:09:57.184801+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M120_HAMPDEN.zip"
+  },
+  "L3_SHP_M121_HANCOCK": {
+    "downloaded_at": "2025-11-08T22:09:58.612229+00:00",
+    "last_checked": "2025-11-08T22:09:58.612229+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M121_HANCOCK.zip"
+  },
+  "L3_SHP_M122_HANOVER": {
+    "downloaded_at": "2025-11-08T22:10:00.635819+00:00",
+    "last_checked": "2025-11-08T22:10:00.635819+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M122_HANOVER.zip"
+  },
+  "L3_SHP_M123_HANSON": {
+    "downloaded_at": "2025-11-08T22:10:04.372785+00:00",
+    "last_checked": "2025-11-08T22:10:04.372785+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M123_HANSON.zip"
+  },
+  "L3_SHP_M124_HARDWICK": {
+    "downloaded_at": "2025-11-08T22:10:06.520429+00:00",
+    "last_checked": "2025-11-08T22:10:06.520429+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M124_HARDWICK.zip"
+  },
+  "L3_SHP_M125_HARVARD": {
+    "downloaded_at": "2025-11-08T22:10:08.722113+00:00",
+    "last_checked": "2025-11-08T22:10:08.722113+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M125_HARVARD.zip"
+  },
+  "L3_SHP_M126_HARWICH": {
+    "downloaded_at": "2025-11-08T22:10:11.263721+00:00",
+    "last_checked": "2025-11-08T22:10:11.263721+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M126_HARWICH.zip"
+  },
+  "L3_SHP_M127_HATFIELD": {
+    "downloaded_at": "2025-11-08T22:10:15.143627+00:00",
+    "last_checked": "2025-11-08T22:10:15.143627+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M127_HATFIELD.zip"
+  },
+  "L3_SHP_M128_HAVERHILL": {
+    "downloaded_at": "2025-11-08T22:10:18.749823+00:00",
+    "last_checked": "2025-11-08T22:10:18.749823+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M128_HAVERHILL.zip"
+  },
+  "L3_SHP_M129_HAWLEY": {
+    "downloaded_at": "2025-11-08T22:10:24.454271+00:00",
+    "last_checked": "2025-11-08T22:10:24.454271+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M129_HAWLEY.zip"
+  },
+  "L3_SHP_M130_HEATH": {
+    "downloaded_at": "2025-11-08T22:10:25.608685+00:00",
+    "last_checked": "2025-11-08T22:10:25.608685+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M130_HEATH.zip"
+  },
+  "L3_SHP_M131_HINGHAM": {
+    "downloaded_at": "2025-11-08T22:10:27.418528+00:00",
+    "last_checked": "2025-11-08T22:10:27.418528+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M131_HINGHAM.zip"
+  },
+  "L3_SHP_M132_HINSDALE": {
+    "downloaded_at": "2025-11-08T22:10:31.789882+00:00",
+    "last_checked": "2025-11-08T22:10:31.789882+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M132_HINSDALE.zip"
+  },
+  "L3_SHP_M133_HOLBROOK": {
+    "downloaded_at": "2025-11-08T22:10:33.714021+00:00",
+    "last_checked": "2025-11-08T22:10:33.714021+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M133_HOLBROOK.zip"
+  },
+  "L3_SHP_M134_HOLDEN": {
+    "downloaded_at": "2025-11-08T22:10:37.357397+00:00",
+    "last_checked": "2025-11-08T22:10:37.357397+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M134_HOLDEN.zip"
+  },
+  "L3_SHP_M135_HOLLAND": {
+    "downloaded_at": "2025-11-08T22:10:41.460920+00:00",
+    "last_checked": "2025-11-08T22:10:41.460920+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M135_HOLLAND.zip"
+  },
+  "L3_SHP_M136_HOLLISTON": {
+    "downloaded_at": "2025-11-08T22:10:43.844885+00:00",
+    "last_checked": "2025-11-08T22:10:43.844885+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M136_HOLLISTON.zip"
+  },
+  "L3_SHP_M137_HOLYOKE": {
+    "downloaded_at": "2025-11-08T22:10:49.429215+00:00",
+    "last_checked": "2025-11-08T22:10:49.429215+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M137_HOLYOKE.zip"
+  },
+  "L3_SHP_M138_HOPEDALE": {
+    "downloaded_at": "2025-11-08T22:10:52.723795+00:00",
+    "last_checked": "2025-11-08T22:10:52.723795+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M138_HOPEDALE.zip"
+  },
+  "L3_SHP_M139_HOPKINTON": {
+    "downloaded_at": "2025-11-08T22:10:56.377188+00:00",
+    "last_checked": "2025-11-08T22:10:56.377188+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M139_HOPKINTON.zip"
+  },
+  "L3_SHP_M140_HUBBARDSTON": {
+    "downloaded_at": "2025-11-08T22:11:00.873041+00:00",
+    "last_checked": "2025-11-08T22:11:00.873041+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M140_HUBBARDSTON.zip"
+  },
+  "L3_SHP_M141_HUDSON": {
+    "downloaded_at": "2025-11-08T22:11:03.533157+00:00",
+    "last_checked": "2025-11-08T22:11:03.533157+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M141_HUDSON.zip"
+  },
+  "L3_SHP_M142_HULL": {
+    "downloaded_at": "2025-11-08T22:11:07.312825+00:00",
+    "last_checked": "2025-11-08T22:11:07.312825+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M142_HULL.zip"
+  },
+  "L3_SHP_M143_HUNTINGTON": {
+    "downloaded_at": "2025-11-08T22:11:09.509731+00:00",
+    "last_checked": "2025-11-08T22:11:09.509731+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M143_HUNTINGTON.zip"
+  },
+  "L3_SHP_M144_IPSWICH": {
+    "downloaded_at": "2025-11-08T22:11:13.003279+00:00",
+    "last_checked": "2025-11-08T22:11:13.003279+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M144_IPSWICH.zip"
+  },
+  "L3_SHP_M145_KINGSTON": {
+    "downloaded_at": "2025-11-08T22:11:18.264998+00:00",
+    "last_checked": "2025-11-08T22:11:18.264998+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M145_KINGSTON.zip"
+  },
+  "L3_SHP_M146_LAKEVILLE": {
+    "downloaded_at": "2025-11-08T22:11:22.422647+00:00",
+    "last_checked": "2025-11-08T22:11:22.422647+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M146_LAKEVILLE.zip"
+  },
+  "L3_SHP_M147_LANCASTER": {
+    "downloaded_at": "2025-11-08T22:11:25.264397+00:00",
+    "last_checked": "2025-11-08T22:11:25.264397+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M147_LANCASTER.zip"
+  },
+  "L3_SHP_M148_LANESBOROUGH": {
+    "downloaded_at": "2025-11-08T22:11:27.174095+00:00",
+    "last_checked": "2025-11-08T22:11:27.174095+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M148_LANESBOROUGH.zip"
+  },
+  "L3_SHP_M149_LAWRENCE": {
+    "downloaded_at": "2025-11-08T22:11:28.332709+00:00",
+    "last_checked": "2025-11-08T22:11:28.332709+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M149_LAWRENCE.zip"
+  },
+  "L3_SHP_M150_LEE": {
+    "downloaded_at": "2025-11-08T22:11:32.367670+00:00",
+    "last_checked": "2025-11-08T22:11:32.367670+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M150_LEE.zip"
+  },
+  "L3_SHP_M151_LEICESTER": {
+    "downloaded_at": "2025-11-08T22:11:34.729126+00:00",
+    "last_checked": "2025-11-08T22:11:34.729126+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M151_LEICESTER.zip"
+  },
+  "L3_SHP_M152_LENOX": {
+    "downloaded_at": "2025-11-08T22:11:37.266101+00:00",
+    "last_checked": "2025-11-08T22:11:37.266101+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M152_LENOX.zip"
+  },
+  "L3_SHP_M153_LEOMINSTER": {
+    "downloaded_at": "2025-11-08T22:11:38.913722+00:00",
+    "last_checked": "2025-11-08T22:11:38.913722+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M153_LEOMINSTER.zip"
+  },
+  "L3_SHP_M154_LEVERETT": {
+    "downloaded_at": "2025-11-08T22:11:42.990094+00:00",
+    "last_checked": "2025-11-08T22:11:42.990094+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M154_LEVERETT.zip"
+  },
+  "L3_SHP_M155_LEXINGTON": {
+    "downloaded_at": "2025-11-08T22:11:46.363337+00:00",
+    "last_checked": "2025-11-08T22:11:46.363337+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M155_LEXINGTON.zip"
+  },
+  "L3_SHP_M156_LEYDEN": {
+    "downloaded_at": "2025-11-08T22:11:49.371329+00:00",
+    "last_checked": "2025-11-08T22:11:49.371329+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M156_LEYDEN.zip"
+  },
+  "L3_SHP_M157_LINCOLN": {
+    "downloaded_at": "2025-11-08T20:46:41.411166+00:00",
+    "last_checked": "2025-11-08T20:46:41.411166+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M157_LINCOLN.zip"
+  },
+  "L3_SHP_M158_LITTLETON": {
+    "downloaded_at": "2025-11-08T22:12:06.318696+00:00",
+    "last_checked": "2025-11-08T22:12:06.318696+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M158_LITTLETON.zip"
+  },
+  "L3_SHP_M159_LONGMEADOW": {
+    "downloaded_at": "2025-11-08T22:12:10.433164+00:00",
+    "last_checked": "2025-11-08T22:12:10.433164+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M159_LONGMEADOW.zip"
+  },
+  "L3_SHP_M160_LOWELL": {
+    "downloaded_at": "2025-11-08T22:12:13.203647+00:00",
+    "last_checked": "2025-11-08T22:12:13.203647+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M160_LOWELL.zip"
+  },
+  "L3_SHP_M161_LUDLOW": {
+    "downloaded_at": "2025-11-08T22:12:20.444524+00:00",
+    "last_checked": "2025-11-08T22:12:20.444524+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M161_LUDLOW.zip"
+  },
+  "L3_SHP_M162_LUNENBURG": {
+    "downloaded_at": "2025-11-08T22:12:23.597993+00:00",
+    "last_checked": "2025-11-08T22:12:23.597993+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M162_LUNENBURG.zip"
+  },
+  "L3_SHP_M163_LYNN": {
+    "downloaded_at": "2025-11-08T22:12:26.038764+00:00",
+    "last_checked": "2025-11-08T22:12:26.038764+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M163_LYNN.zip"
+  },
+  "L3_SHP_M164_LYNNFIELD": {
+    "downloaded_at": "2025-11-08T22:12:30.378727+00:00",
+    "last_checked": "2025-11-08T22:12:30.378727+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M164_LYNNFIELD.zip"
+  },
+  "L3_SHP_M165_MALDEN": {
+    "downloaded_at": "2025-11-08T22:12:35.772990+00:00",
+    "last_checked": "2025-11-08T22:12:35.772990+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M165_MALDEN.zip"
+  },
+  "L3_SHP_M166_MANCHESTER": {
+    "downloaded_at": "2025-11-08T22:12:38.848167+00:00",
+    "last_checked": "2025-11-08T22:12:38.848167+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M166_MANCHESTER.zip"
+  },
+  "L3_SHP_M167_MANSFIELD": {
+    "downloaded_at": "2025-11-08T22:12:43.161458+00:00",
+    "last_checked": "2025-11-08T22:12:43.161458+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M167_MANSFIELD.zip"
+  },
+  "L3_SHP_M168_MARBLEHEAD": {
+    "downloaded_at": "2025-11-08T22:12:47.015779+00:00",
+    "last_checked": "2025-11-08T22:12:47.015779+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M168_MARBLEHEAD.zip"
+  },
+  "L3_SHP_M169_MARION": {
+    "downloaded_at": "2025-11-08T22:12:52.023060+00:00",
+    "last_checked": "2025-11-08T22:12:52.023060+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M169_MARION.zip"
+  },
+  "L3_SHP_M170_MARLBOROUGH": {
+    "downloaded_at": "2025-11-08T22:12:55.786344+00:00",
+    "last_checked": "2025-11-08T22:12:55.786344+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M170_MARLBOROUGH.zip"
+  },
+  "L3_SHP_M171_MARSHFIELD": {
+    "downloaded_at": "2025-11-08T22:13:01.507572+00:00",
+    "last_checked": "2025-11-08T22:13:01.507572+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M171_MARSHFIELD.zip"
+  },
+  "L3_SHP_M172_MASHPEE": {
+    "downloaded_at": "2025-11-08T22:13:06.740811+00:00",
+    "last_checked": "2025-11-08T22:13:06.740811+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M172_MASHPEE.zip"
+  },
+  "L3_SHP_M173_MATTAPOISETT": {
+    "downloaded_at": "2025-11-08T22:13:10.327367+00:00",
+    "last_checked": "2025-11-08T22:13:10.327367+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M173_MATTAPOISETT.zip"
+  },
+  "L3_SHP_M174_MAYNARD": {
+    "downloaded_at": "2025-11-08T22:13:13.030285+00:00",
+    "last_checked": "2025-11-08T22:13:13.030285+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M174_MAYNARD.zip"
+  },
+  "L3_SHP_M175_MEDFIELD": {
+    "downloaded_at": "2025-11-08T22:13:16.918565+00:00",
+    "last_checked": "2025-11-08T22:13:16.918565+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M175_MEDFIELD.zip"
+  },
+  "L3_SHP_M176_MEDFORD": {
+    "downloaded_at": "2025-11-08T22:13:19.249724+00:00",
+    "last_checked": "2025-11-08T22:13:19.249724+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M176_MEDFORD.zip"
+  },
+  "L3_SHP_M177_MEDWAY": {
+    "downloaded_at": "2025-11-08T22:13:24.772463+00:00",
+    "last_checked": "2025-11-08T22:13:24.772463+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M177_MEDWAY.zip"
+  },
+  "L3_SHP_M178_MELROSE": {
+    "downloaded_at": "2025-11-08T22:13:26.722661+00:00",
+    "last_checked": "2025-11-08T22:13:26.722661+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M178_MELROSE.zip"
+  },
+  "L3_SHP_M179_MENDON": {
+    "downloaded_at": "2025-11-08T22:13:30.345945+00:00",
+    "last_checked": "2025-11-08T22:13:30.345945+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M179_MENDON.zip"
+  },
+  "L3_SHP_M180_MERRIMAC": {
+    "downloaded_at": "2025-11-08T22:13:31.760118+00:00",
+    "last_checked": "2025-11-08T22:13:31.760118+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M180_MERRIMAC.zip"
+  },
+  "L3_SHP_M181_METHUEN": {
+    "downloaded_at": "2025-11-08T22:13:33.929007+00:00",
+    "last_checked": "2025-11-08T22:13:33.929007+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M181_METHUEN.zip"
+  },
+  "L3_SHP_M182_MIDDLEBOROUGH": {
+    "downloaded_at": "2025-11-08T22:13:42.190597+00:00",
+    "last_checked": "2025-11-08T22:13:42.190597+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M182_MIDDLEBOROUGH.zip"
+  },
+  "L3_SHP_M183_MIDDLEFIELD": {
+    "downloaded_at": "2025-11-08T22:13:45.018820+00:00",
+    "last_checked": "2025-11-08T22:13:45.018820+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M183_MIDDLEFIELD.zip"
+  },
+  "L3_SHP_M184_MIDDLETON": {
+    "downloaded_at": "2025-11-08T22:13:46.157137+00:00",
+    "last_checked": "2025-11-08T22:13:46.157137+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M184_MIDDLETON.zip"
+  },
+  "L3_SHP_M185_MILFORD": {
+    "downloaded_at": "2025-11-08T22:13:48.597526+00:00",
+    "last_checked": "2025-11-08T22:13:48.597526+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M185_MILFORD.zip"
+  },
+  "L3_SHP_M186_MILLBURY": {
+    "downloaded_at": "2025-11-08T22:13:53.511016+00:00",
+    "last_checked": "2025-11-08T22:13:53.511016+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M186_MILLBURY.zip"
+  },
+  "L3_SHP_M187_MILLIS": {
+    "downloaded_at": "2025-11-08T22:13:56.414519+00:00",
+    "last_checked": "2025-11-08T22:13:56.414519+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M187_MILLIS.zip"
+  },
+  "L3_SHP_M188_MILLVILLE": {
+    "downloaded_at": "2025-11-08T22:13:58.306872+00:00",
+    "last_checked": "2025-11-08T22:13:58.306872+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M188_MILLVILLE.zip"
+  },
+  "L3_SHP_M189_MILTON": {
+    "downloaded_at": "2025-11-08T22:14:01.879754+00:00",
+    "last_checked": "2025-11-08T22:14:01.879754+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M189_MILTON.zip"
+  },
+  "L3_SHP_M190_MONROE": {
+    "downloaded_at": "2025-11-08T22:14:04.580031+00:00",
+    "last_checked": "2025-11-08T22:14:04.580031+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M190_MONROE.zip"
+  },
+  "L3_SHP_M191_MONSON": {
+    "downloaded_at": "2025-11-08T22:14:06.077552+00:00",
+    "last_checked": "2025-11-08T22:14:06.077552+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M191_MONSON.zip"
+  },
+  "L3_SHP_M192_MONTAGUE": {
+    "downloaded_at": "2025-11-08T22:14:08.085063+00:00",
+    "last_checked": "2025-11-08T22:14:08.085063+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M192_MONTAGUE.zip"
+  },
+  "L3_SHP_M193_MONTEREY": {
+    "downloaded_at": "2025-11-08T22:14:10.437664+00:00",
+    "last_checked": "2025-11-08T22:14:10.437664+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M193_MONTEREY.zip"
+  },
+  "L3_SHP_M194_MONTGOMERY": {
+    "downloaded_at": "2025-11-08T22:14:11.762452+00:00",
+    "last_checked": "2025-11-08T22:14:11.762452+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M194_MONTGOMERY.zip"
+  },
+  "L3_SHP_M195_MOUNTWASHINGTON": {
+    "downloaded_at": "2025-11-08T22:14:12.833289+00:00",
+    "last_checked": "2025-11-08T22:14:12.833289+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M195_MOUNTWASHINGTON.zip"
+  },
+  "L3_SHP_M196_NAHANT": {
+    "downloaded_at": "2025-11-08T22:14:14.293703+00:00",
+    "last_checked": "2025-11-08T22:14:14.293703+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M196_NAHANT.zip"
+  },
+  "L3_SHP_M197_NANTUCKET": {
+    "downloaded_at": "2025-11-08T22:14:17.069495+00:00",
+    "last_checked": "2025-11-08T22:14:17.069495+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M197_NANTUCKET.zip"
+  },
+  "L3_SHP_M198_NATICK": {
+    "downloaded_at": "2025-11-08T22:14:23.580879+00:00",
+    "last_checked": "2025-11-08T22:14:23.580879+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M198_NATICK.zip"
+  },
+  "L3_SHP_M199_NEEDHAM": {
+    "downloaded_at": "2025-11-08T22:14:29.627769+00:00",
+    "last_checked": "2025-11-08T22:14:29.627769+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M199_NEEDHAM.zip"
+  },
+  "L3_SHP_M200_NEWASHFORD": {
+    "downloaded_at": "2025-11-08T22:14:33.928736+00:00",
+    "last_checked": "2025-11-08T22:14:33.928736+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M200_NEWASHFORD.zip"
+  },
+  "L3_SHP_M201_NEWBEDFORD": {
+    "downloaded_at": "2025-11-08T22:14:38.941174+00:00",
+    "last_checked": "2025-11-08T22:14:38.941174+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M201_NEWBEDFORD.zip"
+  },
+  "L3_SHP_M202_NEWBRAINTREE": {
+    "downloaded_at": "2025-11-08T22:14:44.320173+00:00",
+    "last_checked": "2025-11-08T22:14:44.320173+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M202_NEWBRAINTREE.zip"
+  },
+  "L3_SHP_M203_NEWMARLBOROUGH": {
+    "downloaded_at": "2025-11-08T22:14:45.714963+00:00",
+    "last_checked": "2025-11-08T22:14:45.714963+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M203_NEWMARLBOROUGH.zip"
+  },
+  "L3_SHP_M204_NEWSALEM": {
+    "downloaded_at": "2025-11-08T22:14:47.680429+00:00",
+    "last_checked": "2025-11-08T22:14:47.680429+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M204_NEWSALEM.zip"
+  },
+  "L3_SHP_M205_NEWBURY": {
+    "downloaded_at": "2025-11-08T22:14:48.777940+00:00",
+    "last_checked": "2025-11-08T22:14:48.777940+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M205_NEWBURY.zip"
+  },
+  "L3_SHP_M206_NEWBURYPORT": {
+    "downloaded_at": "2025-11-08T22:14:50.621397+00:00",
+    "last_checked": "2025-11-08T22:14:50.621397+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M206_NEWBURYPORT.zip"
+  },
+  "L3_SHP_M207_NEWTON": {
+    "downloaded_at": "2025-11-08T22:14:57.244546+00:00",
+    "last_checked": "2025-11-08T22:14:57.244546+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M207_NEWTON.zip"
+  },
+  "L3_SHP_M208_NORFOLK": {
+    "downloaded_at": "2025-11-08T22:15:05.070455+00:00",
+    "last_checked": "2025-11-08T22:15:05.070455+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M208_NORFOLK.zip"
+  },
+  "L3_SHP_M209_NORTHADAMS": {
+    "downloaded_at": "2025-11-08T22:15:07.570356+00:00",
+    "last_checked": "2025-11-08T22:15:07.570356+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M209_NORTHADAMS.zip"
+  },
+  "L3_SHP_M210_NORTHANDOVER": {
+    "downloaded_at": "2025-11-08T22:15:09.434868+00:00",
+    "last_checked": "2025-11-08T22:15:09.434868+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M210_NORTHANDOVER.zip"
+  },
+  "L3_SHP_M211_NORTHATTLEBOROUGH": {
+    "downloaded_at": "2025-11-08T22:15:15.299220+00:00",
+    "last_checked": "2025-11-08T22:15:15.299220+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M211_NORTHATTLEBOROUGH.zip"
+  },
+  "L3_SHP_M212_NORTHBROOKFIELD": {
+    "downloaded_at": "2025-11-08T22:15:20.386067+00:00",
+    "last_checked": "2025-11-08T22:15:20.386067+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M212_NORTHBROOKFIELD.zip"
+  },
+  "L3_SHP_M213_NORTHREADING": {
+    "downloaded_at": "2025-11-08T22:15:21.751831+00:00",
+    "last_checked": "2025-11-08T22:15:21.751831+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M213_NORTHREADING.zip"
+  },
+  "L3_SHP_M214_NORTHAMPTON": {
+    "downloaded_at": "2025-11-08T22:15:27.227340+00:00",
+    "last_checked": "2025-11-08T22:15:27.227340+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M214_NORTHAMPTON.zip"
+  },
+  "L3_SHP_M215_NORTHBOROUGH": {
+    "downloaded_at": "2025-11-08T22:15:33.418773+00:00",
+    "last_checked": "2025-11-08T22:15:33.418773+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M215_NORTHBOROUGH.zip"
+  },
+  "L3_SHP_M216_NORTHBRIDGE": {
+    "downloaded_at": "2025-11-08T22:15:37.650850+00:00",
+    "last_checked": "2025-11-08T22:15:37.650850+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M216_NORTHBRIDGE.zip"
+  },
+  "L3_SHP_M217_NORTHFIELD": {
+    "downloaded_at": "2025-11-08T22:15:40.927068+00:00",
+    "last_checked": "2025-11-08T22:15:40.927068+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M217_NORTHFIELD.zip"
+  },
+  "L3_SHP_M218_NORTON": {
+    "downloaded_at": "2025-11-08T22:15:44.628183+00:00",
+    "last_checked": "2025-11-08T22:15:44.628183+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M218_NORTON.zip"
+  },
+  "L3_SHP_M219_NORWELL": {
+    "downloaded_at": "2025-11-08T22:15:49.329636+00:00",
+    "last_checked": "2025-11-08T22:15:49.329636+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M219_NORWELL.zip"
+  },
+  "L3_SHP_M220_NORWOOD": {
+    "downloaded_at": "2025-11-08T22:15:52.147844+00:00",
+    "last_checked": "2025-11-08T22:15:52.147844+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M220_NORWOOD.zip"
+  },
+  "L3_SHP_M221_OAKBLUFFS": {
+    "downloaded_at": "2025-11-08T22:15:56.139325+00:00",
+    "last_checked": "2025-11-08T22:15:56.139325+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M221_OAKBLUFFS.zip"
+  },
+  "L3_SHP_M222_OAKHAM": {
+    "downloaded_at": "2025-11-08T22:15:58.261509+00:00",
+    "last_checked": "2025-11-08T22:15:58.261509+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M222_OAKHAM.zip"
+  },
+  "L3_SHP_M223_ORANGE": {
+    "downloaded_at": "2025-11-08T22:15:59.236377+00:00",
+    "last_checked": "2025-11-08T22:15:59.236377+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M223_ORANGE.zip"
+  },
+  "L3_SHP_M224_ORLEANS": {
+    "downloaded_at": "2025-11-08T22:16:03.693803+00:00",
+    "last_checked": "2025-11-08T22:16:03.693803+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M224_ORLEANS.zip"
+  },
+  "L3_SHP_M225_OTIS": {
+    "downloaded_at": "2025-11-08T22:16:06.520185+00:00",
+    "last_checked": "2025-11-08T22:16:06.520185+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M225_OTIS.zip"
+  },
+  "L3_SHP_M226_OXFORD": {
+    "downloaded_at": "2025-11-08T22:16:08.922150+00:00",
+    "last_checked": "2025-11-08T22:16:08.922150+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M226_OXFORD.zip"
+  },
+  "L3_SHP_M227_PALMER": {
+    "downloaded_at": "2025-11-08T22:16:12.009372+00:00",
+    "last_checked": "2025-11-08T22:16:12.009372+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M227_PALMER.zip"
+  },
+  "L3_SHP_M228_PAXTON": {
+    "downloaded_at": "2025-11-08T22:16:14.348119+00:00",
+    "last_checked": "2025-11-08T22:16:14.348119+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M228_PAXTON.zip"
+  },
+  "L3_SHP_M229_PEABODY": {
+    "downloaded_at": "2025-11-08T22:16:16.173889+00:00",
+    "last_checked": "2025-11-08T22:16:16.173889+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M229_PEABODY.zip"
+  },
+  "L3_SHP_M230_PELHAM": {
+    "downloaded_at": "2025-11-08T22:16:19.964188+00:00",
+    "last_checked": "2025-11-08T22:16:19.964188+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M230_PELHAM.zip"
+  },
+  "L3_SHP_M231_PEMBROKE": {
+    "downloaded_at": "2025-11-08T22:16:21.701758+00:00",
+    "last_checked": "2025-11-08T22:16:21.701758+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M231_PEMBROKE.zip"
+  },
+  "L3_SHP_M232_PEPPERELL": {
+    "downloaded_at": "2025-11-08T22:16:23.657658+00:00",
+    "last_checked": "2025-11-08T22:16:23.657658+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M232_PEPPERELL.zip"
+  },
+  "L3_SHP_M233_PERU": {
+    "downloaded_at": "2025-11-08T22:16:25.875091+00:00",
+    "last_checked": "2025-11-08T22:16:25.875091+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M233_PERU.zip"
+  },
+  "L3_SHP_M234_PETERSHAM": {
+    "downloaded_at": "2025-11-08T22:16:27.298126+00:00",
+    "last_checked": "2025-11-08T22:16:27.298126+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M234_PETERSHAM.zip"
+  },
+  "L3_SHP_M235_PHILLIPSTON": {
+    "downloaded_at": "2025-11-08T22:16:28.830742+00:00",
+    "last_checked": "2025-11-08T22:16:28.830742+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M235_PHILLIPSTON.zip"
+  },
+  "L3_SHP_M236_PITTSFIELD": {
+    "downloaded_at": "2025-11-08T22:16:33.452099+00:00",
+    "last_checked": "2025-11-08T22:16:33.452099+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M236_PITTSFIELD.zip"
+  },
+  "L3_SHP_M237_PLAINFIELD": {
+    "downloaded_at": "2025-11-08T22:16:38.220548+00:00",
+    "last_checked": "2025-11-08T22:16:38.220548+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M237_PLAINFIELD.zip"
+  },
+  "L3_SHP_M238_PLAINVILLE": {
+    "downloaded_at": "2025-11-08T22:16:40.874839+00:00",
+    "last_checked": "2025-11-08T22:16:40.874839+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M238_PLAINVILLE.zip"
+  },
+  "L3_SHP_M239_PLYMOUTH": {
+    "downloaded_at": "2025-11-08T22:16:46.760750+00:00",
+    "last_checked": "2025-11-08T22:16:46.760750+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M239_PLYMOUTH.zip"
+  },
+  "L3_SHP_M240_PLYMPTON": {
+    "downloaded_at": "2025-11-08T22:16:56.343543+00:00",
+    "last_checked": "2025-11-08T22:16:56.343543+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M240_PLYMPTON.zip"
+  },
+  "L3_SHP_M241_PRINCETON": {
+    "downloaded_at": "2025-11-08T22:16:58.403711+00:00",
+    "last_checked": "2025-11-08T22:16:58.403711+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M241_PRINCETON.zip"
+  },
+  "L3_SHP_M242_PROVINCETOWN": {
+    "downloaded_at": "2025-11-08T22:17:00.747049+00:00",
+    "last_checked": "2025-11-08T22:17:00.747049+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M242_PROVINCETOWN.zip"
+  },
+  "L3_SHP_M243_QUINCY": {
+    "downloaded_at": "2025-11-08T22:17:06.671428+00:00",
+    "last_checked": "2025-11-08T22:17:06.671428+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M243_QUINCY.zip"
+  },
+  "L3_SHP_M244_RANDOLPH": {
+    "downloaded_at": "2025-11-08T22:17:14.135016+00:00",
+    "last_checked": "2025-11-08T22:17:14.135016+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M244_RANDOLPH.zip"
+  },
+  "L3_SHP_M245_RAYNHAM": {
+    "downloaded_at": "2025-11-08T22:17:20.373305+00:00",
+    "last_checked": "2025-11-08T22:17:20.373305+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M245_RAYNHAM.zip"
+  },
+  "L3_SHP_M246_READING": {
+    "downloaded_at": "2025-11-08T22:17:22.868977+00:00",
+    "last_checked": "2025-11-08T22:17:22.868977+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M246_READING.zip"
+  },
+  "L3_SHP_M247_REHOBOTH": {
+    "downloaded_at": "2025-11-08T22:17:28.890505+00:00",
+    "last_checked": "2025-11-08T22:17:28.890505+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M247_REHOBOTH.zip"
+  },
+  "L3_SHP_M248_REVERE": {
+    "downloaded_at": "2025-11-08T22:17:35.293026+00:00",
+    "last_checked": "2025-11-08T22:17:35.293026+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M248_REVERE.zip"
+  },
+  "L3_SHP_M249_RICHMOND": {
+    "downloaded_at": "2025-11-08T22:17:39.122437+00:00",
+    "last_checked": "2025-11-08T22:17:39.122437+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M249_RICHMOND.zip"
+  },
+  "L3_SHP_M250_ROCHESTER": {
+    "downloaded_at": "2025-11-08T22:17:41.027106+00:00",
+    "last_checked": "2025-11-08T22:17:41.027106+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M250_ROCHESTER.zip"
+  },
+  "L3_SHP_M251_ROCKLAND": {
+    "downloaded_at": "2025-11-08T22:17:43.021982+00:00",
+    "last_checked": "2025-11-08T22:17:43.021982+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M251_ROCKLAND.zip"
+  },
+  "L3_SHP_M252_ROCKPORT": {
+    "downloaded_at": "2025-11-08T22:17:44.740468+00:00",
+    "last_checked": "2025-11-08T22:17:44.740468+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M252_ROCKPORT.zip"
+  },
+  "L3_SHP_M253_ROWE": {
+    "downloaded_at": "2025-11-08T22:17:46.464175+00:00",
+    "last_checked": "2025-11-08T22:17:46.464175+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M253_ROWE.zip"
+  },
+  "L3_SHP_M254_ROWLEY": {
+    "downloaded_at": "2025-11-08T22:17:47.465265+00:00",
+    "last_checked": "2025-11-08T22:17:47.465265+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M254_ROWLEY.zip"
+  },
+  "L3_SHP_M255_ROYALSTON": {
+    "downloaded_at": "2025-11-08T22:17:49.514802+00:00",
+    "last_checked": "2025-11-08T22:17:49.514802+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M255_ROYALSTON.zip"
+  },
+  "L3_SHP_M256_RUSSELL": {
+    "downloaded_at": "2025-11-08T22:17:51.349537+00:00",
+    "last_checked": "2025-11-08T22:17:51.349537+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M256_RUSSELL.zip"
+  },
+  "L3_SHP_M257_RUTLAND": {
+    "downloaded_at": "2025-11-08T22:17:54.572030+00:00",
+    "last_checked": "2025-11-08T22:17:54.572030+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M257_RUTLAND.zip"
+  },
+  "L3_SHP_M258_SALEM": {
+    "downloaded_at": "2025-11-08T22:17:57.018030+00:00",
+    "last_checked": "2025-11-08T22:17:57.018030+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M258_SALEM.zip"
+  },
+  "L3_SHP_M259_SALISBURY": {
+    "downloaded_at": "2025-11-08T22:18:00.387020+00:00",
+    "last_checked": "2025-11-08T22:18:00.387020+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M259_SALISBURY.zip"
+  },
+  "L3_SHP_M260_SANDISFIELD": {
+    "downloaded_at": "2025-11-08T22:18:02.786826+00:00",
+    "last_checked": "2025-11-08T22:18:02.786826+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M260_SANDISFIELD.zip"
+  },
+  "L3_SHP_M261_SANDWICH": {
+    "downloaded_at": "2025-11-08T22:18:07.378162+00:00",
+    "last_checked": "2025-11-08T22:18:07.378162+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M261_SANDWICH.zip"
+  },
+  "L3_SHP_M262_SAUGUS": {
+    "downloaded_at": "2025-11-08T22:18:12.670425+00:00",
+    "last_checked": "2025-11-08T22:18:12.670425+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M262_SAUGUS.zip"
+  },
+  "L3_SHP_M263_SAVOY": {
+    "downloaded_at": "2025-11-08T22:18:15.589416+00:00",
+    "last_checked": "2025-11-08T22:18:15.589416+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M263_SAVOY.zip"
+  },
+  "L3_SHP_M264_SCITUATE": {
+    "downloaded_at": "2025-11-08T22:18:17.757979+00:00",
+    "last_checked": "2025-11-08T22:18:17.757979+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M264_SCITUATE.zip"
+  },
+  "L3_SHP_M265_SEEKONK": {
+    "downloaded_at": "2025-11-08T22:18:22.532184+00:00",
+    "last_checked": "2025-11-08T22:18:22.532184+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M265_SEEKONK.zip"
+  },
+  "L3_SHP_M266_SHARON": {
+    "downloaded_at": "2025-11-08T22:18:26.681772+00:00",
+    "last_checked": "2025-11-08T22:18:26.681772+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M266_SHARON.zip"
+  },
+  "L3_SHP_M267_SHEFFIELD": {
+    "downloaded_at": "2025-11-08T22:18:29.779260+00:00",
+    "last_checked": "2025-11-08T22:18:29.779260+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M267_SHEFFIELD.zip"
+  },
+  "L3_SHP_M268_SHELBURNE": {
+    "downloaded_at": "2025-11-08T22:18:31.613392+00:00",
+    "last_checked": "2025-11-08T22:18:31.613392+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M268_SHELBURNE.zip"
+  },
+  "L3_SHP_M269_SHERBORN": {
+    "downloaded_at": "2025-11-08T22:18:33.269978+00:00",
+    "last_checked": "2025-11-08T22:18:33.269978+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M269_SHERBORN.zip"
+  },
+  "L3_SHP_M270_SHIRLEY": {
+    "downloaded_at": "2025-11-08T22:18:35.137746+00:00",
+    "last_checked": "2025-11-08T22:18:35.137746+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M270_SHIRLEY.zip"
+  },
+  "L3_SHP_M271_SHREWSBURY": {
+    "downloaded_at": "2025-11-08T22:18:38.729010+00:00",
+    "last_checked": "2025-11-08T22:18:38.729010+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M271_SHREWSBURY.zip"
+  },
+  "L3_SHP_M272_SHUTESBURY": {
+    "downloaded_at": "2025-11-08T22:18:43.180939+00:00",
+    "last_checked": "2025-11-08T22:18:43.180939+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M272_SHUTESBURY.zip"
+  },
+  "L3_SHP_M273_SOMERSET": {
+    "downloaded_at": "2025-11-08T22:18:46.115511+00:00",
+    "last_checked": "2025-11-08T22:18:46.115511+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M273_SOMERSET.zip"
+  },
+  "L3_SHP_M274_SOMERVILLE": {
+    "downloaded_at": "2025-11-08T22:18:51.075244+00:00",
+    "last_checked": "2025-11-08T22:18:51.075244+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M274_SOMERVILLE.zip"
+  },
+  "L3_SHP_M275_SOUTHHADLEY": {
+    "downloaded_at": "2025-11-08T22:18:56.710088+00:00",
+    "last_checked": "2025-11-08T22:18:56.710088+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M275_SOUTHHADLEY.zip"
+  },
+  "L3_SHP_M276_SOUTHAMPTON": {
+    "downloaded_at": "2025-11-08T22:18:59.527110+00:00",
+    "last_checked": "2025-11-08T22:18:59.527110+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M276_SOUTHAMPTON.zip"
+  },
+  "L3_SHP_M277_SOUTHBOROUGH": {
+    "downloaded_at": "2025-11-08T22:19:01.826802+00:00",
+    "last_checked": "2025-11-08T22:19:01.826802+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M277_SOUTHBOROUGH.zip"
+  },
+  "L3_SHP_M278_SOUTHBRIDGE": {
+    "downloaded_at": "2025-11-08T22:19:06.704657+00:00",
+    "last_checked": "2025-11-08T22:19:06.704657+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M278_SOUTHBRIDGE.zip"
+  },
+  "L3_SHP_M279_SOUTHWICK": {
+    "downloaded_at": "2025-11-08T22:19:09.932746+00:00",
+    "last_checked": "2025-11-08T22:19:09.932746+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M279_SOUTHWICK.zip"
+  },
+  "L3_SHP_M280_SPENCER": {
+    "downloaded_at": "2025-11-08T22:19:12.297590+00:00",
+    "last_checked": "2025-11-08T22:19:12.297590+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M280_SPENCER.zip"
+  },
+  "L3_SHP_M281_SPRINGFIELD": {
+    "downloaded_at": "2025-11-08T22:19:19.713266+00:00",
+    "last_checked": "2025-11-08T22:19:19.713266+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M281_SPRINGFIELD.zip"
+  },
+  "L3_SHP_M282_STERLING": {
+    "downloaded_at": "2025-11-08T22:19:30.000014+00:00",
+    "last_checked": "2025-11-08T22:19:30.000014+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M282_STERLING.zip"
+  },
+  "L3_SHP_M283_STOCKBRIDGE": {
+    "downloaded_at": "2025-11-08T22:19:32.431117+00:00",
+    "last_checked": "2025-11-08T22:19:32.431117+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M283_STOCKBRIDGE.zip"
+  },
+  "L3_SHP_M284_STONEHAM": {
+    "downloaded_at": "2025-11-08T22:19:34.293957+00:00",
+    "last_checked": "2025-11-08T22:19:34.293957+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M284_STONEHAM.zip"
+  },
+  "L3_SHP_M285_STOUGHTON": {
+    "downloaded_at": "2025-11-08T20:46:43.253108+00:00",
+    "last_checked": "2025-11-08T20:46:43.253108+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M285_STOUGHTON.zip"
+  },
+  "L3_SHP_M286_STOW": {
+    "downloaded_at": "2025-11-08T22:19:38.584598+00:00",
+    "last_checked": "2025-11-08T22:19:38.584598+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M286_STOW.zip"
+  },
+  "L3_SHP_M287_STURBRIDGE": {
+    "downloaded_at": "2025-11-08T22:19:40.816546+00:00",
+    "last_checked": "2025-11-08T22:19:40.816546+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M287_STURBRIDGE.zip"
+  },
+  "L3_SHP_M288_SUDBURY": {
+    "downloaded_at": "2025-11-08T22:19:47.460855+00:00",
+    "last_checked": "2025-11-08T22:19:47.460855+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M288_SUDBURY.zip"
+  },
+  "L3_SHP_M289_SUNDERLAND": {
+    "downloaded_at": "2025-11-08T22:19:51.027029+00:00",
+    "last_checked": "2025-11-08T22:19:51.027029+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M289_SUNDERLAND.zip"
+  },
+  "L3_SHP_M290_SUTTON": {
+    "downloaded_at": "2025-11-08T22:19:54.330996+00:00",
+    "last_checked": "2025-11-08T22:19:54.330996+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M290_SUTTON.zip"
+  },
+  "L3_SHP_M291_SWAMPSCOTT": {
+    "downloaded_at": "2025-11-08T22:19:57.324472+00:00",
+    "last_checked": "2025-11-08T22:19:57.324472+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M291_SWAMPSCOTT.zip"
+  },
+  "L3_SHP_M292_SWANSEA": {
+    "downloaded_at": "2025-11-08T22:20:04.761114+00:00",
+    "last_checked": "2025-11-08T22:20:04.761114+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M292_SWANSEA.zip"
+  },
+  "L3_SHP_M293_TAUNTON": {
+    "downloaded_at": "2025-11-08T22:20:14.479719+00:00",
+    "last_checked": "2025-11-08T22:20:14.479719+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M293_TAUNTON.zip"
+  },
+  "L3_SHP_M294_TEMPLETON": {
+    "downloaded_at": "2025-11-08T22:20:19.792348+00:00",
+    "last_checked": "2025-11-08T22:20:19.792348+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M294_TEMPLETON.zip"
+  },
+  "L3_SHP_M295_TEWKSBURY": {
+    "downloaded_at": "2025-11-08T22:20:22.583476+00:00",
+    "last_checked": "2025-11-08T22:20:22.583476+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M295_TEWKSBURY.zip"
+  },
+  "L3_SHP_M296_TISBURY": {
+    "downloaded_at": "2025-11-08T22:20:27.949165+00:00",
+    "last_checked": "2025-11-08T22:20:27.949165+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M296_TISBURY.zip"
+  },
+  "L3_SHP_M297_TOLLAND": {
+    "downloaded_at": "2025-11-08T22:20:29.630869+00:00",
+    "last_checked": "2025-11-08T22:20:29.630869+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M297_TOLLAND.zip"
+  },
+  "L3_SHP_M298_TOPSFIELD": {
+    "downloaded_at": "2025-11-08T22:20:30.646490+00:00",
+    "last_checked": "2025-11-08T22:20:30.646490+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M298_TOPSFIELD.zip"
+  },
+  "L3_SHP_M299_TOWNSEND": {
+    "downloaded_at": "2025-11-08T22:20:32.815801+00:00",
+    "last_checked": "2025-11-08T22:20:32.815801+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M299_TOWNSEND.zip"
+  },
+  "L3_SHP_M300_TRURO": {
+    "downloaded_at": "2025-11-08T22:20:35.756887+00:00",
+    "last_checked": "2025-11-08T22:20:35.756887+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M300_TRURO.zip"
+  },
+  "L3_SHP_M301_TYNGSBOROUGH": {
+    "downloaded_at": "2025-11-08T22:20:38.773512+00:00",
+    "last_checked": "2025-11-08T22:20:38.773512+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M301_TYNGSBOROUGH.zip"
+  },
+  "L3_SHP_M302_TYRINGHAM": {
+    "downloaded_at": "2025-11-08T22:20:40.930923+00:00",
+    "last_checked": "2025-11-08T22:20:40.930923+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M302_TYRINGHAM.zip"
+  },
+  "L3_SHP_M303_UPTON": {
+    "downloaded_at": "2025-11-08T22:20:43.295982+00:00",
+    "last_checked": "2025-11-08T22:20:43.295982+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M303_UPTON.zip"
+  },
+  "L3_SHP_M304_UXBRIDGE": {
+    "downloaded_at": "2025-11-08T22:20:45.611353+00:00",
+    "last_checked": "2025-11-08T22:20:45.611353+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M304_UXBRIDGE.zip"
+  },
+  "L3_SHP_M305_WAKEFIELD": {
+    "downloaded_at": "2025-11-08T22:20:47.622040+00:00",
+    "last_checked": "2025-11-08T22:20:47.622040+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M305_WAKEFIELD.zip"
+  },
+  "L3_SHP_M306_WALES": {
+    "downloaded_at": "2025-11-08T22:20:50.943919+00:00",
+    "last_checked": "2025-11-08T22:20:50.943919+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M306_WALES.zip"
+  },
+  "L3_SHP_M307_WALPOLE": {
+    "downloaded_at": "2025-11-08T22:20:55.172484+00:00",
+    "last_checked": "2025-11-08T22:20:55.172484+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M307_WALPOLE.zip"
+  },
+  "L3_SHP_M308_WALTHAM": {
+    "downloaded_at": "2025-11-08T22:21:02.834879+00:00",
+    "last_checked": "2025-11-08T22:21:02.834879+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M308_WALTHAM.zip"
+  },
+  "L3_SHP_M309_WARE": {
+    "downloaded_at": "2025-11-08T22:21:07.342989+00:00",
+    "last_checked": "2025-11-08T22:21:07.342989+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M309_WARE.zip"
+  },
+  "L3_SHP_M310_WAREHAM": {
+    "downloaded_at": "2025-11-08T22:21:11.280420+00:00",
+    "last_checked": "2025-11-08T22:21:11.280420+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M310_WAREHAM.zip"
+  },
+  "L3_SHP_M311_WARREN": {
+    "downloaded_at": "2025-11-08T22:21:15.756449+00:00",
+    "last_checked": "2025-11-08T22:21:15.756449+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M311_WARREN.zip"
+  },
+  "L3_SHP_M312_WARWICK": {
+    "downloaded_at": "2025-11-08T22:21:17.245048+00:00",
+    "last_checked": "2025-11-08T22:21:17.245048+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M312_WARWICK.zip"
+  },
+  "L3_SHP_M313_WASHINGTON": {
+    "downloaded_at": "2025-11-08T22:21:18.512426+00:00",
+    "last_checked": "2025-11-08T22:21:18.512426+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M313_WASHINGTON.zip"
+  },
+  "L3_SHP_M314_WATERTOWN": {
+    "downloaded_at": "2025-11-08T22:21:22.310478+00:00",
+    "last_checked": "2025-11-08T22:21:22.310478+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M314_WATERTOWN.zip"
+  },
+  "L3_SHP_M315_WAYLAND": {
+    "downloaded_at": "2025-11-08T22:21:25.781259+00:00",
+    "last_checked": "2025-11-08T22:21:25.781259+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M315_WAYLAND.zip"
+  },
+  "L3_SHP_M316_WEBSTER": {
+    "downloaded_at": "2025-11-08T22:21:30.068228+00:00",
+    "last_checked": "2025-11-08T22:21:30.068228+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M316_WEBSTER.zip"
+  },
+  "L3_SHP_M317_WELLESLEY": {
+    "downloaded_at": "2025-11-08T22:21:34.645449+00:00",
+    "last_checked": "2025-11-08T22:21:34.645449+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M317_WELLESLEY.zip"
+  },
+  "L3_SHP_M318_WELLFLEET": {
+    "downloaded_at": "2025-11-08T22:21:40.376232+00:00",
+    "last_checked": "2025-11-08T22:21:40.376232+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M318_WELLFLEET.zip"
+  },
+  "L3_SHP_M319_WENDELL": {
+    "downloaded_at": "2025-11-08T22:21:43.036324+00:00",
+    "last_checked": "2025-11-08T22:21:43.036324+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M319_WENDELL.zip"
+  },
+  "L3_SHP_M320_WENHAM": {
+    "downloaded_at": "2025-11-08T22:21:44.102309+00:00",
+    "last_checked": "2025-11-08T22:21:44.102309+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M320_WENHAM.zip"
+  },
+  "L3_SHP_M321_WESTBOYLSTON": {
+    "downloaded_at": "2025-11-08T22:21:47.276487+00:00",
+    "last_checked": "2025-11-08T22:21:47.276487+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M321_WESTBOYLSTON.zip"
+  },
+  "L3_SHP_M322_WESTBRIDGEWATER": {
+    "downloaded_at": "2025-11-08T22:21:49.504160+00:00",
+    "last_checked": "2025-11-08T22:21:49.504160+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M322_WESTBRIDGEWATER.zip"
+  },
+  "L3_SHP_M323_WESTBROOKFIELD": {
+    "downloaded_at": "2025-11-08T22:21:52.033385+00:00",
+    "last_checked": "2025-11-08T22:21:52.033385+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M323_WESTBROOKFIELD.zip"
+  },
+  "L3_SHP_M324_WESTNEWBURY": {
+    "downloaded_at": "2025-11-08T22:21:53.402797+00:00",
+    "last_checked": "2025-11-08T22:21:53.402797+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M324_WESTNEWBURY.zip"
+  },
+  "L3_SHP_M325_WESTSPRINGFIELD": {
+    "downloaded_at": "2025-11-08T22:21:57.854287+00:00",
+    "last_checked": "2025-11-08T22:21:57.854287+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M325_WESTSPRINGFIELD.zip"
+  },
+  "L3_SHP_M326_WESTSTOCKBRIDGE": {
+    "downloaded_at": "2025-11-08T22:22:01.598538+00:00",
+    "last_checked": "2025-11-08T22:22:01.598538+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M326_WESTSTOCKBRIDGE.zip"
+  },
+  "L3_SHP_M327_WESTTISBURY": {
+    "downloaded_at": "2025-11-08T22:22:04.102525+00:00",
+    "last_checked": "2025-11-08T22:22:04.102525+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M327_WESTTISBURY.zip"
+  },
+  "L3_SHP_M328_WESTBOROUGH": {
+    "downloaded_at": "2025-11-08T22:22:08.736138+00:00",
+    "last_checked": "2025-11-08T22:22:08.736138+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M328_WESTBOROUGH.zip"
+  },
+  "L3_SHP_M329_WESTFIELD": {
+    "downloaded_at": "2025-11-08T22:22:15.512980+00:00",
+    "last_checked": "2025-11-08T22:22:15.512980+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M329_WESTFIELD.zip"
+  },
+  "L3_SHP_M330_WESTFORD": {
+    "downloaded_at": "2025-11-08T22:22:22.682508+00:00",
+    "last_checked": "2025-11-08T22:22:22.682508+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M330_WESTFORD.zip"
+  },
+  "L3_SHP_M331_WESTHAMPTON": {
+    "downloaded_at": "2025-11-08T22:22:26.154777+00:00",
+    "last_checked": "2025-11-08T22:22:26.154777+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M331_WESTHAMPTON.zip"
+  },
+  "L3_SHP_M332_WESTMINSTER": {
+    "downloaded_at": "2025-11-08T22:22:28.511753+00:00",
+    "last_checked": "2025-11-08T22:22:28.511753+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M332_WESTMINSTER.zip"
+  },
+  "L3_SHP_M333_WESTON": {
+    "downloaded_at": "2025-11-08T22:22:31.672256+00:00",
+    "last_checked": "2025-11-08T22:22:31.672256+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M333_WESTON.zip"
+  },
+  "L3_SHP_M334_WESTPORT": {
+    "downloaded_at": "2025-11-08T22:22:37.567195+00:00",
+    "last_checked": "2025-11-08T22:22:37.567195+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M334_WESTPORT.zip"
+  },
+  "L3_SHP_M335_WESTWOOD": {
+    "downloaded_at": "2025-11-08T22:22:43.152252+00:00",
+    "last_checked": "2025-11-08T22:22:43.152252+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M335_WESTWOOD.zip"
+  },
+  "L3_SHP_M336_WEYMOUTH": {
+    "downloaded_at": "2025-11-08T22:22:49.487904+00:00",
+    "last_checked": "2025-11-08T22:22:49.487904+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M336_WEYMOUTH.zip"
+  },
+  "L3_SHP_M337_WHATELY": {
+    "downloaded_at": "2025-11-08T22:22:54.683353+00:00",
+    "last_checked": "2025-11-08T22:22:54.683353+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M337_WHATELY.zip"
+  },
+  "L3_SHP_M338_WHITMAN": {
+    "downloaded_at": "2025-11-08T22:22:56.781468+00:00",
+    "last_checked": "2025-11-08T22:22:56.781468+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M338_WHITMAN.zip"
+  },
+  "L3_SHP_M339_WILBRAHAM": {
+    "downloaded_at": "2025-11-08T22:23:00.983114+00:00",
+    "last_checked": "2025-11-08T22:23:00.983114+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M339_WILBRAHAM.zip"
+  },
+  "L3_SHP_M340_WILLIAMSBURG": {
+    "downloaded_at": "2025-11-08T22:23:02.626544+00:00",
+    "last_checked": "2025-11-08T22:23:02.626544+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M340_WILLIAMSBURG.zip"
+  },
+  "L3_SHP_M341_WILLIAMSTOWN": {
+    "downloaded_at": "2025-11-08T22:23:04.610467+00:00",
+    "last_checked": "2025-11-08T22:23:04.610467+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M341_WILLIAMSTOWN.zip"
+  },
+  "L3_SHP_M342_WILMINGTON": {
+    "downloaded_at": "2025-11-08T22:23:06.209002+00:00",
+    "last_checked": "2025-11-08T22:23:06.209002+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M342_WILMINGTON.zip"
+  },
+  "L3_SHP_M343_WINCHENDON": {
+    "downloaded_at": "2025-11-08T22:23:10.267675+00:00",
+    "last_checked": "2025-11-08T22:23:10.267675+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M343_WINCHENDON.zip"
+  },
+  "L3_SHP_M344_WINCHESTER": {
+    "downloaded_at": "2025-11-08T22:23:13.431050+00:00",
+    "last_checked": "2025-11-08T22:23:13.431050+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M344_WINCHESTER.zip"
+  },
+  "L3_SHP_M345_WINDSOR": {
+    "downloaded_at": "2025-11-08T22:23:16.390426+00:00",
+    "last_checked": "2025-11-08T22:23:16.390426+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M345_WINDSOR.zip"
+  },
+  "L3_SHP_M346_WINTHROP": {
+    "downloaded_at": "2025-11-08T22:23:17.305482+00:00",
+    "last_checked": "2025-11-08T22:23:17.305482+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M346_WINTHROP.zip"
+  },
+  "L3_SHP_M347_WOBURN": {
+    "downloaded_at": "2025-11-08T22:23:19.705982+00:00",
+    "last_checked": "2025-11-08T22:23:19.705982+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M347_WOBURN.zip"
+  },
+  "L3_SHP_M348_WORCESTER": {
+    "downloaded_at": "2025-11-08T22:23:28.216070+00:00",
+    "last_checked": "2025-11-08T22:23:28.216070+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M348_WORCESTER.zip"
+  },
+  "L3_SHP_M349_WORTHINGTON": {
+    "downloaded_at": "2025-11-08T22:23:38.668120+00:00",
+    "last_checked": "2025-11-08T22:23:38.668120+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M349_WORTHINGTON.zip"
+  },
+  "L3_SHP_M350_WRENTHAM": {
+    "downloaded_at": "2025-11-08T22:23:43.203277+00:00",
+    "last_checked": "2025-11-08T22:23:43.203277+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M350_WRENTHAM.zip"
+  },
+  "L3_SHP_M351_YARMOUTH": {
+    "downloaded_at": "2025-11-08T22:23:48.125723+00:00",
+    "last_checked": "2025-11-08T22:23:48.125723+00:00",
+    "source_url": "http://download.massgis.digital.mass.gov/shapefiles/l3parcels/L3_SHP_M351_YARMOUTH.zip"
   }
 }
