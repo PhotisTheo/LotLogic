@@ -3583,6 +3583,9 @@
 
           console.log(`Received ${data.count} parcels from ${sourceLabel.toUpperCase()}`);
 
+          // Clear existing parcels before rendering new ones to prevent overlaps
+          clearViewportParcels();
+
           window.parcelAutoLienSearchEnabled = Boolean(data.autoLienSearchEnabled);
 
           if (Array.isArray(data.parcels)) {
