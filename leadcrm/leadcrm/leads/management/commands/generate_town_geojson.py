@@ -71,7 +71,7 @@ class Command(BaseCommand):
             _ensure_massgis_dataset,
             _find_taxpar_shapefile,
             massgis_stateplane_to_wgs84,
-            MASSGIS_TOWNS,
+            get_massgis_catalog,
         )
         import shapefile
 
@@ -90,7 +90,8 @@ class Command(BaseCommand):
             town_ids = [int(tid.strip()) for tid in towns_filter.split(',')]
             self.stdout.write(f"Processing {len(town_ids)} specific towns: {town_ids}")
         else:
-            town_ids = sorted(MASSGIS_TOWNS.keys())
+            massgis_catalog = get_massgis_catalog()
+            town_ids = sorted(massgis_catalog.keys())
             self.stdout.write(f"Processing all {len(town_ids)} Massachusetts towns")
 
         # Stats
