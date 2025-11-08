@@ -1903,11 +1903,14 @@
 
     function shouldUseTownGeojson(filters, townId) {
       if (!townId) {
+        console.log('shouldUseTownGeojson: false (no townId)');
         return false;
       }
       if (String(townId) === '35' && !filters.neighborhood) {
+        console.log('shouldUseTownGeojson: false (Boston without neighborhood)');
         return false;
       }
+      console.log(`shouldUseTownGeojson: true (townId=${townId}, neighborhood=${filters.neighborhood || 'none'})`);
       return true;
     }
 
@@ -3956,6 +3959,7 @@
         };
 
         const useStaticGeojson = shouldUseTownGeojson(filters, resolvedTownId);
+        console.log(`Using ${useStaticGeojson ? 'STATIC GEOJSON' : 'LEGACY API'} for town_id=${resolvedTownId}`);
         const loaderPromise = (useStaticGeojson
           ? loadStaticGeojson().catch(error => {
               console.warn('Static GeoJSON load failed, falling back to API', error);
