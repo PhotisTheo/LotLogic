@@ -135,6 +135,11 @@ urlpatterns = [
         views.parcels_in_viewport,
         name="parcels_in_viewport",
     ),
+    path(
+        "api/town-geojson/<int:town_id>/",
+        views.town_geojson,
+        name="town_geojson",
+    ),
     path("crm/", views.crm_overview, name="crm_overview"),
     path("crm/<slug:city_slug>/", views.crm_city_requests, name="crm_city_requests"),
     path("add/", views.lead_create, name="lead_create"),

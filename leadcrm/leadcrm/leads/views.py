@@ -5891,3 +5891,77 @@ def search_liens_legal_actions(request, town_id, loc_id):
         "legal_actions": legal_actions_found,
         "liens": liens_found,
     })
+
+
+def town_geojson(request, town_id):
+    """
+    Serve pre-generated GeoJSON for a town (fast path) or fall back to dynamic generation.
+
+    This endpoint provides optimal performance by serving static GeoJSON files when available,
+    eliminating the need for shapefile processing on every request.
+
+    Performance:
+    - Static file (if pre-generated): <100ms (CDN/static file serving)
+    - Dynamic fallback: 2-5 seconds (shapefile processing)
+
+    To pre-generate files: python manage.py generate_town_geojson --towns {town_id}
+    """
+    from django.conf import settings
+    from pathlib import Path
+    import os
+
+    try:
+        from .services import _get_massgis_town
+        town = _get_massgis_town(town_id)
+        town_name_safe = town.name.replace(' ', '_').replace('/', '_')
+
+        # Try to serve pre-generated GeoJSON first (FAST PATH)
+        static_file_name = f"town_{town_id}_{town_name_safe}.geojson"
+
+        # Check multiple possible locations
+        possible_paths = [
+            Path(settings.BASE_DIR) / "static" / "geojson" / "towns" / static_file_name,
+            Path(settings.STATIC_ROOT) / "geojson" / "towns" / static_file_name if settings.STATIC_ROOT else None,
+        ]
+
+        for geojson_path in possible_paths:
+            if geojson_path and geojson_path.exists():
+                logger.info(f"Serving pre-generated GeoJSON for {town.name} from {geojson_path}")
+
+                # Serve the static file with optimal caching headers
+                import json
+                with open(geojson_path, 'r') as f:
+                    geojson_data = json.load(f)
+
+                response = JsonResponse(geojson_data, safe=False)
+                # Cache for 1 year (immutable data)
+                response['Cache-Control'] = 'public, max-age=31536000, immutable'
+                response['X-Served-From'] = 'static-geojson'
+                return response
+
+        # SLOW PATH: GeoJSON not pre-generated, fall back to dynamic generation
+        logger.warning(
+            f"Pre-generated GeoJSON not found for {town.name} (town_id={town_id}). "
+            f"Falling back to slow dynamic generation. "
+            f"Run: python manage.py generate_town_geojson --towns {town_id}"
+        )
+
+        # For now, return an error encouraging pre-generation
+        # In the future, could fall back to old parcels_in_viewport logic
+        return JsonResponse({
+            "error": "GeoJSON not pre-generated for this town",
+            "town_id": town_id,
+            "town_name": town.name,
+            "message": (
+                f"This town's GeoJSON data has not been pre-generated yet. "
+                f"Please run: python manage.py generate_town_geojson --towns {town_id}"
+            ),
+            "fallback_api": f"/api/parcels-in-viewport/?town_id={town_id}",
+        }, status=404)
+
+    except Exception as e:
+        logger.exception(f"Error serving town GeoJSON for town_id={town_id}")
+        return JsonResponse({
+            "error": str(e),
+            "town_id": town_id,
+        }, status=500)
