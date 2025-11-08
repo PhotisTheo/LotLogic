@@ -1163,6 +1163,7 @@
   var filterRefreshTimeout = null;
   var pendingViewportReload = null;
   var loadParcelsInViewportImpl = null;
+  var hasLoadedFullCurrentTown = false;
   window.parcelAutoLienSearchEnabled = {% if initial_auto_lien_search_enabled %}true{% else %}false{% endif %};
   var bostonNeighborhoodLayer = null;
   var bostonNeighborhoodGeoJSON = null;
@@ -1692,6 +1693,7 @@
         });
       }
       viewportParcels.clear();
+      hasLoadedFullCurrentTown = false;
 
       if (globalMap && legendControl) {
         try {
@@ -3003,6 +3005,11 @@
           return;
         }
 
+        if (!forceReload && hasLoadedFullCurrentTown && viewportParcels.size > 0) {
+          console.log('Skipping parcel reload – current town already loaded.');
+          return;
+        }
+
         // Only load if zoomed in enough (zoom 12+)
         const zoom = globalMap.getZoom();
         if (!forceReload && zoom < 12) {
@@ -3478,6 +3485,10 @@
           })
           .finally(() => {
             isLoadingParcels = false;
+
+            if (!parcelLoadHadError && forceReload) {
+              hasLoadedFullCurrentTown = true;
+            }
 
             if (pendingViewportReload) {
               const reloadOptions = pendingViewportReload;
