@@ -22,7 +22,7 @@ from email.utils import parsedate_to_datetime
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 from urllib import error, parse, request
 from urllib.error import URLError
 from urllib.parse import urljoin, urlparse
@@ -4830,14 +4830,30 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                 if not shape.points:
                     continue
 
-                # Simple centroid calculation
-                x_coords = [p[0] for p in shape.points]
-                y_coords = [p[1] for p in shape.points]
-                centroid_x = sum(x_coords) / len(x_coords)
-                centroid_y = sum(y_coords) / len(y_coords)
+                geometry = _shape_to_geojson_geometry(shape)
+                if not geometry:
+                    continue
+                leaflet_geometry = _geojson_geometry_to_leaflet_latlngs(geometry)
+                if not leaflet_geometry:
+                    continue
 
-                # Convert to WGS84
-                lng, lat = massgis_stateplane_to_wgs84(centroid_x, centroid_y)
+                centroid_point = _geometry_centroid(geometry)
+                if not centroid_point:
+                    first_point = None
+                    def _extract_first_latlng(structure):
+                        if not isinstance(structure, list) or not structure:
+                            return None
+                        first = structure[0]
+                        if isinstance(first, list) and first and isinstance(first[0], (int, float)):
+                            return first
+                        return _extract_first_latlng(first)
+                    first_point = _extract_first_latlng(leaflet_geometry)
+                    if first_point:
+                        centroid_point = {"lat": first_point[0], "lng": first_point[1]}
+                if not centroid_point:
+                    continue
+                lat = centroid_point["lat"]
+                lng = centroid_point["lng"]
 
                 # Check if centroid is in bbox
                 if not (south <= lat <= north and west <= lng <= east):
@@ -4930,12 +4946,6 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                 use_code = attributes.get('USE_CODE', '')
                 property_category = _classify_use_code(use_code)
 
-                # Convert parcel geometry to WGS84 coordinates for the polygon
-                polygon_coords = []
-                for point in shape.points:
-                    point_lng, point_lat = massgis_stateplane_to_wgs84(point[0], point[1])
-                    polygon_coords.append([point_lat, point_lng])
-
                 # Get use description from town-specific USE_DESC column
                 # The column name varies by town (e.g., M007UC_LUT_CY24_FY24_USE_DESC for town 007)
 
@@ -4985,8 +4995,8 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                     'city': _clean_string(attributes.get('SITE_CITY')) or _clean_string(attributes.get('CITY')) or town.name.title(),
                     'zip': _clean_string(attributes.get('SITE_ZIP')) or _clean_string(attributes.get('ZIP')),
                     'value_display': f"${total_value:,.0f}" if total_value else None,
-                    'centroid': {'lat': lat, 'lng': lng},
-                    'geometry': polygon_coords,  # Add polygon coordinates
+                    'centroid': centroid_point,
+                    'geometry': leaflet_geometry,
                     'units_detail': _summarize_unit_records(unit_records) if unit_records else None,
                 }
 
@@ -5037,3 +5047,144 @@ def _format_address(attributes: Dict[str, Any]) -> str:
         return f'Parcel {loc_id}'
 
     return 'Unknown parcel'
+
+
+def _shape_to_geojson_geometry(shape) -> Optional[Dict[str, Any]]:
+    """
+    Convert a PyShp shape to GeoJSON geometry in WGS84 coordinates, preserving multipart rings.
+    """
+    if not shape or not hasattr(shape, "__geo_interface__"):
+        return None
+
+    geometry = shape.__geo_interface__
+    return _transform_geometry_to_wgs84(geometry)
+
+
+def _transform_geometry_to_wgs84(geometry: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    geom_type = geometry.get("type")
+    coords = geometry.get("coordinates")
+    if not geom_type or not coords:
+        return None
+
+    if geom_type == "Polygon":
+        rings = [_convert_ring_to_wgs84(ring) for ring in coords]
+        rings = [ring for ring in rings if ring]
+        if not rings:
+            return None
+        return {"type": "Polygon", "coordinates": rings}
+
+    if geom_type == "MultiPolygon":
+        polygons = []
+        for polygon in coords:
+            converted = [_convert_ring_to_wgs84(ring) for ring in polygon]
+            converted = [ring for ring in converted if ring]
+            if converted:
+                polygons.append(converted)
+        if not polygons:
+            return None
+        return {"type": "MultiPolygon", "coordinates": polygons}
+
+    # Unexpected geometry type - treat as polygon if possible
+    if isinstance(coords, list):
+        return _transform_geometry_to_wgs84({"type": "Polygon", "coordinates": coords})
+    return None
+
+
+def _convert_ring_to_wgs84(ring: Iterable[Iterable[float]]) -> Optional[List[List[float]]]:
+    converted: List[List[float]] = []
+    for point in ring or []:
+        if point is None or len(point) < 2:
+            continue
+        lng, lat = massgis_stateplane_to_wgs84(point[0], point[1])
+        converted.append([lng, lat])
+    if len(converted) < 3:
+        return None
+    if converted[0] != converted[-1]:
+        converted.append(converted[0])
+    return converted
+
+
+def _geojson_geometry_to_leaflet_latlngs(geometry: Dict[str, Any]) -> List:
+    """
+    Convert a GeoJSON geometry (WGS84) into the nested lat/lng arrays expected by Leaflet.
+    """
+    if not geometry:
+        return []
+
+    geom_type = geometry.get("type")
+    coords = geometry.get("coordinates") or []
+
+    def convert_ring(ring: Iterable[Iterable[float]]) -> List[List[float]]:
+        latlng_ring: List[List[float]] = []
+        for point in ring or []:
+            if point is None or len(point) < 2:
+                continue
+            lng, lat = point
+            latlng_ring.append([lat, lng])
+        if latlng_ring and latlng_ring[0] == latlng_ring[-1]:
+            latlng_ring.pop()
+        return latlng_ring
+
+    if geom_type == "Polygon":
+        rings = []
+        for ring in coords:
+            converted = convert_ring(ring)
+            if converted:
+                rings.append(converted)
+        return rings
+
+    if geom_type == "MultiPolygon":
+        polygons = []
+        for polygon in coords:
+            converted_polygon = []
+            for ring in polygon:
+                converted = convert_ring(ring)
+                if converted:
+                    converted_polygon.append(converted)
+            if converted_polygon:
+                polygons.append(converted_polygon)
+        return polygons
+
+    return []
+
+
+def _geometry_centroid(geometry: Dict[str, Any]) -> Optional[Dict[str, float]]:
+    """
+    Compute centroid for GeoJSON geometry using the first outer ring.
+    """
+    if not geometry:
+        return None
+
+    coords = geometry.get("coordinates")
+    if not coords:
+        return None
+
+    ring: Optional[List[List[float]]] = None
+    if geometry.get("type") == "Polygon":
+        ring = coords[0] if coords else None
+    elif geometry.get("type") == "MultiPolygon":
+        first_polygon = coords[0] if coords else None
+        if first_polygon:
+            ring = first_polygon[0] if first_polygon else None
+
+    if not ring or len(ring) < 4:
+        return None
+
+    area = 0.0
+    cx = 0.0
+    cy = 0.0
+    for i in range(len(ring) - 1):
+        x1, y1 = ring[i]
+        x2, y2 = ring[i + 1]
+        cross = x1 * y2 - x2 * y1
+        area += cross
+        cx += (x1 + x2) * cross
+        cy += (y1 + y2) * cross
+
+    area *= 0.5
+    if abs(area) < 1e-9:
+        return None
+
+    cx /= (6 * area)
+    cy /= (6 * area)
+    return {"lat": cy, "lng": cx}

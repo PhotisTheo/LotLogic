@@ -117,27 +117,15 @@ class Command(BaseCommand):
 
                 features = []
                 for parcel in parcels:
-                    geometry_latlng = parcel.get('geometry') or []
-                    if not geometry_latlng:
+                    geometry = parcel.get('geometry')
+                    if not geometry:
                         continue
-
-                    # Convert Leaflet-friendly [lat, lng] pairs back to GeoJSON [lng, lat]
-                    coordinates = [[
-                        [lng, lat] for lat, lng in geometry_latlng
-                    ]]
-
-                    if coordinates[0] and coordinates[0][0] != coordinates[0][-1]:
-                        coordinates[0].append(list(coordinates[0][0]))
-
                     properties = dict(parcel)
                     properties.pop('geometry', None)
 
                     feature = {
                         "type": "Feature",
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": coordinates,
-                        },
+                        "geometry": geometry,
                         "properties": properties,
                     }
                     features.append(feature)
@@ -213,8 +201,9 @@ class Command(BaseCommand):
             _load_usecode_lookup,
             _should_replace_assess_record,
             _summarize_unit_records,
+            _geometry_centroid,
+            _shape_to_geojson_geometry,
             calculate_equity_metrics,
-            massgis_stateplane_to_wgs84,
         )
 
         town = _get_massgis_town(town_id)
@@ -271,11 +260,10 @@ class Command(BaseCommand):
                         unit_records = unit_records_map[key]
                         break
 
-            x_coords = [p[0] for p in shape.points]
-            y_coords = [p[1] for p in shape.points]
-            centroid_x = sum(x_coords) / len(x_coords)
-            centroid_y = sum(y_coords) / len(y_coords)
-            lng, lat = massgis_stateplane_to_wgs84(centroid_x, centroid_y)
+            geometry = _shape_to_geojson_geometry(shape)
+            if not geometry:
+                continue
+            centroid_point = _geometry_centroid(geometry)
 
             site_addr = _clean_string(attributes.get("SITE_ADDR")) or _clean_string(attributes.get("LOC_ADDR"))
             if not site_addr:
@@ -291,11 +279,6 @@ class Command(BaseCommand):
 
             if not attributes.get("SITE_CITY"):
                 attributes["SITE_CITY"] = town.name.title()
-
-            polygon_coords = []
-            for point in shape.points:
-                point_lng, point_lat = massgis_stateplane_to_wgs84(point[0], point[1])
-                polygon_coords.append([point_lat, point_lng])
 
             use_code = attributes.get("USE_CODE", "")
             use_desc = _get_use_description(use_code, usecode_lookup)
@@ -333,8 +316,8 @@ class Command(BaseCommand):
                 "city": _clean_string(attributes.get("SITE_CITY")) or _clean_string(attributes.get("CITY")) or town.name.title(),
                 "zip": _clean_string(attributes.get("SITE_ZIP")) or _clean_string(attributes.get("ZIP")),
                 "value_display": None,
-                "centroid": {"lat": lat, "lng": lng},
-                "geometry": polygon_coords,
+                "centroid": centroid_point,
+                "geometry": geometry,
                 "units_detail": _summarize_unit_records(unit_records) if unit_records else None,
             }
 

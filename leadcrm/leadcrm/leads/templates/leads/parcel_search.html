@@ -1810,30 +1810,55 @@
       return request;
     }
 
-    function geometryToLatLng(geometry) {
+    function geometryToLeafletLatLngs(geometry) {
       if (!geometry || !geometry.coordinates) {
         return [];
       }
-      let ring = null;
-      if (geometry.type === 'Polygon') {
-        ring = geometry.coordinates[0] || [];
-      } else if (geometry.type === 'MultiPolygon') {
-        ring = geometry.coordinates[0] && geometry.coordinates[0][0];
-      }
-      if (!Array.isArray(ring)) {
-        return [];
-      }
-      const latLng = ring
-        .map(pair => [Number(pair[1]), Number(pair[0])])
-        .filter(pair => Number.isFinite(pair[0]) && Number.isFinite(pair[1]));
-      if (latLng.length >= 2) {
-        const first = latLng[0];
-        const last = latLng[latLng.length - 1];
-        if (first[0] === last[0] && first[1] === last[1]) {
-          latLng.pop();
+
+      const convertRing = (ring) => {
+        if (!Array.isArray(ring)) {
+          return null;
         }
+        const latLngRing = ring
+          .map(pair => {
+            if (!Array.isArray(pair) || pair.length < 2) {
+              return null;
+            }
+            const [lng, lat] = pair;
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+              return null;
+            }
+            return [lat, lng];
+          })
+          .filter(Boolean);
+        if (latLngRing.length === 0) {
+          return null;
+        }
+        const first = latLngRing[0];
+        const last = latLngRing[latLngRing.length - 1];
+        if (first && last && first[0] === last[0] && first[1] === last[1]) {
+          latLngRing.pop();
+        }
+        return latLngRing;
+      };
+
+      if (geometry.type === 'Polygon') {
+        const rings = (geometry.coordinates || []).map(convertRing).filter(Boolean);
+        return rings;
       }
-      return latLng;
+
+      if (geometry.type === 'MultiPolygon') {
+        const polygons = [];
+        (geometry.coordinates || []).forEach(polygon => {
+          const converted = (polygon || []).map(convertRing).filter(Boolean);
+          if (converted.length > 0) {
+            polygons.push(converted);
+          }
+        });
+        return polygons;
+      }
+
+      return [];
     }
 
     function calculateLatLngCentroid(latLngCoords) {
@@ -1882,11 +1907,17 @@
         return null;
       }
       const parcel = { ...feature.properties };
-      const geometryLatLng = geometryToLatLng(feature.geometry);
+      const geometryLatLng = geometryToLeafletLatLngs(feature.geometry);
       if (!geometryLatLng.length) {
         return null;
       }
       parcel.geometry = geometryLatLng;
+      if (!parcel.centroid) {
+        const centroid = calculateCentroid(geometryLatLng);
+        if (centroid) {
+          parcel.centroid = { lat: centroid[0], lng: centroid[1] };
+        }
+      }
       if (!parcel.centroid || typeof parcel.centroid.lat === 'undefined' || typeof parcel.centroid.lng === 'undefined') {
         const centroid = calculateLatLngCentroid(geometryLatLng);
         if (centroid) {
@@ -2755,21 +2786,34 @@
 
     // Calculate centroid of a polygon
     function calculateCentroid(geometry) {
-      if (!geometry || geometry.length === 0) {
-        return [0, 0];
+      const ring = extractFirstRing(geometry);
+      if (!ring || ring.length < 3) {
+        return null;
+      }
+      const points = ring.slice();
+      points.push(ring[0]);
+
+      let area = 0;
+      let cx = 0;
+      let cy = 0;
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const [lat1, lng1] = points[i];
+        const [lat2, lng2] = points[i + 1];
+        const cross = (lng1 * lat2) - (lng2 * lat1);
+        area += cross;
+        cx += (lng1 + lng2) * cross;
+        cy += (lat1 + lat2) * cross;
       }
 
-      let sumLat = 0;
-      let sumLng = 0;
-      let count = 0;
+      area *= 0.5;
+      if (!area) {
+        return null;
+      }
 
-      geometry.forEach(point => {
-        sumLat += point[0];
-        sumLng += point[1];
-        count++;
-      });
-
-      return [sumLat / count, sumLng / count];
+      cx /= (6 * area);
+      cy /= (6 * area);
+      return [cy, cx];
     }
 
     function getColorForZone(propertyType) {
@@ -3239,8 +3283,11 @@
             center = [lat, lng];
           }
         }
-      } else if (parcel.geometry && parcel.geometry.length >= 2) {
-        center = parcel.geometry[0];
+      } else if (parcel.geometry) {
+        const firstPoint = extractFirstLatLng(parcel.geometry);
+        if (firstPoint) {
+          center = [firstPoint[0], firstPoint[1]];
+        }
       }
       if (!center) {
         center = [42.4072, -71.3824];
@@ -3252,7 +3299,8 @@
           quickViewPolygon.remove();
           quickViewPolygon = null;
         }
-        if (parcel.geometry && parcel.geometry.length >= 3) {
+        const primaryRing = extractFirstRing(parcel.geometry);
+        if (parcel.geometry && primaryRing && primaryRing.length >= 3) {
           quickViewPolygon = L.polygon(parcel.geometry, {
             color: '#2563eb',
             weight: 2,
@@ -4275,3 +4323,21 @@
   </script>
 
 {% endblock %}
+    function extractFirstRing(latlngStructure) {
+      if (!Array.isArray(latlngStructure) || latlngStructure.length === 0) {
+        return null;
+      }
+      const first = latlngStructure[0];
+      if (Array.isArray(first) && typeof first[0] === 'number') {
+        return latlngStructure;
+      }
+      return extractFirstRing(first);
+    }
+
+    function extractFirstLatLng(latlngStructure) {
+      const ring = extractFirstRing(latlngStructure);
+      if (!ring || ring.length === 0) {
+        return null;
+      }
+      return ring[0] || null;
+    }
