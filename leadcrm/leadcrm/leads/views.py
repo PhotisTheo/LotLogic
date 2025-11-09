@@ -5738,7 +5738,10 @@ def parcel_flags(request):
             "queuedBackgroundSearches": 0,
         })
 
-    auto_lien_search_enabled = len(normalized) <= LIEN_SEARCH_AUTO_THRESHOLD
+    # Disable auto lien search for parcel-flags endpoint to prevent slowdowns
+    # when batching large datasets (each batch of 1000 would trigger searches)
+    # Lien search is already handled by the main viewport endpoint
+    auto_lien_search_enabled = False
 
     # Build lookup for response flags
     parcel_keys = [(parcel["town_id"], parcel["loc_id"]) for parcel in normalized]
