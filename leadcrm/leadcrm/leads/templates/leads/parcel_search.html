@@ -1772,25 +1772,36 @@
         return Promise.reject(new Error('Missing town id'));
       }
       if (!options.force && townGeojsonCache.has(key)) {
+        console.log(`📦 Using cached GeoJSON for town ${key}`);
         return Promise.resolve(townGeojsonCache.get(key));
       }
       if (townGeojsonRequests.has(key)) {
+        console.log(`⏳ GeoJSON request for town ${key} already in progress`);
         return townGeojsonRequests.get(key);
       }
+      console.log(`🌐 Fetching GeoJSON for town ${key} from /api/town-geojson/${key}/`);
       const request = fetch(`/api/town-geojson/${key}/`, {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
         .then(response => {
           if (!response.ok) {
+            console.error(`❌ GeoJSON fetch failed: HTTP ${response.status} for town ${key}`);
             const error = new Error(`HTTP ${response.status}`);
             error.status = response.status;
             throw error;
           }
+          console.log(`✅ GeoJSON fetch successful for town ${key}`);
           return response.json();
         })
         .then(data => {
+          const featureCount = data?.features?.length || 0;
+          console.log(`✅ Parsed GeoJSON for town ${key}: ${featureCount} features`);
           townGeojsonCache.set(key, data);
           return data;
+        })
+        .catch(error => {
+          console.error(`❌ Error fetching GeoJSON for town ${key}:`, error);
+          throw error;
         })
         .finally(() => {
           townGeojsonRequests.delete(key);
