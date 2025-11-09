@@ -2108,6 +2108,10 @@
     }
 
     function clearViewportParcels() {
+      const parcelLayerCount = parcelLayers.length;
+      const viewportParcelCount = viewportParcels.size;
+      console.log(`🧹 Clearing ${parcelLayerCount} parcel layers and ${viewportParcelCount} viewport parcels`);
+
       if (globalMap) {
         try {
           parcelLayers.forEach(layer => {
@@ -2135,6 +2139,8 @@
         } catch (_) {}
         legendControl = null;
       }
+
+      console.log(`✅ Cleared all parcels from map`);
     }
 
     function refreshParcelsForFilters(options = {}) {
@@ -3440,7 +3446,7 @@
         }
 
         if (!forceReload && hasLoadedFullCurrentTown && viewportParcels.size > 0) {
-          console.log('Skipping parcel reload – current town already loaded.');
+          console.log(`⏭️  Skipping parcel reload – current town already loaded (${viewportParcels.size} parcels on map)`);
           return;
         }
 
@@ -3651,6 +3657,8 @@
 
             // Track unique zones for legend
             const uniqueZones = new Map();
+            let skippedDuplicates = 0;
+            let renderedParcels = 0;
 
             // Add each parcel as polygon
             data.parcels.forEach(parcel => {
@@ -3658,6 +3666,7 @@
 
               // Skip if already loaded
               if (viewportParcels.has(key)) {
+                skippedDuplicates++;
                 return;
               }
 
@@ -3715,6 +3724,7 @@
 
               polygon.addTo(globalMap);
               viewportParcels.set(key, polygon);
+              renderedParcels++;
 
               // Add red exclamation marker if parcel has liens or legal actions
               if (parcel.has_lien || parcel.has_legal_action) {
@@ -3743,6 +3753,8 @@
                 viewportParcels.set(key + '_alert', alertMarker);
               }
             });
+
+            console.log(`📍 Rendered ${renderedParcels} parcels on map, skipped ${skippedDuplicates} duplicates. Total on map: ${viewportParcels.size}`);
 
             // Update/create legend
             if (uniqueZones.size > 0) {
