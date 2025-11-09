@@ -6048,9 +6048,21 @@ def town_geojson(request, town_id):
     import os
 
     try:
-        from .services import _get_massgis_town
+        from .services import _get_massgis_town, BOSTON_TOWN_ID
         town = _get_massgis_town(town_id)
         town_name_safe = town.name.replace(' ', '_').replace('/', '_')
+
+        # Boston has 98k+ parcels (917MB GeoJSON) - too large for client-side loading
+        # Return 404 to force frontend to use legacy API with server-side filtering
+        if int(town_id) == BOSTON_TOWN_ID:
+            logger.info(f"Refusing to serve GeoJSON for Boston (town_id={town_id}) - too large (917MB)")
+            return JsonResponse({
+                "error": "GeoJSON too large for this town",
+                "town_id": town_id,
+                "town_name": town.name,
+                "message": "Boston has 98,845 parcels (917MB). Use /api/parcels-in-viewport/ with neighborhood filter instead.",
+                "fallback_api": f"/api/parcels-in-viewport/?town_id={town_id}",
+            }, status=404)
 
         # Try to serve pre-generated GeoJSON first (FAST PATH)
         static_file_name = f"town_{town_id}_{town_name_safe}.geojson"
