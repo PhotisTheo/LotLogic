@@ -116,6 +116,11 @@ urlpatterns = [
         name="saved_parcel_list_mailers",
     ),
     path(
+        "saved-lists/<int:pk>/legal-search/",
+        views.bulk_legal_search,
+        name="bulk_legal_search",
+    ),
+    path(
         "api/parcel/<int:town_id>/<str:loc_id>/geometry/",
         views.parcel_geometry,
         name="parcel_geometry",

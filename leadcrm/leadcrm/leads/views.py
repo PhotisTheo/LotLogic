@@ -5248,6 +5248,87 @@ def saved_parcel_list_mailers(request, pk):
     return response
 
 
+@login_required
+@require_http_methods(["POST"])
+def bulk_legal_search(request, pk):
+    """
+    Trigger manual lien and legal action search for all parcels in a saved list.
+    This is the new UX - users explicitly request legal info instead of automatic searches.
+    """
+    import json
+    from .background_lien_search import search_parcel_background, should_search_parcel
+
+    saved_list = get_object_or_404(
+        _saved_list_queryset_for_user(request.user), pk=pk
+    )
+
+    parcels, _, _ = _pending_parcels_for_saved_list(
+        saved_list, user=request.user
+    )
+
+    if not parcels:
+        return JsonResponse(
+            {"error": "No parcels available to search."}, status=400
+        )
+
+    # Queue background searches for all residential parcels in the list
+    searches_queued = 0
+    searches_skipped = 0
+
+    for parcel in parcels:
+        town_id = parcel.town_id
+        loc_id = parcel.loc_id
+        property_category = getattr(parcel, 'property_category', '')
+
+        # Only search residential parcels (saves API calls)
+        if property_category != 'Residential':
+            searches_skipped += 1
+            continue
+
+        # Determine county from town name
+        county = None
+        town_name = parcel.town.name if hasattr(parcel, 'town') else ''
+        if town_name:
+            town_lower = town_name.lower()
+            if town_lower in ["salem", "beverly", "peabody", "lynn", "gloucester", "marblehead", "danvers"]:
+                county = "Essex"
+            elif town_lower in ["boston", "cambridge", "somerville", "brookline", "chelsea", "revere", "winthrop"]:
+                county = "Suffolk"
+            elif town_lower in ["worcester", "shrewsbury", "westborough", "auburn", "millbury"]:
+                county = "Worcester"
+            elif town_lower in ["springfield", "chicopee", "holyoke", "westfield"]:
+                county = "Hampden"
+            elif town_lower in ["lowell", "cambridge", "newton", "framingham", "waltham"]:
+                county = "Middlesex"
+
+        # Queue background search (force=False means it won't duplicate existing searches)
+        parcel_data = {
+            'owner_name': getattr(parcel, 'owner_name', ''),
+            'address': getattr(parcel, 'site_address', ''),
+            'town_name': town_name,
+            'county': county,
+        }
+
+        try:
+            if search_parcel_background(request.user, town_id, loc_id, parcel_data, force=False):
+                searches_queued += 1
+            else:
+                # Already searching or searched
+                searches_skipped += 1
+        except Exception as e:
+            logger.warning(f"Failed to queue background search for {town_id}/{loc_id}: {e}")
+            searches_skipped += 1
+
+    logger.info(f"Bulk legal search for list {pk}: queued {searches_queued}, skipped {searches_skipped}")
+
+    return JsonResponse({
+        "message": f"Legal search started for {searches_queued} properties. Results will appear on the map as they complete.",
+        "completed": 0,  # Initial progress
+        "total": searches_queued,
+        "skipped": searches_skipped,
+    })
+
+
 # --- Lightweight CRM dashboard listing leads and call requests.
 @login_required
 def crm_overview(request):
@@ -5535,17 +5616,13 @@ def parcels_in_viewport(request):
         logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
         parcels = get_parcels_in_bbox(north, south, east, west, limit=limit, **filters)
         logger.info(f"Found {len(parcels)} parcels")
-        auto_lien_search_enabled = len(parcels) <= LIEN_SEARCH_AUTO_THRESHOLD
-        if not auto_lien_search_enabled:
-            logger.info(
-                "Skipping automatic lien search for %s parcels (threshold %s)",
-                len(parcels),
-                LIEN_SEARCH_AUTO_THRESHOLD,
-            )
+
+        # Automatic lien search disabled - users must manually trigger via "Find Legal Info" button
+        auto_lien_search_enabled = False
 
         # Check for liens and legal actions for each parcel (batch query for efficiency)
+        # This displays existing search results but does NOT trigger new searches
         from .models import LienRecord, LegalAction
-        from .background_lien_search import search_parcel_background, should_search_parcel
 
         # Build list of (town_id, loc_id) tuples for batch query
         parcel_keys = [(p['town_id'], p['loc_id']) for p in parcels]
@@ -5581,55 +5658,8 @@ def parcels_in_viewport(request):
             ).values_list('town_id', 'loc_id')
             actions_set.update(actions_qs)
 
-        # Trigger background searches for parcels that need it
-        # This happens asynchronously so it doesn't slow down the map load
-        # Only search residential parcels to save API quota
+        # No automatic background searches - users trigger manually via "Find Legal Info" button
         searches_queued = 0
-        if auto_lien_search_enabled:
-            for parcel in parcels:
-                town_id = parcel['town_id']
-                loc_id = parcel['loc_id']
-                property_category = parcel.get('property_category', '')
-
-                # Only search residential parcels (saves API calls)
-                if property_category != 'Residential':
-                    continue
-
-                # Check if this parcel needs searching
-                if should_search_parcel(request.user, town_id, loc_id):
-                    # Determine county from town name
-                    county = None
-                    town_name = parcel.get('town_name', '')
-                    if town_name:
-                        town_lower = town_name.lower()
-                        if town_lower in ["salem", "beverly", "peabody", "lynn", "gloucester", "marblehead", "danvers"]:
-                            county = "Essex"
-                        elif town_lower in ["boston", "cambridge", "somerville", "brookline", "chelsea", "revere", "winthrop"]:
-                            county = "Suffolk"
-                        elif town_lower in ["worcester", "shrewsbury", "westborough", "auburn", "millbury"]:
-                            county = "Worcester"
-                        elif town_lower in ["springfield", "chicopee", "holyoke", "westfield"]:
-                            county = "Hampden"
-                        elif town_lower in ["lowell", "cambridge", "newton", "framingham", "waltham"]:
-                            county = "Middlesex"
-
-                    # Queue background search
-                    parcel_data = {
-                        'owner_name': parcel.get('owner', ''),
-                        'address': parcel.get('address', ''),
-                        'town_name': town_name,
-                        'county': county,
-                    }
-
-                    try:
-                        if search_parcel_background(request.user, town_id, loc_id, parcel_data):
-                            searches_queued += 1
-                    except Exception as e:
-                        # Don't let background search errors crash the API endpoint
-                        logger.warning(f"Failed to queue background search for {town_id}/{loc_id}: {e}")
-
-        if searches_queued > 0:
-            logger.info(f"Queued {searches_queued} background lien/legal action searches")
 
         # Format as simple JSON array (not GeoJSON, since we fetch geometry separately)
         results = []

@@ -49,18 +49,28 @@
     <div class="card shadow-sm">
       <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span class="fw-semibold">{{ total }} parcel{% if total != 1 %}s{% endif %} saved</span>
-        {% if list_is_archived %}
-          <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Archived</button>
-        {% elif bulk_skiptrace_pending_count %}
-          <button type="button"
-                  class="btn btn-warning btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#bulkSkiptraceModal">
-            Skip Trace {{ bulk_skiptrace_pending_count }} Remaining
-          </button>
-        {% else %}
-          <button type="button" class="btn btn-outline-secondary btn-sm" disabled>All Skip Traced</button>
-        {% endif %}
+        <div class="d-flex gap-2">
+          {% if list_is_archived %}
+            <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Archived</button>
+          {% elif bulk_skiptrace_pending_count %}
+            <button type="button"
+                    class="btn btn-warning btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#bulkSkiptraceModal">
+              Skip Trace {{ bulk_skiptrace_pending_count }} Remaining
+            </button>
+          {% else %}
+            <button type="button" class="btn btn-outline-secondary btn-sm" disabled>All Skip Traced</button>
+          {% endif %}
+          {% if not list_is_archived %}
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#legalSearchModal">
+              🔍 Find Legal Info
+            </button>
+          {% endif %}
+        </div>
       </div>
       <div class="table-responsive">
         <table class="table table-striped align-middle mb-0">
@@ -249,6 +259,56 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="button" class="btn btn-primary" data-role="bulk-mailer-generate">Generate Mailers</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade"
+         id="legalSearchModal"
+         tabindex="-1"
+         aria-labelledby="legalSearchModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-semibold" id="legalSearchModalLabel">Find Legal Info</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              This will search for liens and legal actions for <strong>{{ total }}</strong>
+              propert{{ total|pluralize:"y,ies" }} in this list.
+            </p>
+            <p class="small text-muted mb-3">
+              The search runs in the background. Results will appear as red markers on the map once completed.
+              You can close this modal and continue working while the search is running.
+            </p>
+            <div class="d-flex align-items-center gap-2 mt-3">
+              <div class="spinner-border spinner-border-sm text-primary d-none" data-role="legal-search-spinner" role="status">
+                <span class="visually-hidden">Searching…</span>
+              </div>
+              <div class="small d-none" data-role="legal-search-status"></div>
+            </div>
+            <div class="progress d-none mt-3" data-role="legal-search-progress-wrapper" style="height: 25px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated"
+                   role="progressbar"
+                   data-role="legal-search-progress-bar"
+                   style="width: 0%"
+                   aria-valuenow="0"
+                   aria-valuemin="0"
+                   aria-valuemax="100">
+                <span data-role="legal-search-progress-text">0%</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-role="legal-search-confirm"
+                    data-endpoint="{% url 'bulk_legal_search' saved_list.pk %}">
+              Start Search
+            </button>
           </div>
         </div>
       </div>
@@ -549,6 +609,116 @@
             } finally {
               generateButton.disabled = false;
               toggleMailerSpinner(false);
+            }
+          });
+        }
+      }
+
+      // Legal search modal handler
+      const legalSearchModalEl = document.getElementById('legalSearchModal');
+      if (legalSearchModalEl) {
+        const confirmButton = legalSearchModalEl.querySelector('[data-role="legal-search-confirm"]');
+        const spinner = legalSearchModalEl.querySelector('[data-role="legal-search-spinner"]');
+        const status = legalSearchModalEl.querySelector('[data-role="legal-search-status"]');
+        const progressWrapper = legalSearchModalEl.querySelector('[data-role="legal-search-progress-wrapper"]');
+        const progressBar = legalSearchModalEl.querySelector('[data-role="legal-search-progress-bar"]');
+        const progressText = legalSearchModalEl.querySelector('[data-role="legal-search-progress-text"]');
+
+        const setStatus = (message, tone) => {
+          if (!status) return;
+          status.textContent = message || '';
+          status.classList.add('small');
+          status.classList.remove('d-none', 'text-danger', 'text-success', 'text-muted');
+          if (!message) {
+            status.classList.add('d-none');
+            return;
+          }
+          if (tone === 'error') {
+            status.classList.add('text-danger');
+          } else if (tone === 'success') {
+            status.classList.add('text-success');
+          } else {
+            status.classList.add('text-muted');
+          }
+        };
+
+        const updateProgress = (current, total) => {
+          if (!progressBar || !progressText || !progressWrapper) return;
+          const percent = total > 0 ? Math.round((current / total) * 100) : 0;
+          progressBar.style.width = percent + '%';
+          progressBar.setAttribute('aria-valuenow', percent);
+          progressText.textContent = `${current} / ${total} (${percent}%)`;
+        };
+
+        legalSearchModalEl.addEventListener('show.bs.modal', function () {
+          setStatus('', null);
+          if (spinner) spinner.classList.add('d-none');
+          if (progressWrapper) progressWrapper.classList.add('d-none');
+          if (confirmButton) confirmButton.disabled = false;
+        });
+
+        if (confirmButton) {
+          confirmButton.addEventListener('click', async function () {
+            const endpoint = confirmButton.dataset.endpoint;
+            if (!endpoint) {
+              setStatus('Legal search endpoint is not available.', 'error');
+              return;
+            }
+
+            confirmButton.disabled = true;
+            if (spinner) spinner.classList.remove('d-none');
+            if (progressWrapper) progressWrapper.classList.remove('d-none');
+            setStatus('Starting legal search...', 'pending');
+            updateProgress(0, {{ total }});
+
+            try {
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': getCookie('csrftoken') || ''
+                },
+                body: JSON.stringify({})
+              });
+
+              let payload = {};
+              try {
+                payload = await response.json();
+              } catch (error) {
+                payload = {};
+              }
+
+              if (!response.ok || (payload && payload.error)) {
+                throw new Error((payload && payload.error) || 'Legal search failed.');
+              }
+
+              // Update progress
+              const completed = payload.completed || 0;
+              const total = payload.total || {{ total }};
+              updateProgress(completed, total);
+
+              if (payload.message) {
+                setStatus(payload.message, 'success');
+              } else {
+                setStatus(`Search initiated for ${total} properties. Results will appear on the map as they complete.`, 'success');
+              }
+
+              // Keep modal open to show progress
+              // User can close manually or wait for auto-close
+              setTimeout(() => {
+                const modalInstance = bootstrap.Modal.getInstance(legalSearchModalEl);
+                if (modalInstance) {
+                  modalInstance.hide();
+                }
+                // Optionally reload to show updated markers
+                window.location.reload();
+              }, 3000);
+
+            } catch (error) {
+              setStatus(error.message || 'Unable to start legal search.', 'error');
+              confirmButton.disabled = false;
+            } finally {
+              if (spinner) spinner.classList.add('d-none');
             }
           });
         }
