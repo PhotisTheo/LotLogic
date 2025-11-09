@@ -5518,6 +5518,19 @@ def parcels_in_viewport(request):
             else:
                 filters['town_name'] = town_name_clean
 
+        # Safety check: Boston without neighborhood + no limit = 98k+ parcels = server crash
+        # Require neighborhood filter or return error message
+        if filters.get('town_id') == 35 and not filters.get('neighborhood'):
+            logger.warning("Boston parcels requested without neighborhood filter - rejecting request")
+            return JsonResponse({
+                "count": 0,
+                "parcels": [],
+                "autoLienSearchEnabled": False,
+                "queuedBackgroundSearches": 0,
+                "error": "Boston requires neighborhood selection",
+                "message": "Please select a Boston neighborhood to load parcels. Boston has 98,845 parcels which is too many to load without filtering."
+            })
+
         # Fetch parcels
         logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
         parcels = get_parcels_in_bbox(north, south, east, west, limit=limit, **filters)
