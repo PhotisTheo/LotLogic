@@ -1917,8 +1917,10 @@
         console.log('shouldUseTownGeojson: false (no townId)');
         return false;
       }
-      if (String(townId) === '35' && !filters.neighborhood) {
-        console.log('shouldUseTownGeojson: false (Boston without neighborhood)');
+      // Boston (35) has 98k+ parcels (917MB GeoJSON), too large for client-side loading
+      // Use legacy API which filters by neighborhood on server-side
+      if (String(townId) === '35') {
+        console.log('shouldUseTownGeojson: false (Boston - too large, using server-side filtering)');
         return false;
       }
       console.log(`shouldUseTownGeojson: true (townId=${townId}, neighborhood=${filters.neighborhood || 'none'})`);
