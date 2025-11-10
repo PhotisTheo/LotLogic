@@ -2385,6 +2385,96 @@ def get_massgis_parcel_detail(town_id: int, loc_id: str) -> ParcelSearchResult:
 
         return parcel_result
 
+    # If not found in assessment database, try shapefile as fallback
+    logger.info(f"Parcel {loc_id} not found in assessment database, trying shapefile fallback")
+
+    try:
+        from pathlib import Path
+        tax_par_path = _find_taxpar_shapefile(Path(dataset_dir))
+        shape_match = _lookup_parcel_record(tax_par_path, loc_id)
+
+        if shape_match:
+            shape, shape_attrs = shape_match
+
+            # Build a minimal parcel record from shapefile data
+            # Note: Some fields won't be available since they come from the assessment database
+            fallback_record = {
+                "LOC_ID": shape_attrs.get("LOC_ID", loc_id),
+                "SITE_ADDR": shape_attrs.get("SITE_ADDR") or shape_attrs.get("LOC_ADDR"),
+                "SITE_CITY": shape_attrs.get("SITE_CITY") or shape_attrs.get("CITY") or town.name,
+                "SITE_ZIP": shape_attrs.get("SITE_ZIP") or shape_attrs.get("ZIP"),
+                "OWNER1": shape_attrs.get("OWNER1") or shape_attrs.get("OWNER_NAME"),
+                "MAIL_ADDR": shape_attrs.get("MAIL_ADDR"),
+                "MAIL_CITY": shape_attrs.get("MAIL_CITY"),
+                "MAIL_ST": shape_attrs.get("MAIL_ST"),
+                "MAIL_ZIP": shape_attrs.get("MAIL_ZIP"),
+                "USE_CODE": shape_attrs.get("USE_CODE"),
+                "STYLE": shape_attrs.get("STYLE"),
+                "TOTAL_VAL": shape_attrs.get("TOTAL_VAL"),
+                "LOT_SIZE": shape_attrs.get("LOT_SIZE"),
+                "LOT_UNITS": shape_attrs.get("LOT_UNITS"),
+                "ZONING": shape_attrs.get("ZONING") or shape_attrs.get("ZONE"),
+                "UNITS": shape_attrs.get("UNITS"),
+                "YEAR_BUILT": shape_attrs.get("YEAR_BUILT") or shape_attrs.get("YR_BUILT"),
+                "LAND_VAL": shape_attrs.get("LAND_VAL"),
+                "BLDG_VAL": shape_attrs.get("BLDG_VAL"),
+                "LS_PRICE": shape_attrs.get("LS_PRICE"),
+                "LS_DATE": shape_attrs.get("LS_DATE"),
+                "LS_BOOK": shape_attrs.get("LS_BOOK"),
+                "LS_PAGE": shape_attrs.get("LS_PAGE"),
+            }
+
+            # Calculate derived values
+            category = _classify_use_code(fallback_record.get("USE_CODE"))
+            equity_percent, estimated_balance, equity_value, roi_percent, annual_rate, monthly_payment = calculate_equity_metrics(fallback_record)
+
+            use_code_raw = _clean_string(fallback_record.get("USE_CODE"))
+            use_code_key = (use_code_raw or "").upper()
+            property_type_label = use_code_lookup.get(use_code_key) or use_code_lookup.get(
+                use_code_key.lstrip("0"), use_code_raw
+            )
+
+            parcel_result = ParcelSearchResult(
+                town=town,
+                loc_id=_clean_string(fallback_record.get("LOC_ID")) or target,
+                site_address=_clean_string(fallback_record.get("SITE_ADDR")) or "",
+                site_city=_clean_string(fallback_record.get("SITE_CITY")),
+                site_zip=_clean_zip(fallback_record.get("SITE_ZIP")),
+                owner_name=_clean_string(fallback_record.get("OWNER1")),
+                owner_address=_compose_owner_address(fallback_record),
+                absentee=_is_absentee(fallback_record),
+                property_category=category,
+                use_code=use_code_raw,
+                property_type=property_type_label,
+                style=_clean_string(fallback_record.get("STYLE")),
+                total_value=_to_number(fallback_record.get("TOTAL_VAL")),
+                lot_size=_to_number(fallback_record.get("LOT_SIZE")),
+                zoning=_clean_string(fallback_record.get("ZONING")),
+                equity_percent=equity_percent,
+                units=_to_int(fallback_record.get("UNITS")),
+                attributes=fallback_record,
+                estimated_mortgage_balance=estimated_balance,
+                estimated_equity_value=equity_value,
+                estimated_roi_percent=roi_percent,
+                estimated_mortgage_rate_percent=annual_rate,
+                estimated_monthly_payment=monthly_payment,
+                units_detail=None,  # Not available from shapefile alone
+            )
+
+            # Cache the fallback parcel data
+            try:
+                cache_dict = _parcel_data_to_dict(parcel_result, fallback_record)
+                _cache_parcel_data(town_id, target, cache_dict)
+                logger.debug(f"Cached fallback parcel {town_id}/{loc_id}")
+            except Exception as e:
+                logger.warning(f"Failed to cache fallback parcel {town_id}/{loc_id}: {e}")
+
+            logger.info(f"Successfully loaded parcel {loc_id} from shapefile fallback")
+            return parcel_result
+
+    except Exception as e:
+        logger.warning(f"Shapefile fallback failed for {loc_id}: {e}")
+
     raise MassGISDataError(f"Parcel {loc_id} was not found for {town.name}.")
 
 
