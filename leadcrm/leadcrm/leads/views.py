@@ -3021,6 +3021,8 @@ def parcel_search_detail(request, town_id, loc_id):
 @require_POST
 def parcel_search_save_list(request):
     from .attom_service import update_attom_data_for_parcel
+    import threading
+
     form = ParcelListSaveForm(request.POST)
     if not form.is_valid():
         messages.error(request, "List could not be saved. Please try again.")
@@ -3052,23 +3054,44 @@ def parcel_search_save_list(request):
         created_by=workspace_owner,
     )
 
-    # ATTOM API call
+    # Run ATTOM enrichment in background thread (non-blocking)
+    def enrich_attom_data_background(saved_list_id, town_id, loc_ids):
+        """Background task to enrich saved list with ATTOM data."""
+        try:
+            # Re-fetch the saved list in this thread to avoid threading issues
+            from django.db import connection
+            connection.close()  # Close any existing connection from parent thread
+
+            saved_list = SavedParcelList.objects.get(pk=saved_list_id)
+
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                futures = []
+                for loc_id in loc_ids:
+                    futures.append(executor.submit(update_attom_data_for_parcel, saved_list, town_id, loc_id))
+
+                for future in as_completed(futures):
+                    try:
+                        future.result()
+                    except Exception as e:
+                        logger.error(f"Error updating ATTOM data for parcel: {e}")
+
+            logger.info(f"Successfully enriched {len(loc_ids)} parcels with ATTOM data for list '{saved_list.name}'")
+        except Exception as e:
+            logger.error(f"Background ATTOM enrichment failed for list {saved_list_id}: {e}")
+
+    # Start background enrichment (non-blocking)
     if saved_list:
-        town_id = saved_list.town_id
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            futures = []
-            for loc_id in loc_ids:
-                futures.append(executor.submit(update_attom_data_for_parcel, saved_list, town_id, loc_id))
-            
-            for future in as_completed(futures):
-                try:
-                    future.result()
-                except Exception as e:
-                    logger.error(f"Error updating ATTOM data for a parcel: {e}")
+        background_thread = threading.Thread(
+            target=enrich_attom_data_background,
+            args=(saved_list.pk, saved_list.town_id, loc_ids),
+            daemon=True  # Daemon thread won't prevent app shutdown
+        )
+        background_thread.start()
+        logger.info(f"Started background ATTOM enrichment for {len(loc_ids)} parcels in list '{saved_list.name}'")
 
     messages.success(
         request,
-        f"Saved {len(loc_ids)} parcels to '{saved_list.name}'. Fetching ATTOM data in the background.",
+        f"Saved {len(loc_ids)} parcels to '{saved_list.name}'. ATTOM data enrichment running in background.",
     )
     return redirect("saved_parcel_list_detail", pk=saved_list.pk)
 
@@ -3201,11 +3224,27 @@ def parcel_add_to_list(request, town_id, loc_id):
 
         message = f"Created new list '{list_name}' with this parcel."
 
-    # Queue ATTOM data update in background
-    try:
-        update_attom_data_for_parcel(saved_list, town_id, loc_id)
-    except Exception as e:
-        logger.warning(f"Failed to update ATTOM data for {town_id}/{loc_id}: {e}")
+    # Queue ATTOM data update in background (non-blocking)
+    import threading
+
+    def enrich_single_parcel_background(saved_list_id, town_id, loc_id):
+        """Background task to enrich single parcel with ATTOM data."""
+        try:
+            from django.db import connection
+            connection.close()  # Close any existing connection from parent thread
+
+            saved_list = SavedParcelList.objects.get(pk=saved_list_id)
+            update_attom_data_for_parcel(saved_list, town_id, loc_id)
+            logger.info(f"Successfully enriched parcel {town_id}/{loc_id} with ATTOM data")
+        except Exception as e:
+            logger.warning(f"Background ATTOM enrichment failed for {town_id}/{loc_id}: {e}")
+
+    background_thread = threading.Thread(
+        target=enrich_single_parcel_background,
+        args=(saved_list.pk, town_id, loc_id),
+        daemon=True
+    )
+    background_thread.start()
 
     return JsonResponse({
         "success": True,
