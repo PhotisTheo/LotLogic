@@ -8,6 +8,7 @@ app_name = "accounts"
 
 urlpatterns = [
     path("signup/", views.signup, name="signup"),
+    path("terms/", views.TermsView.as_view(), name="terms"),
     path(
         "login/",
         auth_views.LoginView.as_view(
@@ -38,6 +39,16 @@ urlpatterns = [
         "team/invite/<uuid:token>/accept/",
         views.team_invite_accept,
         name="team_invite_accept",
+    ),
+    path(
+        "beta/approve/<uuid:token>/",
+        views.beta_request_approve,
+        name="beta_request_approve",
+    ),
+    path(
+        "confirm-email/<uuid:token>/",
+        views.confirm_email,
+        name="confirm_email",
     ),
     path("signup/payment-intent/", views.signup_payment_intent, name="signup_payment_intent"),
 ]

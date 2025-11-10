@@ -141,9 +141,9 @@
   <section class="signup-hero mb-5 position-relative overflow-hidden">
     <div class="row align-items-center">
       <div class="col-lg-7 position-relative">
-        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-3">Lead CRM Subscriptions</span>
-        <h1 class="mb-3">Grow your deal flow with a CRM built for parcel intelligence.</h1>
-        <p class="lead text-secondary mb-4">Choose the workspace that fits your team, run skip traces with a click, and launch high-converting mailers—all from the same dashboard.</p>
+        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 mb-3">Lead CRM Beta</span>
+        <h1 class="mb-3">Join the beta and help shape the future of parcel intelligence.</h1>
+        <p class="lead text-secondary mb-4">Beta testers get every Lead CRM feature for free while we finish subscriptions—skip tracing stays pay-as-you-go inside the app.</p>
         <div class="trust-badges text-secondary-emphasis">
           <span class="trust-badge">
             <span aria-hidden="true">⚡</span>
@@ -184,9 +184,13 @@
     <section class="mb-5">
       <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
         <div>
-          <h2 class="h4 fw-semibold mb-1">Pick the workspace that fits today—upgrade anytime.</h2>
-          <p class="text-muted mb-0">All plans include skip tracing, mailer automation, and access to the latest parcel data.</p>
+          <h2 class="h4 fw-semibold mb-1">Beta Tester Access</h2>
+          <p class="text-muted mb-0">Sign up for free during beta. You’ll only see charges when you purchase skip traces inside the product.</p>
         </div>
+      </div>
+
+      <div class="alert alert-info border-0 shadow-sm mb-4">
+        During beta the Tester plan is the only option available. Every new signup requires a quick manual approval—expect an email as soon as you're live. Make sure to click the confirmation link we send so we can verify your email before activating access. We’ll notify you before paid subscriptions return, and we’ll never charge you automatically for skip tracing without your confirmation.
       </div>
 
       <div class="row g-4" id="plan-options">
@@ -356,31 +360,56 @@
               </div>
             </div>
           {% else %}
-            <div class="bg-light-subtle rounded-3 p-4">
-              <h2 class="h6 fw-semibold mb-2">Billing handled by your team lead</h2>
-              <p class="small text-muted mb-0">
-                Once you create a password you’ll be added to their shared workspace instantly.
-              </p>
-            </div>
+            {% if invite %}
+              <div class="bg-light-subtle rounded-3 p-4">
+                <h2 class="h6 fw-semibold mb-2">Billing handled by your team lead</h2>
+                <p class="small text-muted mb-0">
+                  Once you create a password you’ll be added to their shared workspace instantly.
+                </p>
+              </div>
+            {% else %}
+              <div class="bg-light-subtle rounded-3 p-4">
+                <h2 class="h6 fw-semibold mb-2">Beta access is on us</h2>
+                <p class="small text-muted mb-2">
+                  There’s no monthly subscription charge while you’re in the beta.
+                </p>
+                <p class="small text-muted mb-2">
+                  Skip tracing is still purchased in-app, so you only pay when you confirm a lookup.
+                </p>
+                <p class="small text-muted mb-0">
+                  Our team reviews every beta request—approvals usually take less than a business day once your email is confirmed.
+                </p>
+              </div>
+            {% endif %}
           {% endif %}
         </div>
       </div>
 
       <div class="signup-divider"></div>
 
+      <div class="form-check mb-4">
+        {{ form.accept_terms }}
+        <label class="form-check-label small text-muted ms-2" for="{{ form.accept_terms.id_for_label }}">
+          I agree to the <a href="{% url 'accounts:terms' %}" target="_blank" rel="noopener">Lead CRM Terms &amp; Conditions</a>.
+        </label>
+        {% for error in form.accept_terms.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
       <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div class="text-muted small">
-          By continuing you agree to our subscription terms and monthly billing. You can cancel anytime from your account settings.
+          By continuing you agree to our beta terms. Skip tracing charges only occur when you confirm an in-app purchase.
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg px-5" data-role="submit-button">
-          {% if invite %}Join workspace{% else %}Start my subscription{% endif %}
+          {% if invite %}Join workspace{% else %}Join the beta{% endif %}
         </button>
       </div>
     </form>
   </section>
 
-  <p class="text-center text-muted small">Have questions before signing up? Email <a href="mailto:support@leadcrm.io">support@leadcrm.io</a> and we’ll help you choose the right plan.</p>
+  <p class="text-center text-muted small">Questions about beta access or skip tracing costs? Email <a href="mailto:support@leadcrm.io">support@leadcrm.io</a> and we’ll get you answers fast.</p>
 
   {{ plan_catalog|json_script:"signup-plan-catalog" }}
   {{ plan_groups|json_script:"signup-plan-groups" }}

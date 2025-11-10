@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.utils.html import format_html
 from django.contrib.auth import get_user_model
 
-from .models import TeamInvite, UserProfile
+from .models import BetaSignupRequest, EmailVerification, TeamInvite, UserProfile
 
 User = get_user_model()
 
@@ -69,3 +69,18 @@ class TeamInviteAdmin(admin.ModelAdmin):
     list_display = ("email", "team_lead", "created_at", "accepted_at")
     search_fields = ("email", "team_lead__username")
     list_filter = ("accepted_at",)
+
+
+@admin.register(BetaSignupRequest)
+class BetaSignupRequestAdmin(admin.ModelAdmin):
+    list_display = ("user", "plan_id", "status", "created_at", "approved_at")
+    list_filter = ("status", "plan_id")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("token", "created_at", "approved_at")
+
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ("user", "email", "confirmed_at", "created_at")
+    search_fields = ("user__username", "user__email", "email")
+    readonly_fields = ("token", "created_at", "confirmed_at")

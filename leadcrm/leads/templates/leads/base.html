@@ -119,9 +119,10 @@
     </main>
 
     <footer class="bg-dark text-light py-3 mt-auto">
-      <div class="container d-flex flex-wrap justify-content-between align-items-center">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
         <span class="small">&copy; {% now "Y" %} Lead CRM</span>
-        <span class="small text-muted">Data sources: MassGIS, FEMA</span>
+        <a class="small text-decoration-none text-light" href="{% url 'accounts:terms' %}">Terms &amp; Conditions</a>
+        <span class="small text-muted ms-auto">Data sources: MassGIS, FEMA</span>
       </div>
     </footer>
   </div>

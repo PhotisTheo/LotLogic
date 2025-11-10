@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 class UserProfile(models.Model):
@@ -41,6 +42,7 @@ class UserProfile(models.Model):
     work_phone = models.CharField(max_length=32, blank=True)
     mobile_phone = models.CharField(max_length=32, blank=True)
     bio = models.TextField(blank=True)
+    email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         label = dict(self.ACCOUNT_TYPE_CHOICES).get(self.account_type, self.account_type)
@@ -132,6 +134,138 @@ class TeamInvite(models.Model):
             return True
         accepted = UserProfile.objects.filter(team_lead=self.team_lead).count()
         return accepted < profile.team_member_limit
+
+
+class BetaSignupRequest(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_APPROVED = "approved"
+    STATUS_REVOKED = "revoked"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "Pending"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_REVOKED, "Revoked"),
+    ]
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="beta_signup_request",
+    )
+    plan_id = models.CharField(max_length=50, default="beta_tester")
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.CharField(max_length=120, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Beta request for {self.user.username} ({self.plan_id})"
+
+    @property
+    def plan(self) -> dict:
+        from .plans import get_plan
+
+        return get_plan(self.plan_id)
+
+    @property
+    def plan_label(self) -> str:
+        plan = self.plan
+        return plan.get("label", self.plan_id)
+
+    def approve(self, approver: str | None = None) -> bool:
+        if self.status == self.STATUS_APPROVED:
+            return False
+        self.status = self.STATUS_APPROVED
+        self.approved_at = timezone.now()
+        self.approved_by = approver or ""
+        self.save(
+            update_fields=[
+                "status",
+                "approved_at",
+                "approved_by",
+            ]
+        )
+        user = self.user
+        attempt_activate_user(user)
+        return True
+
+    def reset(self):
+        self.status = self.STATUS_PENDING
+        self.approved_at = None
+        self.approved_by = ""
+        self.token = uuid.uuid4()
+        self.save(
+            update_fields=[
+                "status",
+                "approved_at",
+                "approved_by",
+                "token",
+            ]
+        )
+
+class EmailVerification(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="email_verification",
+    )
+    email = models.EmailField()
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Email verification for {self.user.username}"
+
+    def regenerate(self):
+        self.token = uuid.uuid4()
+        self.email = self.user.email
+        self.confirmed_at = None
+        self.save(update_fields=["token", "email", "confirmed_at"])
+
+    def mark_confirmed(self) -> bool:
+        if self.confirmed_at:
+            return False
+        now = timezone.now()
+        self.confirmed_at = now
+        self.save(update_fields=["confirmed_at"])
+        profile = self.user.profile
+        if not profile.email_confirmed_at:
+            profile.email_confirmed_at = now
+            profile.save(update_fields=["email_confirmed_at"])
+        attempt_activate_user(self.user)
+        return True
+
+
+def attempt_activate_user(user: User) -> bool:
+    profile = getattr(user, "profile", None)
+    if not profile or not profile.email_confirmed_at:
+        return False
+
+    from .plans import get_plan
+
+    plan = get_plan(profile.plan_id)
+    requires_manual = bool(plan.get("requires_manual_approval"))
+    if requires_manual:
+        beta_request = getattr(user, "beta_signup_request", None)
+        if not beta_request or beta_request.status != BetaSignupRequest.STATUS_APPROVED:
+            return False
+        if profile.billing_status == "beta_pending":
+            profile.billing_status = "included"
+            profile.save(update_fields=["billing_status"])
+
+    if not user.is_active:
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+    return True
 
 
 def get_workspace_owner(user: Optional[User]) -> Optional[User]:

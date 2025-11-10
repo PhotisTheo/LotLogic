@@ -1,0 +1,46 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Beta Approval · Lead CRM{% endblock %}
+
+{% block content %}
+  <section class="py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="bg-white rounded-4 shadow-sm p-5 text-center">
+          {% if approved_now %}
+            <span class="badge bg-success-subtle text-success mb-3 px-3 py-2 rounded-pill">Approved</span>
+            <h1 class="h3 fw-semibold mb-3">Beta access granted</h1>
+            <p class="text-muted">
+              {{ beta_request.user.get_full_name|default:beta_request.user.username }} can now log in with their username and start testing Lead CRM.
+            </p>
+          {% elif already_approved %}
+            <span class="badge bg-secondary-subtle text-secondary mb-3 px-3 py-2 rounded-pill">Already approved</span>
+            <h1 class="h4 fw-semibold mb-3">This beta tester already has access</h1>
+            <p class="text-muted mb-1">
+              Approval was recorded on {{ beta_request.approved_at|date:"F j, Y g:i a T" }}.
+            </p>
+            <p class="text-muted">
+              No further action is required.
+            </p>
+          {% elif invalid_link %}
+            <span class="badge bg-danger-subtle text-danger mb-3 px-3 py-2 rounded-pill">Unavailable</span>
+            <h1 class="h4 fw-semibold mb-3">We couldn't approve this request</h1>
+            <p class="text-muted">
+              The approval link is not valid anymore. Please check with the team before retrying.
+            </p>
+          {% else %}
+            <span class="badge bg-secondary-subtle text-secondary mb-3 px-3 py-2 rounded-pill">Pending</span>
+            <h1 class="h4 fw-semibold mb-3">This request is still processing</h1>
+            <p class="text-muted">
+              Try refreshing the page or contact support if you believe this link should be active.
+            </p>
+          {% endif %}
+
+          <div class="mt-4">
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary px-4">Go to login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

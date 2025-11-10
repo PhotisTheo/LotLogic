@@ -246,6 +246,12 @@ COURTLISTENER_API_KEY = os.getenv("COURTLISTENER_API_KEY", "")
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "accounts:profile"
 LOGOUT_REDIRECT_URL = "parcel_search"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "support@leadcrm.io")
+BETA_REQUEST_NOTIFICATION_EMAILS = [
+    email.strip()
+    for email in os.getenv("BETA_REQUEST_NOTIFICATION_EMAILS", "").split(",")
+    if email.strip()
+]
 
 
 def _decimal_setting(key: str, default: str) -> Decimal:
@@ -333,6 +339,8 @@ else:
 
 if SKIPTRACE_MARKUP_AMOUNT_PER_LOOKUP < Decimal("0"):
     SKIPTRACE_MARKUP_AMOUNT_PER_LOOKUP = Decimal("0.00")
+
+BETA_REQUIRE_APPROVAL = _bool_setting("BETA_REQUIRE_APPROVAL", True)
 
 
 MAILER_CONTACT_PHONE = os.getenv("MAILER_CONTACT_PHONE", "555-5555")

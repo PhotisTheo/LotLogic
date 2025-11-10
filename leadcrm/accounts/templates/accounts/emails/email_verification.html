@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Confirm your Lead CRM email</title>
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5; color: #0f172a;">
+    <h2 style="margin-bottom: 0.5rem;">Confirm your email</h2>
+    <p style="margin-top: 0;">
+      Hi {{ user_display }}, thanks for signing up for Lead CRM.
+    </p>
+    <p>
+      Click the button below to confirm your email address and finish setting up your account.
+    </p>
+    <p style="margin: 1.5rem 0;">
+      <a href="{{ confirmation_url }}" style="display: inline-block; background: #2563eb; color: #fff; padding: 0.8rem 1.8rem; border-radius: 999px; text-decoration: none; font-weight: 600;">
+        Confirm email
+      </a>
+    </p>
+    <p style="font-size: 0.9rem; color: #64748b;">
+      If the button doesn't work, copy and paste this link into your browser:<br>
+      <span style="color: #0f172a;">{{ confirmation_url }}</span>
+    </p>
+    <p style="font-size: 0.85rem; color: #94a3b8;">
+      If you didn't create this account, you can safely ignore this message.
+    </p>
+  </body>
+</html>

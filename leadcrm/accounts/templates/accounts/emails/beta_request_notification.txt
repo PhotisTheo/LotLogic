@@ -1,0 +1,12 @@
+New beta signup request
+=================================
+
+Name: {{ user_display }}
+Email: {{ user_email }}
+Plan: {{ plan_label }}
+Requested: {{ beta_request.created_at|date:"F j, Y g:i a T" }}
+
+Approve access:
+{{ approval_url }}
+
+This link activates the account immediately. Reply to this email if you need to follow up with the requester.

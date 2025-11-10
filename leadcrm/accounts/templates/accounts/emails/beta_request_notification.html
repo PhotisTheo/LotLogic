@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Beta signup request</title>
+  </head>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5; color: #0f172a;">
+    <h2 style="margin-bottom: 0.5rem;">New beta signup request</h2>
+    <p style="margin-top: 0; color: #475569;">
+      {{ user_display }} ({{ user_email }}) just requested access to the {{ plan_label }} plan.
+    </p>
+
+    <ul style="padding-left: 1.25rem; color: #0f172a;">
+      <li><strong>Requested</strong>: {{ beta_request.created_at|date:"F j, Y g:i a T" }}</li>
+      <li><strong>Plan</strong>: {{ plan_label }}</li>
+    </ul>
+
+    <p style="margin-top: 1.5rem; margin-bottom: 1rem;">
+      Approve and activate the account instantly:
+    </p>
+
+    <p style="margin: 0 0 2rem;">
+      <a href="{{ approval_url }}" style="display: inline-block; background: #2563eb; color: #fff; padding: 0.75rem 1.5rem; border-radius: 999px; text-decoration: none; font-weight: 600;">
+        Approve {{ user_display }}
+      </a>
+    </p>
+
+    <p style="font-size: 0.9rem; color: #64748b;">
+      If the button doesn't work, copy and paste this link into your browser:<br>
+      <span style="color: #0f172a;">{{ approval_url }}</span>
+    </p>
+  </body>
+</html>

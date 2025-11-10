@@ -14,8 +14,15 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
+from .emails import send_beta_signup_notification, send_email_verification
 from .forms import ProfileUpdateForm, TeamInviteForm, UserSignupForm
-from .models import TeamInvite, UserProfile, get_workspace_owner
+from .models import (
+    BetaSignupRequest,
+    EmailVerification,
+    TeamInvite,
+    UserProfile,
+    get_workspace_owner,
+)
 from .plans import (
     ACCOUNT_INDIVIDUAL,
     ACCOUNT_TEAM_LEAD,
@@ -23,6 +30,7 @@ from .plans import (
     DEFAULT_PLAN_ID,
     PLAN_CATALOG,
     PLAN_GROUPS,
+    PUBLIC_SIGNUP_PLAN_IDS,
     get_plan,
     plans_for_account_type,
 )
@@ -73,7 +81,12 @@ def _get_invite(token: str | None) -> TeamInvite | None:
 
 def _plan_options_for_display() -> list[dict[str, object]]:
     options = []
-    for plan_id in ("individual_standard", "team_standard", "team_plus"):
+    plan_ids: tuple[str, ...] = PUBLIC_SIGNUP_PLAN_IDS or (DEFAULT_PLAN_ID,)
+    seen: set[str] = set()
+    for plan_id in plan_ids:
+        if plan_id in seen:
+            continue
+        seen.add(plan_id)
         plan = PLAN_CATALOG.get(plan_id)
         if not plan:
             continue
@@ -94,6 +107,26 @@ def _plan_options_for_display() -> list[dict[str, object]]:
                 "upgrade_note": plan.get("upgrade_note"),
             }
         )
+    if not options:
+        plan = PLAN_CATALOG.get(DEFAULT_PLAN_ID)
+        if plan:
+            options.append(
+                {
+                    "id": plan["id"],
+                    "label": plan["label"],
+                    "subtitle": plan.get("subtitle", ""),
+                    "price_display": plan.get("price_display", ""),
+                    "price_cents": plan.get("price_cents", 0),
+                    "account_type": plan.get("account_type"),
+                    "seat_limit": plan.get("seat_limit"),
+                    "features": plan.get("features", []),
+                    "cta": plan.get("cta", ""),
+                    "highlight": plan.get("highlight", False),
+                    "badge": plan.get("badge"),
+                    "badge_style": plan.get("badge_style"),
+                    "upgrade_note": plan.get("upgrade_note"),
+                }
+            )
     return options
 
 
@@ -122,6 +155,12 @@ def signup(request):
         plan = get_plan(selected_plan_id)
         price_cents = plan.get("price_cents", 0)
         requires_payment = invite is None and price_cents > 0
+        plan_requires_manual_approval = bool(plan.get("requires_manual_approval"))
+        requires_manual_approval = (
+            not invite
+            and plan_requires_manual_approval
+            and getattr(settings, "BETA_REQUIRE_APPROVAL", True)
+        )
 
         if form.is_valid():
             plan_id = form.cleaned_data.get("plan_id") or selected_plan_id
@@ -131,6 +170,12 @@ def signup(request):
             )
             price_cents = plan.get("price_cents", 0)
             requires_payment = invite is None and price_cents > 0
+            plan_requires_manual_approval = bool(plan.get("requires_manual_approval"))
+            requires_manual_approval = (
+                not invite
+                and plan_requires_manual_approval
+                and getattr(settings, "BETA_REQUIRE_APPROVAL", True)
+            )
 
             subscription_id = (request.POST.get("stripe_subscription_id") or "").strip()
             customer_id_from_form = (
@@ -322,6 +367,7 @@ def signup(request):
 
             if not form.errors:
                 user = form.save(commit=False)
+                user.is_active = False
                 user.save()
 
                 profile = user.profile
@@ -391,6 +437,8 @@ def signup(request):
                     profile.billing_status = "included"
                     profile.payment_intent_id = None
                     profile.stripe_subscription_id = None
+                if requires_manual_approval:
+                    profile.billing_status = "beta_pending"
 
                 profile.save(
                     update_fields=[
@@ -405,11 +453,55 @@ def signup(request):
                     ]
                 )
 
-                login(request, user)
-                messages.success(
-                    request, "Welcome aboard! Your account is ready to go."
+                verification, _ = EmailVerification.objects.get_or_create(user=user)
+                verification.email = user.email
+                verification.token = uuid.uuid4()
+                verification.confirmed_at = None
+                verification.save()
+
+                confirmation_url = request.build_absolute_uri(
+                    reverse("accounts:confirm_email", args=[verification.token])
                 )
-                return redirect("accounts:profile")
+                try:
+                    send_email_verification(verification, confirmation_url)
+                except Exception:
+                    logger.exception(
+                        "Failed to send email verification",
+                        extra={"user_id": user.id},
+                    )
+
+                if requires_manual_approval:
+                    beta_request, _ = BetaSignupRequest.objects.get_or_create(
+                        user=user
+                    )
+                    beta_request.plan_id = plan_id
+                    beta_request.status = BetaSignupRequest.STATUS_PENDING
+                    beta_request.approved_at = None
+                    beta_request.approved_by = ""
+                    beta_request.token = uuid.uuid4()
+                    beta_request.save()
+
+                    approval_url = request.build_absolute_uri(
+                        reverse("accounts:beta_request_approve", args=[beta_request.token])
+                    )
+                    try:
+                        send_beta_signup_notification(beta_request, approval_url)
+                    except Exception:
+                        logger.exception(
+                            "Failed to send beta signup notification",
+                            extra={"user_id": user.id, "plan_id": plan_id},
+                        )
+
+                    messages.info(
+                        request,
+                        "Check your inbox to confirm your email. Once it's verified, we'll approve your beta access and let you know when you can log in.",
+                    )
+                else:
+                    messages.success(
+                        request,
+                        "We sent a confirmation link to your email—verify it to finish setting up your account.",
+                    )
+                return redirect("accounts:login")
 
         selected_plan_id = form.data.get("plan_id") or DEFAULT_PLAN_ID
         plan = get_plan(selected_plan_id)
@@ -597,6 +689,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             }
         )
         return context
+
+
+class TermsView(TemplateView):
+    template_name = "accounts/terms.html"
 
 
 class MailerTemplateListView(LoginRequiredMixin, TemplateView):
@@ -819,6 +915,77 @@ def team_invite_accept(request, token):
         f"You've joined {invite.team_lead.get_full_name() or invite.team_lead.username}'s team.",
     )
     return redirect("accounts:profile")
+
+
+def beta_request_approve(request, token):
+    beta_request = get_object_or_404(BetaSignupRequest, token=token)
+    approved_now = False
+    already_approved = beta_request.status == BetaSignupRequest.STATUS_APPROVED
+    invalid_link = beta_request.status == BetaSignupRequest.STATUS_REVOKED
+
+    if beta_request.status == BetaSignupRequest.STATUS_PENDING:
+        approver_identifier = ""
+        if request.user.is_authenticated and request.user.email:
+            approver_identifier = request.user.email
+        else:
+            approver_identifier = (
+                request.GET.get("approver")
+                or request.GET.get("by")
+                or request.META.get("REMOTE_ADDR", "")
+            )
+        approved_now = beta_request.approve(approver_identifier)
+        already_approved = False
+        invalid_link = False
+
+    context = {
+        "beta_request": beta_request,
+        "approved_now": approved_now,
+        "already_approved": already_approved,
+        "invalid_link": invalid_link,
+    }
+    return render(request, "accounts/beta_request_approval.html", context)
+
+
+def confirm_email(request, token):
+    verification = get_object_or_404(
+        EmailVerification.objects.select_related("user", "user__profile"), token=token
+    )
+    user = verification.user
+    plan = user.profile.plan
+    requires_manual = bool(plan.get("requires_manual_approval"))
+    newly_confirmed = verification.mark_confirmed()
+    if newly_confirmed:
+        if user.is_active:
+            messages.success(request, "Email confirmed! You can log in now.")
+        elif requires_manual:
+            messages.success(
+                request,
+                "Email confirmed! We'll activate your account as soon as the team approves your beta request.",
+            )
+        else:
+            messages.success(
+                request, "Email confirmed! You can now log in to Lead CRM."
+            )
+    else:
+        if verification.confirmed_at:
+            if user.is_active:
+                messages.info(request, "This email was already confirmed—you can log in.")
+            elif requires_manual:
+                messages.info(
+                    request,
+                    "Your email is confirmed. We're just waiting on the beta approval.",
+                )
+            else:
+                messages.info(
+                    request,
+                    "Your email is already confirmed. Try logging in.",
+                )
+        else:
+            messages.error(
+                request,
+                "We couldn't confirm this email address. Please request a new link.",
+            )
+    return redirect("accounts:login")
 
 
 @require_POST

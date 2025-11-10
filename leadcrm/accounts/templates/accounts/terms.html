@@ -1,0 +1,150 @@
+{% extends "leads/base.html" %}
+
+{% block title %}Terms & Conditions · Lead CRM{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="bg-white rounded-4 shadow-sm p-5">
+        <h1 class="h3 fw-bold mb-4 text-primary-emphasis">Lead CRM Terms & Conditions</h1>
+        <p class="text-muted mb-4">
+          Last updated: {{ now|date:"F j, Y" }}
+        </p>
+
+        <p class="mb-4">
+          These Terms &amp; Conditions (“Terms”) govern your access to and use of the Lead CRM web application,
+          related data products, and any software, mobile experiences, or professional services provided by Lead CRM,
+          LotLogic, or their affiliates (“Lead CRM,” “we,” “us,” or “our”). By creating an account, accessing the platform,
+          or participating in the Lead CRM beta program, you (“you,” “Customer,” or “User”) agree to these Terms and our
+          Privacy Policy. If you are accepting on behalf of a company or other legal entity, you represent that you have
+          the authority to bind that entity to these Terms. IF YOU DO NOT AGREE, DO NOT USE THE SERVICES.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-5">1. Definitions</h2>
+        <ul class="mb-4">
+          <li><strong>“Services”</strong> means the Lead CRM platform, APIs, analytics, data exports, skip tracing modules, mailer tools, and any support or implementation services we provide.</li>
+          <li><strong>“Customer Data”</strong> means any data, files, or content submitted to the Services by you or on your behalf.</li>
+          <li><strong>“Lead CRM Data”</strong> means parcel intelligence, skip tracing results, enrichment data, analytics, or other content we make available through the Services.</li>
+          <li><strong>“Beta Services”</strong> are pre-release, experimental, or evaluation features offered for limited use and feedback.</li>
+        </ul>
+
+        <h2 class="h5 fw-semibold">2. Eligibility & Registration</h2>
+        <p>
+          You must be at least 18 years old and capable of forming a binding contract to use the Services. When you create an account, you agree to provide accurate,
+          current, and complete information, including a verifiable business email address. You must not impersonate another person or entity or misrepresent your
+          association with one. Lead CRM reserves the right to reject or suspend any account if we detect duplicate registrations, fraudulent intent, or misuse.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">3. Account Security & Email Verification</h2>
+        <p>
+          You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use.
+          Email verification is mandatory for all new accounts. We may disable or delete accounts that are not verified within a reasonable period. Creating multiple accounts with the same email,
+          bypassing verification, or sharing logins is strictly prohibited.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">4. Beta Program Participation</h2>
+        <p>
+          If you access Beta Services, you acknowledge that they may be incomplete, contain defects, or change without notice. Beta Services are provided “as is” for evaluation purposes only.
+          We may collect usage metrics, feedback, and crash data to improve the platform. You agree to keep Beta features confidential unless we make them public and acknowledge that
+          Beta access may be revoked at any time. No service-level guarantees or uptime commitments apply to Beta Services.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">5. License & Permitted Use</h2>
+        <p>
+          Subject to these Terms, we grant you a limited, revocable, non-exclusive, non-transferable license to access and use the Services for your internal business purposes.
+          You must not (a) resell or sublicense the Services, (b) reverse engineer or attempt to extract source code, (c) use automated tools to scrape or harvest Lead CRM Data,
+          (d) use the Services to create a competing product, or (e) remove proprietary notices. We retain all ownership and intellectual property rights in the Services and Lead CRM Data.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">6. Customer Data & Privacy</h2>
+        <p>
+          You retain ownership of Customer Data. You grant Lead CRM a global, royalty-free license to host, process, transmit, and display Customer Data solely to provide the Services.
+          You represent that you have obtained all necessary rights and consents to submit Customer Data and that it does not infringe, misappropriate, or violate any third-party rights or laws.
+          We implement reasonable safeguards to protect Customer Data, but you acknowledge that no method of transmission or storage is entirely secure.
+          Additional privacy practices are outlined in our Privacy Policy.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">7. Skip Tracing & Compliance</h2>
+        <p>
+          Certain features, including skip tracing, involve sensitive personally identifiable information. You agree to comply with all applicable laws and industry regulations,
+          including but not limited to the Fair Credit Reporting Act (FCRA), the Telephone Consumer Protection Act (TCPA), CAN-SPAM, Do Not Call (DNC) rules, state privacy statutes, and any licensing requirements.
+          You must not use skip tracing data for tenant screening, employment decisions, credit determination, harassment, stalking, or any unlawful purpose.
+          Lead CRM may delay, audit, or block skip tracing requests that appear suspicious or violate these restrictions.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">8. Billing, Fees & In-App Purchases</h2>
+        <p>
+          Beta access is currently free; however, skip tracing and other in-app purchases are charged per use. You authorize Lead CRM and our payment processors to charge the payment method you provide for all fees incurred.
+          Fees are non-refundable except as required by law. We may update pricing upon notice posted in the Services or sent to your email. You are responsible for any taxes, duties, or government assessments associated with your purchases.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">9. Acceptable Use Policy</h2>
+        <p>
+          You agree not to:
+        </p>
+        <ul>
+          <li>Upload malware, attempt to gain unauthorized access, or disrupt the integrity of the Services.</li>
+          <li>Misrepresent property ownership or send deceptive outreach through our mailer tools.</li>
+          <li>Harvest contact information for spam campaigns or send communications without legally required consent.</li>
+          <li>Use Lead CRM Data to build databases offered to third parties without our written consent.</li>
+          <li>Engage in conduct that could expose Lead CRM, our partners, or data providers to liability.</li>
+        </ul>
+
+        <h2 class="h5 fw-semibold mt-4">10. Feedback & Usage Data</h2>
+        <p>
+          You may provide feedback about the Services. We may use feedback without restriction and without obligation to you. We may collect aggregated or anonymized usage data to maintain and improve the Services,
+          provided that such data does not identify you or contain Customer Data.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">11. Suspension & Termination</h2>
+        <p>
+          We may suspend or terminate your access if you breach these Terms, fail to verify your email, misuse skip tracing, or otherwise create risk for the platform or our data partners.
+          You may terminate your account at any time by contacting support. Sections that by their nature should survive termination will continue to apply, including ownership, disclaimers,
+          limitation of liability, and indemnity.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">12. Disclaimer of Warranties</h2>
+        <p>
+          THE SERVICES, LEAD CRM DATA, AND BETA FEATURES ARE PROVIDED “AS IS” AND “AS AVAILABLE.” WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
+          INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICES WILL BE UNINTERRUPTED,
+          ERROR-FREE, OR THAT DATA OUTPUTS WILL BE COMPLETE, ACCURATE, OR SUITABLE FOR YOUR INTENDED USE.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">13. Limitation of Liability</h2>
+        <p>
+          TO THE FULLEST EXTENT PERMITTED BY LAW, LEAD CRM, ITS AFFILIATES, DIRECTORS, EMPLOYEES, LICENSORS, AND AGENTS SHALL NOT BE LIABLE
+          FOR INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS OPPORTUNITIES,
+          EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. OUR TOTAL LIABILITY FOR ANY CLAIM ARISING OUT OF OR RELATED TO THE SERVICES SHALL NOT EXCEED
+          THE GREATER OF (A) THE AMOUNT YOU PAID TO LEAD CRM IN THE TWELVE MONTHS PRECEDING THE CLAIM, OR (B) ONE HUNDRED DOLLARS ($100).
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">14. Indemnification</h2>
+        <p>
+          You agree to defend, indemnify, and hold harmless Lead CRM and its affiliates from and against any claims, damages, liabilities, costs, and expenses (including reasonable attorneys’ fees)
+          arising out of or related to (a) your use of the Services, (b) your violation of these Terms or applicable law, (c) Customer Data you submit, or (d) activities conducted under your account.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">15. Governing Law & Dispute Resolution</h2>
+        <p>
+          These Terms are governed by the laws of the Commonwealth of Massachusetts, without regard to its conflict-of-law principles.
+          The parties consent to the exclusive jurisdiction and venue of the state and federal courts located in Suffolk County, Massachusetts.
+          Each party waives any objection to jurisdiction or venue in such courts.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">16. Changes to the Terms</h2>
+        <p>
+          We may update these Terms at any time. If we make material changes, we will provide notice through the Services or via email.
+          Continued use of the Services after the effective date of the revised Terms constitutes your acceptance.
+          If you do not agree to the updated Terms, you must discontinue use of the Services.
+        </p>
+
+        <h2 class="h5 fw-semibold mt-4">17. Contact</h2>
+        <p>
+          If you have questions about these Terms or the Services, contact us at <a href="mailto:support@leadcrm.io">support@leadcrm.io</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

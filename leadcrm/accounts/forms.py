@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import TeamInvite, UserProfile
-from .plans import PLAN_CATALOG, PLAN_GROUPS, DEFAULT_PLAN_ID
+from .plans import PLAN_CATALOG, PLAN_GROUPS, DEFAULT_PLAN_ID, PUBLIC_SIGNUP_PLAN_IDS
 
 
 class UserSignupForm(UserCreationForm):
@@ -23,6 +23,10 @@ class UserSignupForm(UserCreationForm):
         choices=[(DEFAULT_PLAN_ID, "Solo Agent")],
         required=False,
     )
+    accept_terms = forms.BooleanField(
+        required=True,
+        label="I agree to the Lead CRM Terms & Conditions",
+    )
 
     class Meta:
         model = User
@@ -39,8 +43,11 @@ class UserSignupForm(UserCreationForm):
         self.invite = invite
         self.plan_groups = plan_groups or PLAN_GROUPS
         for field in self.fields.values():
-            css = field.widget.attrs.get("class", "")
-            field.widget.attrs["class"] = f"{css} form-control".strip()
+            css = field.widget.attrs.get("class", "").strip()
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs["class"] = f"{css} form-check-input".strip()
+            else:
+                field.widget.attrs["class"] = f"{css} form-control".strip()
         self.fields["username"].widget.attrs.update(
             {"class": "form-control form-control-lg", "placeholder": "Create a username"}
         )
@@ -59,17 +66,25 @@ class UserSignupForm(UserCreationForm):
             self.fields["plan_id"].initial = "team_member_included"
             self.fields["plan_id"].widget = forms.HiddenInput()
             self.fields["plan_id"].required = False
+            self.fields["accept_terms"].widget.attrs.setdefault("class", "form-check-input")
         else:
             self.fields["account_type"].initial = UserProfile.ACCOUNT_INDIVIDUAL
             self.fields["account_type"].widget.attrs.setdefault("class", "form-select")
             self.fields["account_type"].help_text = "Team leads can invite their whole team—start with 15 seats and upgrade to 30 anytime."
             self.fields["plan_id"].required = True
-            self.fields["plan_id"].initial = DEFAULT_PLAN_ID
+            public_plan_ids = [
+                plan_id
+                for plan_id in PUBLIC_SIGNUP_PLAN_IDS
+                if plan_id in PLAN_CATALOG
+            ] or [DEFAULT_PLAN_ID]
+            self.fields["plan_id"].initial = public_plan_ids[0]
             self.fields["plan_id"].choices = [
                 (plan_id, PLAN_CATALOG[plan_id]["label"])
-                for plan_id in PLAN_CATALOG.keys()
+                for plan_id in public_plan_ids
+                if plan_id in PLAN_CATALOG
             ]
             self.fields["plan_id"].widget = forms.HiddenInput()
+            self.fields["accept_terms"].widget.attrs.setdefault("class", "form-check-input")
 
     def clean_account_type(self):
         account_type = self.cleaned_data.get("account_type")
@@ -82,6 +97,16 @@ class UserSignupForm(UserCreationForm):
             raise forms.ValidationError("Please choose an account type.")
         return account_type
 
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip()
+        if not email:
+            return email
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "An account already exists with this email address."
+            )
+        return email
+
     def clean_plan_id(self):
         plan_id = self.cleaned_data.get("plan_id")
         if self.invite:
@@ -91,6 +116,8 @@ class UserSignupForm(UserCreationForm):
             raise forms.ValidationError("Please choose a billing plan.")
         if plan_id not in PLAN_CATALOG:
             raise forms.ValidationError("Please choose a valid billing plan.")
+        if not self.invite and plan_id not in PUBLIC_SIGNUP_PLAN_IDS:
+            raise forms.ValidationError("Selected plan is not available right now.")
         plan = PLAN_CATALOG[plan_id]
         plan_account_type = plan.get("account_type") or UserProfile.ACCOUNT_INDIVIDUAL
         allowed = set(self.plan_groups.get(plan_account_type, []))
@@ -98,6 +125,12 @@ class UserSignupForm(UserCreationForm):
             raise forms.ValidationError("Selected plan is not available for this account type.")
         self.cleaned_data["account_type"] = plan_account_type
         return plan_id
+
+    def clean_accept_terms(self):
+        accepted = self.cleaned_data.get("accept_terms")
+        if not accepted:
+            raise forms.ValidationError("You must agree to the Terms & Conditions to continue.")
+        return accepted
 
     def clean(self):
         cleaned = super().clean()

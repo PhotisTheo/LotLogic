@@ -9,9 +9,31 @@ ACCOUNT_TEAM_LEAD = "team_lead"
 ACCOUNT_TEAM_MEMBER = "team_member"
 
 
-DEFAULT_PLAN_ID = "individual_standard"
+DEFAULT_PLAN_ID = "beta_tester"
+
+PUBLIC_SIGNUP_PLAN_IDS = ("beta_tester",)
 
 PLAN_CATALOG: Dict[str, Dict[str, object]] = {
+    "beta_tester": {
+        "id": "beta_tester",
+        "label": "Beta Tester",
+        "subtitle": "Preview the newest Lead CRM updates alongside our team.",
+        "price_cents": 0,
+        "price_display": "Free during beta",
+        "account_type": ACCOUNT_INDIVIDUAL,
+        "seat_limit": 1,
+        "features": [
+            "Unlimited parcel intelligence searches",
+            "Mailer builder, saved lists, and CRM tools",
+            "Skip tracing available as in-app purchases",
+        ],
+        "cta": "Join the beta",
+        "highlight": True,
+        "badge": "Now open",
+        "badge_style": "bg-success",
+        "public_signup": True,
+        "requires_manual_approval": True,
+    },
     "individual_standard": {
         "id": "individual_standard",
         "label": "Solo Agent",
@@ -96,7 +118,7 @@ PLAN_CATALOG: Dict[str, Dict[str, object]] = {
 
 
 PLAN_GROUPS: Dict[str, List[str]] = {
-    ACCOUNT_INDIVIDUAL: ["individual_standard"],
+    ACCOUNT_INDIVIDUAL: ["beta_tester", "individual_standard"],
     ACCOUNT_TEAM_LEAD: ["team_standard", "team_plus"],
     ACCOUNT_TEAM_MEMBER: ["team_member_included"],
 }
