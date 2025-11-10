@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd leadcrm/leadcrm && pip install -r ../requirements.txt"
+    "buildCommand": "cd leadcrm/leadcrm/leadcrm && pip install -r ../../requirements.txt"
   },
   "deploy": {
-    "startCommand": "cd leadcrm/leadcrm && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -",
+    "startCommand": "cd leadcrm/leadcrm/leadcrm && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
