@@ -708,7 +708,8 @@ def team_invite_create(request):
     if request.method != "POST":
         return redirect("accounts:profile")
 
-    if profile.remaining_invites <= 0:
+    # Superusers bypass seat limit check
+    if not request.user.is_superuser and profile.remaining_invites <= 0:
         messages.error(
             request, "You have reached the maximum number of team invitations."
         )

@@ -132,6 +132,7 @@ if not DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",  # Must come before django.contrib.admin
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -431,5 +432,114 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+    },
+}
+
+# Jazzmin Admin Theme Configuration
+JAZZMIN_SETTINGS = {
+    # Title on the login screen and admin site
+    "site_title": "LotLogic Admin",
+    "site_header": "LotLogic",
+    "site_brand": "LotLogic Lead CRM",
+    "site_logo": None,  # Path to logo image for admin
+    "login_logo": None,  # Path to logo for login screen
+    "site_logo_classes": "img-circle",
+    "site_icon": None,  # Favicon path
+    "welcome_sign": "Welcome to LotLogic Admin",
+    "copyright": "LotLogic",
+    "search_model": ["auth.User", "leads.Lead", "accounts.UserProfile"],
+    "user_avatar": None,
+
+    # Top Menu
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "View Site", "url": "/", "new_window": True},
+        {"model": "auth.User"},
+        {"app": "leads"},
+    ],
+
+    # User menu on the top right
+    "usermenu_links": [
+        {"model": "auth.user"},
+    ],
+
+    # Side Menu
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": ["auth", "accounts", "leads"],
+
+    # Custom icons for models (Font Awesome 5 free icons)
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "accounts.UserProfile": "fas fa-user-circle",
+        "accounts.TeamInvite": "fas fa-envelope",
+        "leads.Lead": "fas fa-user-tag",
+        "leads.SavedParcelList": "fas fa-list-alt",
+        "leads.SkipTraceRecord": "fas fa-search",
+        "leads.AttomData": "fas fa-database",
+        "leads.LienRecord": "fas fa-gavel",
+        "leads.LegalAction": "fas fa-balance-scale",
+        "leads.LienSearchAttempt": "fas fa-search-location",
+    },
+
+    # Icons from https://fontawesome.com/icons?d=gallery&m=free
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # UI Customizer
+    "custom_css": None,
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+
+    # Change view settings
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+
+    # Theme settings
+    "theme": "cyborg",  # Options: default, cerulean, cosmo, cyborg, darkly, flatly, journal, litera, lumen, lux, materia, minty, pulse, sandstone, simplex, sketchy, slate, solar, spacelab, superhero, united, yeti
+    "dark_mode_theme": None,  # Leave theme as-is in dark mode
+
+    # Login page
+    "login_logo_dark": None,
+}
+
+# Custom admin UI settings
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "cyborg",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
     },
 }

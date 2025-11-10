@@ -127,6 +127,9 @@ class TeamInvite(models.Model):
         profile = getattr(self.team_lead, "profile", None)
         if not profile:
             return False
+        # Superusers bypass seat limits
+        if self.team_lead.is_superuser:
+            return True
         accepted = UserProfile.objects.filter(team_lead=self.team_lead).count()
         return accepted < profile.team_member_limit
 

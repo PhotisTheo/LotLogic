@@ -665,6 +665,10 @@ def _is_truthy(value) -> bool:
 
 
 def _skiptrace_allowed_for_parcel(town_id: int, loc_id: str, *, user=None) -> bool:
+    # Superusers bypass all restrictions
+    if user and getattr(user, 'is_superuser', False):
+        return True
+
     parcel_saved = _saved_list_contains_loc_id(town_id, loc_id, user=user)
     lead_saved = (
         _lead_queryset_for_user(user).filter(loc_id__iexact=loc_id).exists()
@@ -3876,6 +3880,17 @@ def saved_parcel_list_export(request, pk):
 @require_POST
 # --- Stripe payment intent for single skip trace.
 def skiptrace_payment_single(request):
+    # Superusers bypass payment
+    if request.user.is_superuser:
+        pricing = _build_skiptrace_pricing(1)
+        return JsonResponse(
+            {
+                "clientSecret": "superuser_bypass",
+                "pricing": pricing,
+                "superuser": True,
+            }
+        )
+
     if not _stripe_configured():
         return JsonResponse({"error": "Stripe is not configured."}, status=400)
 
@@ -3913,9 +3928,6 @@ def skiptrace_payment_single(request):
 @require_POST
 # --- Stripe payment intent for bulk skip trace purchases.
 def skiptrace_payment_bulk(request, pk):
-    if not _stripe_configured():
-        return JsonResponse({"error": "Stripe is not configured."}, status=400)
-
     saved_list = get_object_or_404(
         _saved_list_queryset_for_user(request.user), pk=pk
     )
@@ -3929,6 +3941,20 @@ def skiptrace_payment_bulk(request, pk):
         )
 
     pricing = _build_skiptrace_pricing(pending_count)
+
+    # Superusers bypass payment
+    if request.user.is_superuser:
+        return JsonResponse(
+            {
+                "clientSecret": "superuser_bypass",
+                "pricing": pricing,
+                "superuser": True,
+            }
+        )
+
+    if not _stripe_configured():
+        return JsonResponse({"error": "Stripe is not configured."}, status=400)
+
     metadata = {
         "mode": "bulk",
         "saved_list_id": str(saved_list.pk),
