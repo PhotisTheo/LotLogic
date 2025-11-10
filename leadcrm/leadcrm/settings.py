@@ -21,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from a local .env file if present
 _env_candidates = [
-    BASE_DIR / ".env",          # inner project directory
-    BASE_DIR.parent / ".env",   # repo root (one level up)
+    BASE_DIR / ".env",  # inner project directory
+    BASE_DIR.parent / ".env",  # repo root (one level up)
 ]
 for ENV_PATH in _env_candidates:
     if not ENV_PATH.exists():
@@ -100,7 +100,7 @@ def _origin_with_scheme(raw: str) -> str:
     if not cleaned:
         return ""
     # Remove any leading slashes or spaces
-    cleaned = cleaned.lstrip('/')
+    cleaned = cleaned.lstrip("/")
     # Check if scheme is already present
     if cleaned.startswith(("http://", "https://")):
         return cleaned
@@ -186,9 +186,7 @@ import dj_database_url
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    }
+    DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
 else:
     DATABASES = {
         "default": {
@@ -465,7 +463,6 @@ JAZZMIN_SETTINGS = {
     "copyright": "LotLogic",
     "search_model": ["auth.User", "leads.Lead", "accounts.UserProfile"],
     "user_avatar": None,
-
     # Top Menu
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -473,19 +470,16 @@ JAZZMIN_SETTINGS = {
         {"model": "auth.User"},
         {"app": "leads"},
     ],
-
     # User menu on the top right
     "usermenu_links": [
         {"model": "auth.user"},
     ],
-
     # Side Menu
     "show_sidebar": True,
     "navigation_expanded": True,
     "hide_apps": [],
     "hide_models": [],
     "order_with_respect_to": ["auth", "accounts", "leads"],
-
     # Custom icons for models (Font Awesome 5 free icons)
     "icons": {
         "auth": "fas fa-users-cog",
@@ -501,28 +495,23 @@ JAZZMIN_SETTINGS = {
         "leads.LegalAction": "fas fa-balance-scale",
         "leads.LienSearchAttempt": "fas fa-search-location",
     },
-
     # Icons from https://fontawesome.com/icons?d=gallery&m=free
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
-
     # UI Customizer
     "custom_css": None,
     "custom_js": None,
     "use_google_fonts_cdn": True,
     "show_ui_builder": False,
-
     # Change view settings
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "auth.user": "collapsible",
         "auth.group": "vertical_tabs",
     },
-
     # Theme settings
     "theme": "cyborg",  # Options: default, cerulean, cosmo, cyborg, darkly, flatly, journal, litera, lumen, lux, materia, minty, pulse, sandstone, simplex, sketchy, slate, solar, spacelab, superhero, united, yeti
     "dark_mode_theme": None,  # Leave theme as-is in dark mode
-
     # Login page
     "login_logo_dark": None,
 }
@@ -559,3 +548,15 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Replace with your email provider's SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+# Use an app password if using Gmail
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = "Photis Theodorou <photisgtheodorou@gmail.com>"
