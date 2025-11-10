@@ -19,6 +19,8 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path("settings/", views.SettingsView.as_view(), name="settings"),
+    path("settings/delete/", views.delete_account, name="delete_account"),
     path(
         "mailers/templates/",
         views.MailerTemplateListView.as_view(),

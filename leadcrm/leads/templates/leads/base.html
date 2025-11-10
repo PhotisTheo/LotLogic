@@ -84,14 +84,21 @@
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link{% if request.resolver_match.url_name == 'profile' %} active{% endif %}" href="{% url 'accounts:profile' %}">Hi, {{ request.user.username }}</a>
-              </li>
-              <li class="nav-item">
-                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                  {% csrf_token %}
-                  <button type="submit" class="nav-link btn btn-link px-0 text-decoration-none">Log Out</button>
-                </form>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle{% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'settings' %} active{% endif %}" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Hi, {{ request.user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person"></i> Profile</a></li>
+                  <li><a class="dropdown-item" href="{% url 'accounts:settings' %}"><i class="bi bi-gear"></i> Settings</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i> Log Out</button>
+                    </form>
+                  </li>
+                </ul>
               </li>
             {% else %}
               <li class="nav-item">

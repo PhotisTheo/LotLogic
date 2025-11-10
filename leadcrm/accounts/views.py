@@ -695,6 +695,109 @@ class TermsView(TemplateView):
     template_name = "accounts/terms.html"
 
 
+class SettingsView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/settings.html"
+    login_url = reverse_lazy("accounts:login")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        profile = user.profile
+
+        email_verification = None
+        try:
+            email_verification = EmailVerification.objects.get(user=user)
+        except EmailVerification.DoesNotExist:
+            pass
+
+        context.update(
+            {
+                "profile": profile,
+                "plan_details": profile.plan,
+                "email_verification": email_verification,
+            }
+        )
+        return context
+
+
+@login_required
+@require_POST
+def delete_account(request):
+    """
+    Delete user account and cancel Stripe subscription if applicable.
+    """
+    confirmation = request.POST.get("confirmation", "").strip()
+    if confirmation != "DELETE":
+        messages.error(request, "Account deletion cancelled. Confirmation text did not match.")
+        return redirect("accounts:settings")
+
+    user = request.user
+    profile = user.profile
+
+    # Cancel Stripe subscription if exists
+    if profile.stripe_subscription_id and stripe:
+        try:
+            stripe.Subscription.delete(profile.stripe_subscription_id)
+            logger.info(
+                f"Cancelled Stripe subscription for user {user.username}",
+                extra={
+                    "user_id": user.id,
+                    "subscription_id": profile.stripe_subscription_id,
+                },
+            )
+        except Exception as exc:
+            logger.error(
+                f"Failed to cancel Stripe subscription for user {user.username}",
+                exc_info=exc,
+                extra={
+                    "user_id": user.id,
+                    "subscription_id": profile.stripe_subscription_id,
+                },
+            )
+            messages.warning(
+                request,
+                "We couldn't cancel your Stripe subscription automatically. Please contact support to ensure billing is stopped.",
+            )
+
+    # If team lead, handle team members
+    if profile.account_type == UserProfile.ACCOUNT_TEAM_LEAD:
+        team_members = UserProfile.objects.filter(team_lead=user)
+        for member_profile in team_members:
+            member_profile.account_type = UserProfile.ACCOUNT_INDIVIDUAL
+            member_profile.team_lead = None
+            member_profile.plan_id = "individual_free"
+            member_profile.plan_amount_cents = 0
+            member_profile.billing_status = "active"
+            member_profile.save(
+                update_fields=[
+                    "account_type",
+                    "team_lead",
+                    "plan_id",
+                    "plan_amount_cents",
+                    "billing_status",
+                ]
+            )
+        logger.info(
+            f"Removed {team_members.count()} team members from team lead {user.username}",
+            extra={"user_id": user.id, "team_member_count": team_members.count()},
+        )
+
+    # Delete user (this will cascade to profile and related data)
+    username = user.username
+    user.delete()
+
+    logger.info(
+        f"Account deleted for user {username}",
+        extra={"username": username},
+    )
+
+    messages.success(
+        request,
+        "Your account has been permanently deleted. We're sorry to see you go.",
+    )
+    return redirect("accounts:login")
+
+
 class MailerTemplateListView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/mailer_templates.html"
     login_url = reverse_lazy("accounts:login")

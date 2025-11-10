@@ -24,10 +24,35 @@
               <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 fw-semibold">{{ plan_details.label }} · {{ plan_details.price_display }}</span>
             </div>
           </div>
-          <form method="post" action="{% url 'accounts:logout' %}" class="mt-3 mt-md-0">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-secondary">Log Out</button>
-          </form>
+          <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="profileMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenuButton">
+                <li>
+                  <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateDetailsModal">
+                    <i class="bi bi-pencil"></i> Update Details
+                  </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'accounts:settings' %}">
+                    <i class="bi bi-gear"></i> Settings
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item text-danger">
+                      <i class="bi bi-box-arrow-right"></i> Log Out
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
         <div class="row g-4">
           <div class="col-lg-6">
@@ -172,150 +197,7 @@
       </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-      <div class="card-body p-4 p-md-5">
-        <h2 class="h5 fw-semibold mb-3">Update your details</h2>
-        <form method="post" action="{% url 'accounts:profile' %}" novalidate>
-          {% csrf_token %}
-          {% if profile_form.non_field_errors %}
-            <div class="alert alert-danger">
-              {% for error in profile_form.non_field_errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.first_name.id_for_label }}">First name</label>
-              {{ profile_form.first_name }}
-              {% for error in profile_form.first_name.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.last_name.id_for_label }}">Last name</label>
-              {{ profile_form.last_name }}
-              {% for error in profile_form.last_name.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.company_name.id_for_label }}">Company</label>
-              {{ profile_form.company_name }}
-              {% for error in profile_form.company_name.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.job_title.id_for_label }}">Role</label>
-              {{ profile_form.job_title }}
-              {% for error in profile_form.job_title.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.work_phone.id_for_label }}">Work phone</label>
-              {{ profile_form.work_phone }}
-              {% for error in profile_form.work_phone.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-semibold" for="{{ profile_form.mobile_phone.id_for_label }}">Mobile</label>
-              {{ profile_form.mobile_phone }}
-              {% for error in profile_form.mobile_phone.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-semibold" for="{{ profile_form.bio.id_for_label }}">About you</label>
-              {{ profile_form.bio }}
-              {% for error in profile_form.bio.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-primary px-4">Save profile</button>
-          </div>
-        </form>
-      </div>
-    </div>
 
-    {% if upgrade_options %}
-      <div class="card shadow-sm mb-4">
-        <div class="card-body p-4 p-md-5">
-          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
-            <div>
-              <h2 class="h5 fw-semibold mb-1">Need more seats or features?</h2>
-              <p class="text-muted mb-0">Upgrade anytime—billing is prorated through Stripe.</p>
-            </div>
-            <a class="btn btn-outline-primary" href="{% url 'accounts:signup' %}">View all plans</a>
-          </div>
-          <div class="row g-3">
-            {% for plan in upgrade_options %}
-              <div class="col-md-6">
-                <div class="border rounded-4 h-100 p-4 bg-light-subtle">
-                  {% if plan.badge %}
-                    <span class="badge {{ plan.badge_style|default:'bg-primary' }} mb-2">{{ plan.badge }}</span>
-                  {% endif %}
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <h3 class="h5 fw-semibold mb-0">{{ plan.label }}</h3>
-                      <div class="text-muted small">{{ plan.subtitle }}</div>
-                    </div>
-                    <span class="fw-semibold text-primary">{{ plan.price_display }}</span>
-                  </div>
-                  <ul class="list-unstyled small text-muted mb-4">
-                    {% for feature in plan.features|slice:":3" %}
-                      <li class="d-flex align-items-center gap-2 mb-1">
-                        <i class="fa-solid fa-check text-primary"></i>
-                        <span>{{ feature }}</span>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                  <a class="btn btn-primary w-100" href="{{ plan.url }}">Upgrade to {{ plan.label }}</a>
-                  {% if plan.upgrade_note %}
-                    <p class="small text-muted mb-0 mt-3">{{ plan.upgrade_note }}</p>
-                  {% endif %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    {% endif %}
-
-    {% if profile.account_type == "team_lead" %}
-      <div class="alert alert-info border-0 shadow-sm">
-        <div class="d-flex align-items-start">
-          <div class="me-3">
-            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 fw-semibold">Team workspace</span>
-          </div>
-          <div>
-            <p class="mb-1 fw-semibold">Share parcel lists and CRM activity with your team.</p>
-            <p class="mb-0">Invite up to {{ profile.team_member_limit }} teammates to collaborate on this workspace. Everyone on your team sees the same saved lists and CRM records.</p>
-          </div>
-        </div>
-      </div>
-    {% elif profile.account_type == "team_member" %}
-      <div class="alert alert-warning border-0 shadow-sm">
-        <div class="fw-semibold mb-1">You're collaborating with {{ profile.team_lead.get_full_name|default:profile.team_lead.username }}.</div>
-        <div class="small text-muted">Anything you save will be shared with the entire team workspace.</div>
-      </div>
-    {% else %}
-      <div class="alert alert-info border-0 shadow-sm">
-        <div class="d-flex align-items-start">
-          <div class="me-3">
-            <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2 fw-semibold">Heads up</span>
-          </div>
-          <div>
-            <p class="mb-1 fw-semibold">Your account is ready for multi-user mode.</p>
-            <p class="mb-0">All saved parcel lists and CRM activity you create are linked to this workspace. Upgrade to a team lead account if you’d like to collaborate with others.</p>
-          </div>
-        </div>
-      </div>
-    {% endif %}
 
     {% if profile.account_type == "team_lead" %}
       <div class="card shadow-sm mb-4">
@@ -414,11 +296,98 @@
     {% endif %}
 </div>
 </div>
+
+<!-- Update Details Modal -->
+<div class="modal fade" id="updateDetailsModal" tabindex="-1" aria-labelledby="updateDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-semibold" id="updateDetailsModalLabel">Update Your Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'accounts:profile' %}" novalidate>
+        <div class="modal-body">
+          {% csrf_token %}
+          {% if profile_form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in profile_form.non_field_errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.first_name.id_for_label }}">First name</label>
+              {{ profile_form.first_name }}
+              {% for error in profile_form.first_name.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.last_name.id_for_label }}">Last name</label>
+              {{ profile_form.last_name }}
+              {% for error in profile_form.last_name.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.company_name.id_for_label }}">Company</label>
+              {{ profile_form.company_name }}
+              {% for error in profile_form.company_name.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.job_title.id_for_label }}">Role</label>
+              {{ profile_form.job_title }}
+              {% for error in profile_form.job_title.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.work_phone.id_for_label }}">Work phone</label>
+              {{ profile_form.work_phone }}
+              {% for error in profile_form.work_phone.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="{{ profile_form.mobile_phone.id_for_label }}">Mobile</label>
+              {{ profile_form.mobile_phone }}
+              {% for error in profile_form.mobile_phone.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold" for="{{ profile_form.bio.id_for_label }}">About you</label>
+              {{ profile_form.bio }}
+              {% for error in profile_form.bio.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
   {{ block.super }}
   <script>
+    // Auto-open modal if there are form errors
+    document.addEventListener('DOMContentLoaded', function () {
+      {% if profile_form.errors %}
+        const updateDetailsModal = new bootstrap.Modal(document.getElementById('updateDetailsModal'));
+        updateDetailsModal.show();
+      {% endif %}
+    });
+
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
