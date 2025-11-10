@@ -311,7 +311,47 @@ def fetch_attom_data_for_address(address1: str, address2: str, owner_name: Optio
             )
 
     if profile_response and profile_response.get("property"):
-        property_data = profile_response["property"][0]
+        # When multiple properties are returned, select the one with the most recent mortgage
+        properties = profile_response["property"]
+        property_data = None
+
+        if len(properties) == 1:
+            property_data = properties[0]
+        else:
+            # Multiple records found - select the one with the most recent mortgage date
+            print(f"  ℹ️  Found {len(properties)} property records, selecting most recent mortgage...")
+            most_recent_date = None
+            most_recent_property = properties[0]  # Fallback to first
+
+            for prop in properties:
+                # Try to extract mortgage date from this property
+                assessment = prop.get("assessment", {})
+                mortgage_raw = assessment.get("mortgage", {})
+                if not mortgage_raw:
+                    mortgage_raw = prop.get("mortgage", {})
+
+                # Handle both dict and list formats
+                if isinstance(mortgage_raw, list):
+                    mortgage_data = mortgage_raw[0] if mortgage_raw else {}
+                elif isinstance(mortgage_raw, dict):
+                    mortgage_data = mortgage_raw.get("FirstConcurrent", {}) if "FirstConcurrent" in mortgage_raw else mortgage_raw
+                else:
+                    mortgage_data = {}
+
+                recording_date_str = mortgage_data.get("date") or mortgage_data.get("recordingDate")
+                if recording_date_str:
+                    try:
+                        from datetime import datetime
+                        recording_date = datetime.strptime(recording_date_str, "%Y-%m-%d")
+                        if most_recent_date is None or recording_date > most_recent_date:
+                            most_recent_date = recording_date
+                            most_recent_property = prop
+                    except (ValueError, TypeError):
+                        pass
+
+            property_data = most_recent_property
+            if most_recent_date:
+                print(f"  ✓ Selected property with mortgage date: {most_recent_date.strftime('%Y-%m-%d')}")
 
         # Extract mortgage details
         mortgage_details = _extract_mortgage_details(property_data)

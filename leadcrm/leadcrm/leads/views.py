@@ -2394,6 +2394,26 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         parts = [part for part in [book, page] if part]
         return " / ".join(parts) if parts else None
 
+    def _format_gis_date(date_value: Optional[object]) -> Optional[str]:
+        """Format GIS date to match ATTOM date format (YYYY-MM-DD) for consistency."""
+        if not date_value:
+            return None
+        from datetime import datetime
+        date_str = str(date_value).strip()
+        # Try multiple formats that GIS dates might be in
+        for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%Y%m%d", "%m/%d/%y", "%Y"]:
+            try:
+                parsed_date = datetime.strptime(date_str, fmt)
+                if fmt == "%Y":
+                    # If only year, use January 1st
+                    parsed_date = parsed_date.replace(month=1, day=1)
+                # Return in standardized YYYY-MM-DD format
+                return parsed_date.strftime("%Y-%m-%d")
+            except ValueError:
+                continue
+        # If no format matches, return original
+        return date_str
+
     beds, baths = _extract_bed_bath_from_attrs(attrs)
     beds_display = _format_bed_bath(beds)
     baths_display = _format_bed_bath(baths)
@@ -2457,7 +2477,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         {
             "title": "Sale History",
             "items": [
-                ("Sale Date", attrs.get("LS_DATE")),
+                ("Sale Date (GIS)", _format_gis_date(attrs.get("LS_DATE"))),
                 ("Sale Price", _format_currency(attrs.get("LS_PRICE"))),
                 ("Book / Page", _book_page_display()),
             ],
@@ -2778,13 +2798,21 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
             if section["title"] == "Sale History":
                 attom_items_added = False
 
-                # Keep existing MassGIS sale data at the top, then add ATTOM data below
-                # Add ATTOM data source indicator
-                section["items"].extend([
-                    ("─" * 30, ""),
-                    ("ATTOM DATA AVAILABLE", "✓"),
-                ])
-                attom_items_added = True
+                # Check if we have any useful ATTOM data to display
+                has_any_attom_data = (
+                    has_mortgage_data or
+                    attom_data.tax_assessed_value or attom_data.tax_amount_annual or attom_data.tax_assessment_year or
+                    attom_data.pre_foreclosure or attom_data.foreclosure_recording_date or attom_data.foreclosure_stage or attom_data.foreclosure_estimated_value or
+                    attom_data.propensity_to_default_score or attom_data.propensity_to_default_decile
+                )
+
+                # Only show "ATTOM DATA AVAILABLE" if we actually have data to display
+                if has_any_attom_data:
+                    section["items"].extend([
+                        ("─" * 30, ""),
+                        ("ATTOM DATA AVAILABLE", "✓"),
+                    ])
+                    attom_items_added = True
 
                 # Add foreclosure information if available
                 if (attom_data.pre_foreclosure or attom_data.foreclosure_recording_date or
@@ -2821,8 +2849,41 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                     section["items"].append(("MORTGAGE DATA", ""))
                     section["items"].append(("Mortgage Amount", _format_currency(float(attom_data.mortgage_loan_amount))))
 
+                    # Check if mortgage date matches GIS sale date
+                    date_mismatch_warning = None
                     if attom_data.mortgage_recording_date:
+                        gis_sale_date = attrs.get("LS_DATE")
+                        if gis_sale_date:
+                            # Normalize both dates for comparison
+                            try:
+                                from datetime import datetime
+                                # Parse ATTOM mortgage date (YYYY-MM-DD format)
+                                mortgage_date = datetime.strptime(attom_data.mortgage_recording_date, "%Y-%m-%d")
+
+                                # Parse GIS sale date (multiple formats possible)
+                                gis_date = None
+                                gis_date_str = str(gis_sale_date).strip()
+                                for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%Y%m%d", "%m/%d/%y", "%Y"]:
+                                    try:
+                                        gis_date = datetime.strptime(gis_date_str, fmt)
+                                        if fmt == "%Y":
+                                            gis_date = gis_date.replace(month=1, day=1)
+                                        break
+                                    except ValueError:
+                                        continue
+
+                                # Compare dates (allowing for small differences due to recording delays)
+                                if gis_date and mortgage_date:
+                                    # If dates are more than 90 days apart, show warning
+                                    days_diff = abs((mortgage_date - gis_date).days)
+                                    if days_diff > 90:
+                                        date_mismatch_warning = f"⚠️ Mortgage date differs from GIS sale date by {days_diff} days. ATTOM mortgage may be from a refinance or different transaction."
+                            except (ValueError, TypeError):
+                                pass
+
                         section["items"].append(("Mortgage Date", attom_data.mortgage_recording_date))
+                        if date_mismatch_warning:
+                            section["items"].append(("⚠️ Date Notice", date_mismatch_warning))
                     if attom_data.mortgage_due_date:
                         section["items"].append(("Mortgage Due Date", attom_data.mortgage_due_date))
                     if attom_data.mortgage_lender_name:
