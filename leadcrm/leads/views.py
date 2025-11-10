@@ -5638,10 +5638,41 @@ def crm_overview(request):
                 call_request.created_by = workspace_owner
                 call_request.save(update_fields=["created_by"])
 
-    schedule_requests = (
-        ScheduleCallRequest.objects.filter(created_by=workspace_owner)
-        .order_by("-created_at")
-    )
+    # Get active leads (not archived)
+    active_leads = ScheduleCallRequest.objects.filter(
+        created_by=workspace_owner,
+        is_archived=False
+    ).order_by("-created_at")
+
+    # Organize leads by stage
+    leads_by_stage = {
+        'new': [],
+        'contacted': [],
+        'appointment': [],
+        'listed': [],
+        'under_contract': [],
+        'closed': []
+    }
+
+    for lead in active_leads:
+        if lead.stage in leads_by_stage:
+            leads_by_stage[lead.stage].append(lead)
+
+    # Get archived leads
+    archived_leads = ScheduleCallRequest.objects.filter(
+        created_by=workspace_owner,
+        is_archived=True
+    ).order_by("-archived_at")
+
+    # Calculate stats
+    one_week_ago = timezone.now() - timedelta(days=7)
+    stats = {
+        'total': active_leads.count(),
+        'new': active_leads.filter(created_at__gte=one_week_ago).count(),
+        'active': active_leads.exclude(stage__in=['closed']).count(),
+        'closed': leads_by_stage['closed'].__len__(),
+    }
+
     return render(
         request,
         "leads/crm_overview.html",
@@ -5649,7 +5680,9 @@ def crm_overview(request):
             "total_leads": total_leads,
             "city_count": len(city_names),
             "city_names": city_names,
-            "schedule_requests": schedule_requests,
+            "leads_by_stage": leads_by_stage,
+            "archived_leads": archived_leads,
+            "stats": stats,
         },
     )
 
@@ -6493,3 +6526,104 @@ def _maybe_redirect_geojson_from_s3(static_file_name: str) -> Optional[HttpRespo
     response['Cache-Control'] = 'public, max-age=31536000, immutable'
     response['X-Served-From'] = 's3-geojson'
     return response
+
+
+# --- CRM Lead Management AJAX Endpoints ---
+
+@login_required
+@require_POST
+def crm_update_lead_stage(request, lead_id):
+    """Update the stage of a lead via AJAX."""
+    try:
+        workspace_owner = get_workspace_owner(request.user)
+        lead = get_object_or_404(
+            ScheduleCallRequest,
+            id=lead_id,
+            created_by=workspace_owner
+        )
+
+        data = json.loads(request.body)
+        new_stage = data.get('stage')
+
+        # Validate stage
+        valid_stages = [choice[0] for choice in ScheduleCallRequest.STAGE_CHOICES]
+        if new_stage not in valid_stages:
+            return JsonResponse({'success': False, 'error': 'Invalid stage'}, status=400)
+
+        lead.stage = new_stage
+        lead.save(update_fields=['stage', 'updated_at'])
+
+        return JsonResponse({'success': True, 'stage': new_stage})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        logger.error(f"Error updating lead stage: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def crm_archive_lead(request, lead_id):
+    """Archive a lead via AJAX."""
+    try:
+        workspace_owner = get_workspace_owner(request.user)
+        lead = get_object_or_404(
+            ScheduleCallRequest,
+            id=lead_id,
+            created_by=workspace_owner
+        )
+
+        lead.is_archived = True
+        lead.archived_at = timezone.now()
+        lead.save(update_fields=['is_archived', 'archived_at', 'updated_at'])
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        logger.error(f"Error archiving lead: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def crm_unarchive_lead(request, lead_id):
+    """Unarchive a lead via AJAX."""
+    try:
+        workspace_owner = get_workspace_owner(request.user)
+        lead = get_object_or_404(
+            ScheduleCallRequest,
+            id=lead_id,
+            created_by=workspace_owner
+        )
+
+        lead.is_archived = False
+        lead.archived_at = None
+        lead.save(update_fields=['is_archived', 'archived_at', 'updated_at'])
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        logger.error(f"Error unarchiving lead: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def crm_delete_lead(request, lead_id):
+    """Permanently delete a lead via AJAX."""
+    try:
+        workspace_owner = get_workspace_owner(request.user)
+        lead = get_object_or_404(
+            ScheduleCallRequest,
+            id=lead_id,
+            created_by=workspace_owner
+        )
+
+        lead.delete()
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        logger.error(f"Error deleting lead: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

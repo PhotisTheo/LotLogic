@@ -157,6 +157,11 @@ urlpatterns = [
     ),
     path("crm/", views.crm_overview, name="crm_overview"),
     path("crm/<slug:city_slug>/", views.crm_city_requests, name="crm_city_requests"),
+    # CRM Lead Management
+    path("crm/update-stage/<int:lead_id>/", views.crm_update_lead_stage, name="crm_update_lead_stage"),
+    path("crm/archive/<int:lead_id>/", views.crm_archive_lead, name="crm_archive_lead"),
+    path("crm/unarchive/<int:lead_id>/", views.crm_unarchive_lead, name="crm_unarchive_lead"),
+    path("crm/delete/<int:lead_id>/", views.crm_delete_lead, name="crm_delete_lead"),
     path("add/", views.lead_create, name="lead_create"),
     path("upload/", views.lead_upload, name="lead_upload"),
     path("leads/<int:pk>/", views.lead_detail, name="lead_detail"),

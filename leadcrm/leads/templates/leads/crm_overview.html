@@ -1,85 +1,711 @@
 {% extends "leads/base.html" %}
 
-{% block title %}CRM Overview{% endblock %}
+{% block title %}CRM Pipeline · LotLogic{% endblock %}
+
+{% block extra_css %}
+<style>
+  .crm-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px -10px rgba(102, 126, 234, 0.3);
+  }
+
+  .crm-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .crm-stat {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .crm-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .crm-stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .pipeline-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .view-toggle .btn {
+    border-radius: 8px;
+  }
+
+  .kanban-board {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .kanban-column {
+    flex: 0 0 320px;
+    min-width: 320px;
+  }
+
+  .kanban-column-header {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kanban-column-count {
+    background: white;
+    color: #495057;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .kanban-column-body {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 1rem;
+    min-height: 400px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .lead-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: move;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .lead-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+
+  .lead-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .lead-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.75rem;
+  }
+
+  .lead-card-address {
+    font-weight: 600;
+    color: #212529;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .lead-card-city {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+
+  .lead-card-menu {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .lead-card:hover .lead-card-menu {
+    opacity: 1;
+  }
+
+  .lead-card-menu .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .lead-card-contact {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .lead-card-contact-name {
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.9rem;
+  }
+
+  .lead-card-contact-phone {
+    color: #667eea;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .lead-card-contact-phone:hover {
+    text-decoration: underline;
+  }
+
+  .lead-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+
+  .lead-card-date {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .lead-card-notes {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    color: #495057;
+    margin-top: 0.5rem;
+    border-left: 3px solid #667eea;
+  }
+
+  .kanban-column-body.drag-over {
+    background: #e7f3ff;
+    border-color: #667eea;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #adb5bd;
+    padding: 2rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+  }
+
+  /* Archived section */
+  .archived-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e9ecef;
+  }
+
+  .archived-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .archived-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .archived-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 1rem;
+    opacity: 0.8;
+  }
+
+  .archived-badge {
+    background: #6c757d;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Stage color coding */
+  .stage-new .kanban-column-header {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea15, #667eea05);
+  }
+
+  .stage-contacted .kanban-column-header {
+    border-color: #f093fb;
+    background: linear-gradient(135deg, #f093fb15, #f093fb05);
+  }
+
+  .stage-appointment .kanban-column-header {
+    border-color: #4facfe;
+    background: linear-gradient(135deg, #4facfe15, #4facfe05);
+  }
+
+  .stage-listed .kanban-column-header {
+    border-color: #43e97b;
+    background: linear-gradient(135deg, #43e97b15, #43e97b05);
+  }
+
+  .stage-under_contract .kanban-column-header {
+    border-color: #fa709a;
+    background: linear-gradient(135deg, #fa709a15, #fa709a05);
+  }
+
+  .stage-closed .kanban-column-header {
+    border-color: #30cfd0;
+    background: linear-gradient(135deg, #30cfd015, #30cfd005);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-  <div class="page-header mb-4">
-    <h1 class="mb-1">CRM Overview</h1>
-    <p class="text-muted mb-0">
-      Tracking {{ total_leads }} lead{{ total_leads|pluralize }} across {{ city_count }} cit{{ city_count|pluralize:"y,ies" }}.
-    </p>
+<!-- CRM Header -->
+<div class="crm-header">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 fw-bold mb-2">Lead Pipeline</h1>
+      <p class="mb-0 opacity-90">Manage your leads from first contact to closed deal</p>
+    </div>
+  </div>
+  <div class="crm-stats">
+    <div class="crm-stat">
+      <div class="crm-stat-value">{{ stats.total }}</div>
+      <div class="crm-stat-label">Total Leads</div>
+    </div>
+    <div class="crm-stat">
+      <div class="crm-stat-value">{{ stats.new }}</div>
+      <div class="crm-stat-label">New This Week</div>
+    </div>
+    <div class="crm-stat">
+      <div class="crm-stat-value">{{ stats.active }}</div>
+      <div class="crm-stat-label">Active Pipeline</div>
+    </div>
+    <div class="crm-stat">
+      <div class="crm-stat-value">{{ stats.closed }}</div>
+      <div class="crm-stat-label">Closed Deals</div>
+    </div>
+  </div>
+</div>
+
+<!-- Pipeline Controls -->
+<div class="pipeline-controls">
+  <div class="view-toggle">
+    <button class="btn btn-sm btn-outline-secondary active" id="kanbanViewBtn">
+      <i class="bi bi-columns-gap"></i> Kanban
+    </button>
+    <button class="btn btn-sm btn-outline-secondary" id="listViewBtn">
+      <i class="bi bi-list-ul"></i> List
+    </button>
+  </div>
+  <div class="ms-auto d-flex gap-2">
+    <button class="btn btn-sm btn-outline-secondary" id="toggleArchivedBtn">
+      <i class="bi bi-archive"></i> Show Archived ({{ archived_leads|length }})
+    </button>
+  </div>
+</div>
+
+<!-- Kanban Board -->
+<div class="kanban-board" id="kanbanBoard">
+  <!-- New Leads Column -->
+  <div class="kanban-column stage-new" data-stage="new">
+    <div class="kanban-column-header">
+      <span>New Leads</span>
+      <span class="kanban-column-count">{{ leads_by_stage.new|length }}</span>
+    </div>
+    <div class="kanban-column-body" data-stage="new">
+      {% if leads_by_stage.new %}
+        {% for lead in leads_by_stage.new %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <div>No new leads</div>
+        </div>
+      {% endif %}
+    </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-12 col-lg-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <h2 class="h6 text-muted text-uppercase">Active Markets</h2>
-          {% if city_names %}
-            <ul class="list-unstyled small mb-0">
-              {% for city in city_names %}
-                <li>• {{ city }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="text-muted small mb-0">No cities recorded yet.</p>
-          {% endif %}
-        </div>
-      </div>
+  <!-- Contacted Column -->
+  <div class="kanban-column stage-contacted" data-stage="contacted">
+    <div class="kanban-column-header">
+      <span>Contacted</span>
+      <span class="kanban-column-count">{{ leads_by_stage.contacted|length }}</span>
     </div>
-    <div class="col-12 col-lg-8">
-      <div class="card shadow-sm h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span class="fw-semibold">Scheduled Call Requests</span>
-          <span class="badge text-bg-primary">{{ schedule_requests|length }}</span>
+    <div class="kanban-column-body" data-stage="contacted">
+      {% if leads_by_stage.contacted %}
+        {% for lead in leads_by_stage.contacted %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-telephone"></i>
+          <div>No contacted leads</div>
         </div>
-        {% if schedule_requests %}
-          <div class="table-responsive">
-            <table class="table table-hover table-sm align-middle mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th>Received</th>
-                  <th>Property</th>
-                  <th>Contact</th>
-                  <th>Preferred Time</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for request in schedule_requests %}
-                  <tr>
-                    <td>{{ request.created_at|date:"M j, Y h:i A" }}</td>
-                    <td>
-                      {{ request.property_address|default:"—" }}
-                      {% if request.property_city %}
-                        <div class="small text-muted">{{ request.property_city }}</div>
-                      {% endif %}
-                    </td>
-                    <td>
-                      <div class="fw-semibold">{{ request.contact_phone }}</div>
-                      {% if request.recipient_name %}
-                        <div class="small text-muted">{{ request.recipient_name }}</div>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% if request.preferred_call_time %}
-                        {{ request.preferred_call_time|date:"M j, Y h:i A" }}
-                      {% else %}
-                        <span class="badge text-bg-secondary">No preference</span>
-                      {% endif %}
-                    </td>
-                    <td class="small">{{ request.notes|default:"—" }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <div class="card-body">
-            <p class="text-muted mb-0">No scheduled calls yet. Mailer QR codes will direct owners to this form.</p>
-          </div>
-        {% endif %}
-      </div>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Listing Appointment Column -->
+  <div class="kanban-column stage-appointment" data-stage="appointment">
+    <div class="kanban-column-header">
+      <span>Listing Appointment</span>
+      <span class="kanban-column-count">{{ leads_by_stage.appointment|length }}</span>
+    </div>
+    <div class="kanban-column-body" data-stage="appointment">
+      {% if leads_by_stage.appointment %}
+        {% for lead in leads_by_stage.appointment %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-calendar-check"></i>
+          <div>No appointments scheduled</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Listed Column -->
+  <div class="kanban-column stage-listed" data-stage="listed">
+    <div class="kanban-column-header">
+      <span>Listed</span>
+      <span class="kanban-column-count">{{ leads_by_stage.listed|length }}</span>
+    </div>
+    <div class="kanban-column-body" data-stage="listed">
+      {% if leads_by_stage.listed %}
+        {% for lead in leads_by_stage.listed %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-house"></i>
+          <div>No active listings</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Under Contract Column -->
+  <div class="kanban-column stage-under_contract" data-stage="under_contract">
+    <div class="kanban-column-header">
+      <span>Under Contract</span>
+      <span class="kanban-column-count">{{ leads_by_stage.under_contract|length }}</span>
+    </div>
+    <div class="kanban-column-body" data-stage="under_contract">
+      {% if leads_by_stage.under_contract %}
+        {% for lead in leads_by_stage.under_contract %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-file-earmark-text"></i>
+          <div>No contracts pending</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Closed Column -->
+  <div class="kanban-column stage-closed" data-stage="closed">
+    <div class="kanban-column-header">
+      <span>Closed/Sold</span>
+      <span class="kanban-column-count">{{ leads_by_stage.closed|length }}</span>
+    </div>
+    <div class="kanban-column-body" data-stage="closed">
+      {% if leads_by_stage.closed %}
+        {% for lead in leads_by_stage.closed %}
+          {% include 'leads/partials/lead_card.html' with lead=lead %}
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-check-circle"></i>
+          <div>No closed deals yet</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Archived Section -->
+<div class="archived-section" id="archivedSection" style="display: none;">
+  <div class="archived-header">
+    <h2 class="h5 fw-semibold mb-0">
+      <i class="bi bi-archive"></i> Archived Leads
+    </h2>
+    <button class="btn btn-sm btn-outline-secondary" id="hideArchivedBtn">
+      <i class="bi bi-x"></i> Hide
+    </button>
+  </div>
+
+  {% if archived_leads %}
+    <div class="archived-grid">
+      {% for lead in archived_leads %}
+        <div class="archived-card" data-lead-id="{{ lead.id }}">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <div class="fw-semibold">{{ lead.property_address|default:"Address Unknown" }}</div>
+              <div class="small text-muted">{{ lead.property_city|default:"" }}</div>
+            </div>
+            <span class="archived-badge">ARCHIVED</span>
+          </div>
+          <div class="small mb-2">
+            <div><i class="bi bi-person"></i> {{ lead.recipient_name|default:"Unknown" }}</div>
+            <div><i class="bi bi-telephone"></i> {{ lead.contact_phone }}</div>
+          </div>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-sm btn-outline-primary flex-fill unarchive-lead" data-lead-id="{{ lead.id }}">
+              <i class="bi bi-arrow-counterclockwise"></i> Restore
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-lead" data-lead-id="{{ lead.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-archive" style="font-size: 3rem; opacity: 0.3;"></i>
+      <p class="mt-2">No archived leads</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Drag and Drop functionality
+  const leadCards = document.querySelectorAll('.lead-card');
+  const columnBodies = document.querySelectorAll('.kanban-column-body');
+
+  leadCards.forEach(card => {
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+  });
+
+  columnBodies.forEach(column => {
+    column.addEventListener('dragover', handleDragOver);
+    column.addEventListener('drop', handleDrop);
+    column.addEventListener('dragleave', handleDragLeave);
+  });
+
+  let draggedElement = null;
+
+  function handleDragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+  }
+
+  function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    columnBodies.forEach(col => col.classList.remove('drag-over'));
+  }
+
+  function handleDragOver(e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    this.classList.add('drag-over');
+    return false;
+  }
+
+  function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+  }
+
+  function handleDrop(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    this.classList.remove('drag-over');
+
+    if (draggedElement && draggedElement !== this) {
+      const newStage = this.dataset.stage;
+      const leadId = draggedElement.dataset.leadId;
+
+      // Move the card visually
+      this.insertBefore(draggedElement, this.firstChild);
+
+      // Update the stage via AJAX
+      updateLeadStage(leadId, newStage);
+    }
+
+    return false;
+  }
+
+  // Update lead stage via AJAX
+  function updateLeadStage(leadId, newStage) {
+    fetch(`/leads/crm/update-stage/${leadId}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ stage: newStage })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update column counts
+        updateColumnCounts();
+        showToast('Lead stage updated successfully', 'success');
+      } else {
+        showToast('Failed to update lead stage', 'error');
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showToast('An error occurred', 'error');
+      location.reload();
+    });
+  }
+
+  // Archive lead
+  document.querySelectorAll('.archive-lead').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const leadId = this.dataset.leadId;
+      if (confirm('Archive this lead? You can restore it later from the archived section.')) {
+        archiveLead(leadId);
+      }
+    });
+  });
+
+  function archiveLead(leadId) {
+    fetch(`/leads/crm/archive/${leadId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        showToast('Failed to archive lead', 'error');
+      }
+    });
+  }
+
+  // Delete lead
+  document.querySelectorAll('.delete-lead').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const leadId = this.dataset.leadId;
+      if (confirm('Permanently delete this lead? This action cannot be undone.')) {
+        deleteLead(leadId);
+      }
+    });
+  });
+
+  function deleteLead(leadId) {
+    fetch(`/leads/crm/delete/${leadId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        showToast('Failed to delete lead', 'error');
+      }
+    });
+  }
+
+  // Unarchive lead
+  document.querySelectorAll('.unarchive-lead').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const leadId = this.dataset.leadId;
+      unarchiveLead(leadId);
+    });
+  });
+
+  function unarchiveLead(leadId) {
+    fetch(`/leads/crm/unarchive/${leadId}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        showToast('Failed to restore lead', 'error');
+      }
+    });
+  }
+
+  // Toggle archived section
+  document.getElementById('toggleArchivedBtn').addEventListener('click', function() {
+    const archivedSection = document.getElementById('archivedSection');
+    archivedSection.style.display = archivedSection.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.getElementById('hideArchivedBtn').addEventListener('click', function() {
+    document.getElementById('archivedSection').style.display = 'none';
+  });
+
+  // Update column counts
+  function updateColumnCounts() {
+    columnBodies.forEach(column => {
+      const stage = column.dataset.stage;
+      const count = column.querySelectorAll('.lead-card').length;
+      const columnHeader = column.parentElement.querySelector('.kanban-column-count');
+      if (columnHeader) {
+        columnHeader.textContent = count;
+      }
+    });
+  }
+
+  // Toast notification
+  function showToast(message, type) {
+    // Simple alert for now - you can replace with a nicer toast library
+    alert(message);
+  }
+});
+</script>
 {% endblock %}

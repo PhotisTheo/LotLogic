@@ -1,0 +1,50 @@
+<div class="lead-card" draggable="true" data-lead-id="{{ lead.id }}">
+  <div class="lead-card-header">
+    <div>
+      <div class="lead-card-address">{{ lead.property_address|default:"Address Unknown" }}</div>
+      <div class="lead-card-city">{{ lead.property_city|default:"" }}</div>
+    </div>
+    <div class="dropdown lead-card-menu">
+      <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><button class="dropdown-item archive-lead" data-lead-id="{{ lead.id }}">
+          <i class="bi bi-archive"></i> Archive
+        </button></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item text-danger delete-lead" data-lead-id="{{ lead.id }}">
+          <i class="bi bi-trash"></i> Delete
+        </button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="lead-card-contact">
+    <div class="lead-card-contact-name">
+      <i class="bi bi-person"></i> {{ lead.recipient_name|default:"Unknown Owner" }}
+    </div>
+    <a href="tel:{{ lead.contact_phone }}" class="lead-card-contact-phone">
+      <i class="bi bi-telephone"></i> {{ lead.contact_phone }}
+    </a>
+  </div>
+
+  {% if lead.preferred_call_time %}
+  <div class="small text-muted mb-2">
+    <i class="bi bi-calendar-event"></i> Preferred: {{ lead.preferred_call_time|date:"M j, Y g:i A" }}
+  </div>
+  {% endif %}
+
+  {% if lead.notes %}
+  <div class="lead-card-notes">
+    <i class="bi bi-chat-left-text"></i> {{ lead.notes|truncatewords:15 }}
+  </div>
+  {% endif %}
+
+  <div class="lead-card-meta">
+    <div class="lead-card-date">
+      <i class="bi bi-clock"></i>
+      {{ lead.created_at|timesince }} ago
+    </div>
+  </div>
+</div>

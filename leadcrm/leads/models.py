@@ -171,6 +171,22 @@ class MassGISParcelCache(models.Model):
 
 
 class ScheduleCallRequest(models.Model):
+    STAGE_NEW = "new"
+    STAGE_CONTACTED = "contacted"
+    STAGE_APPOINTMENT = "appointment"
+    STAGE_LISTED = "listed"
+    STAGE_UNDER_CONTRACT = "under_contract"
+    STAGE_CLOSED = "closed"
+
+    STAGE_CHOICES = [
+        (STAGE_NEW, "New Lead"),
+        (STAGE_CONTACTED, "Contacted"),
+        (STAGE_APPOINTMENT, "Listing Appointment"),
+        (STAGE_LISTED, "Listed"),
+        (STAGE_UNDER_CONTRACT, "Under Contract"),
+        (STAGE_CLOSED, "Closed/Sold"),
+    ]
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -186,12 +202,20 @@ class ScheduleCallRequest(models.Model):
     contact_phone = models.CharField(max_length=50)
     preferred_call_time = models.DateTimeField(blank=True, null=True)
     notes = models.TextField(blank=True)
+
+    # CRM fields
+    stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default=STAGE_NEW)
+    is_archived = models.BooleanField(default=False)
+    archived_at = models.DateTimeField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["town_id", "loc_id"]),
+            models.Index(fields=["stage", "is_archived"]),
         ]
 
     def __str__(self):
