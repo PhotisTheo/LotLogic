@@ -390,7 +390,6 @@ if USE_S3:
     # and S3 only for media files
     STATIC_URL = "static/"
     STATIC_ROOT = BASE_DIR / "staticfiles"
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
     # Media files location in S3
     AWS_MEDIA_LOCATION = "media"
@@ -398,12 +397,20 @@ if USE_S3:
         "default": {
             "BACKEND": "leadcrm.storage_backends.MediaStorage",
         },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
     }
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/"
 else:
     # Local storage fallback
     STATIC_URL = "static/"
     STATIC_ROOT = BASE_DIR / "staticfiles"
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
     MEDIA_URL = "media/"
     MEDIA_ROOT = BASE_DIR / "media"
 
