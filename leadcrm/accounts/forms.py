@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 from .models import TeamInvite, UserProfile
@@ -239,3 +239,26 @@ class ProfileUpdateForm(forms.Form):
         profile.save(
             update_fields=["company_name", "job_title", "work_phone", "mobile_phone", "bio"]
         )
+
+
+class StyledPasswordChangeForm(PasswordChangeForm):
+    """Styled password change form with Bootstrap classes."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            css = field.widget.attrs.get("class", "")
+            field.widget.attrs["class"] = f"{css} form-control".strip()
+
+        self.fields["old_password"].widget.attrs.update({
+            "placeholder": "Current password",
+            "autocomplete": "current-password"
+        })
+        self.fields["new_password1"].widget.attrs.update({
+            "placeholder": "New password",
+            "autocomplete": "new-password"
+        })
+        self.fields["new_password2"].widget.attrs.update({
+            "placeholder": "Confirm new password",
+            "autocomplete": "new-password"
+        })

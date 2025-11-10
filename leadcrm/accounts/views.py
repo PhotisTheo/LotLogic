@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from .emails import send_beta_signup_notification, send_email_verification
-from .forms import ProfileUpdateForm, TeamInviteForm, UserSignupForm
+from .forms import ProfileUpdateForm, TeamInviteForm, UserSignupForm, StyledPasswordChangeForm
 from .models import (
     BetaSignupRequest,
     EmailVerification,
@@ -718,6 +718,31 @@ class SettingsView(LoginRequiredMixin, TemplateView):
             }
         )
         return context
+
+
+@login_required
+def change_password(request):
+    """
+    Handle password change requests.
+    """
+    if request.method == "POST":
+        form = StyledPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Update session to prevent logout after password change
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
+
+            logger.info(
+                f"Password changed for user {user.username}",
+                extra={"user_id": user.id},
+            )
+            messages.success(request, "Your password has been changed successfully.")
+            return redirect("accounts:settings")
+    else:
+        form = StyledPasswordChangeForm(user=request.user)
+
+    return render(request, "accounts/change_password.html", {"form": form})
 
 
 @login_required
