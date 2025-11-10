@@ -1181,6 +1181,7 @@ def _generate_mailer_bundle(
     agent_photo_url: Optional[str] = None,
     request=None,
     town_id_override: Optional[int] = None,
+    skiptrace_record=None,
 ) -> dict:
     property_address_parts = [
         full_address,
@@ -1198,7 +1199,14 @@ def _generate_mailer_bundle(
     property_address = property_address.strip(", ")
     property_address = _normalize_capitalization(property_address) or property_address
 
-    greeting_name = _extract_owner_first_name(getattr(parcel, "owner_name", None)) or "Neighbor"
+    # Use skip trace name if available, otherwise fall back to parcel owner name
+    owner_name = None
+    if skiptrace_record and hasattr(skiptrace_record, "owner_name"):
+        owner_name = skiptrace_record.owner_name
+    if not owner_name:
+        owner_name = getattr(parcel, "owner_name", None)
+
+    greeting_name = _extract_owner_first_name(owner_name) or "Neighbor"
     greeting_name = _normalize_capitalization(greeting_name) or greeting_name
 
     contact_phone_default = getattr(settings, "MAILER_CONTACT_PHONE", "555-555-5555")
@@ -1451,6 +1459,7 @@ def _build_mailer_context(
     download_endpoint: Optional[str] = None,
     request=None,
     town_id_override: Optional[int] = None,
+    skiptrace_record=None,
 ) -> dict:
     bundle = _generate_mailer_bundle(
         parcel,
@@ -1460,6 +1469,7 @@ def _build_mailer_context(
         agent_photo_url=agent_photo_url,
         request=request,
         town_id_override=town_id_override,
+        skiptrace_record=skiptrace_record,
     )
 
     scripts = bundle["scripts"]
@@ -1510,6 +1520,7 @@ def _render_mailer_script_for_parcel(
     hero_image_url: Optional[str] = None,
     request=None,
     town_id_override: Optional[int] = None,
+    skiptrace_record=None,
 ) -> tuple[str, dict, str]:
     bundle = _generate_mailer_bundle(
         parcel,
@@ -1518,6 +1529,7 @@ def _render_mailer_script_for_parcel(
         hero_image_url=hero_image_url,
         request=request,
         town_id_override=town_id_override,
+        skiptrace_record=skiptrace_record,
     )
     scripts = bundle["scripts"]
     selected_id = script_id if script_id in scripts else bundle["default_id"]
@@ -2295,7 +2307,63 @@ def parcel_search_home(request):
 
 
 @login_required
-def parcel_search_detail(request, town_id, loc_id):
+def parcel_search_detail(request, town_id, loc_id, list_id=None):
+    # Build navigation context if viewing from a saved list
+    nav_context = {}
+    if list_id:
+        try:
+            saved_list = get_object_or_404(
+                _saved_list_queryset_for_user(request.user), pk=list_id
+            )
+            # Get all parcel refs from the list
+            parcel_refs = list(_iter_saved_list_parcel_refs(saved_list))
+
+            # Find current parcel index
+            current_index = None
+            for idx, ref in enumerate(parcel_refs):
+                if ref.town_id == town_id and _normalize_loc_id(ref.loc_id) == _normalize_loc_id(loc_id):
+                    current_index = idx
+                    break
+
+            if current_index is not None:
+                nav_context = {
+                    "from_list": True,
+                    "list_id": list_id,
+                    "list_name": saved_list.name,
+                    "current_index": current_index,
+                    "total_parcels": len(parcel_refs),
+                }
+
+                # Add previous parcel info
+                if current_index > 0:
+                    prev_ref = parcel_refs[current_index - 1]
+                    nav_context["prev_parcel"] = {
+                        "town_id": prev_ref.town_id,
+                        "loc_id": prev_ref.loc_id,
+                        "url": reverse(
+                            "parcel_detail_from_list",
+                            args=[prev_ref.town_id, prev_ref.loc_id, list_id],
+                        ),
+                    }
+
+                # Add next parcel info
+                if current_index < len(parcel_refs) - 1:
+                    next_ref = parcel_refs[current_index + 1]
+                    nav_context["next_parcel"] = {
+                        "town_id": next_ref.town_id,
+                        "loc_id": next_ref.loc_id,
+                        "url": reverse(
+                            "parcel_detail_from_list",
+                            args=[next_ref.town_id, next_ref.loc_id, list_id],
+                        ),
+                    }
+
+                # Add list URL
+                nav_context["list_url"] = reverse("saved_parcel_list_detail", args=[list_id])
+        except Exception:  # noqa: BLE001
+            # If we can't load the list, just proceed without navigation
+            pass
+
     try:
         parcel = get_massgis_parcel_detail(town_id, loc_id)
     except MassGISDataError as exc:
@@ -2541,6 +2609,11 @@ def parcel_search_detail(request, town_id, loc_id):
     mailer_download_base = reverse(
         "mailer_download_pdf", args=[parcel.town.town_id, parcel.loc_id]
     )
+
+    record = _get_skiptrace_record_for_loc_id(
+        parcel.town.town_id, parcel.loc_id, user=request.user
+    )
+
     mailer_context = _build_mailer_context(
         parcel,
         full_address=full_address,
@@ -2548,10 +2621,7 @@ def parcel_search_detail(request, town_id, loc_id):
         hero_image_url=hero_image_url,
         download_endpoint=mailer_download_base,
         request=request,
-    )
-
-    record = _get_skiptrace_record_for_loc_id(
-        parcel.town.town_id, parcel.loc_id, user=request.user
+        skiptrace_record=record,
     )
     record_is_fresh = _skiptrace_record_is_fresh(record) if record else False
     saved_match = _saved_list_contains_loc_id(
@@ -3008,6 +3078,7 @@ def parcel_search_detail(request, town_id, loc_id):
         "lien_auto_search_enabled": enable_lien_search_param,
         "lien_auto_search_threshold": LIEN_SEARCH_AUTO_THRESHOLD,
         "lien_refresh_endpoint": lien_refresh_endpoint,
+        **nav_context,  # Add navigation context for list browsing
     }
 
     return render(
@@ -4796,6 +4867,11 @@ def mailer_download_pdf(request, town_id, loc_id):
     full_address = _compose_full_address(parcel)
     zillow_url = _build_zillow_url(full_address)
 
+    # Get skip trace record if available
+    skiptrace_record = _get_skiptrace_record_for_loc_id(
+        town_id, loc_id, user=request.user
+    )
+
     # Try to build a hero image
     hero_image_url = None
     try:
@@ -4817,6 +4893,7 @@ def mailer_download_pdf(request, town_id, loc_id):
             hero_image_url=hero_image_url,
             request=request,
             town_id_override=town_id,
+            skiptrace_record=skiptrace_record,
         )
         scripts = bundle["scripts"]
         requested_script = request.GET.get("script") or bundle["default_id"]
@@ -4839,6 +4916,7 @@ def mailer_download_pdf(request, town_id, loc_id):
             hero_image_url=hero_image_url,
             request=request,
             town_id_override=town_id,
+            skiptrace_record=skiptrace_record,
         )
         html = render_to_string(
             "leads/mailer_pdf.html",
@@ -4882,6 +4960,11 @@ def parcel_generate_mailer(request, town_id, loc_id):
     except Exception:
         pass
 
+    # Get skip trace record if available
+    skiptrace_record = _get_skiptrace_record_for_loc_id(
+        town_id, loc_id, user=request.user
+    )
+
     download_base = reverse("mailer_download_pdf", args=[parcel.town.town_id, parcel.loc_id])
     mailer_ctx = _build_mailer_context(
         parcel,
@@ -4890,6 +4973,7 @@ def parcel_generate_mailer(request, town_id, loc_id):
         hero_image_url=hero_image_url,
         download_endpoint=download_base,
         request=request,
+        skiptrace_record=skiptrace_record,
     )
     payload = {
         "locId": parcel.loc_id,
@@ -5194,7 +5278,7 @@ def saved_parcel_list_mailers(request, pk):
     if not script_id:
         return JsonResponse({"error": "Select a template to generate mailers."}, status=400)
 
-    parcels, _, _ = _pending_parcels_for_saved_list(
+    parcels, skiptrace_records, _ = _pending_parcels_for_saved_list(
         saved_list, user=request.user
     )
     if not parcels:
@@ -5211,6 +5295,8 @@ def saved_parcel_list_mailers(request, pk):
         try:
             full_address = _compose_full_address(parcel)
             zillow_url = _build_zillow_url(full_address)
+            normalized_loc_id = _normalize_loc_id(parcel.loc_id)
+            skiptrace_record = skiptrace_records.get(normalized_loc_id) if normalized_loc_id else None
             _, script, html = _render_mailer_script_for_parcel(
                 parcel,
                 script_id,
@@ -5218,6 +5304,7 @@ def saved_parcel_list_mailers(request, pk):
                 zillow_url=zillow_url,
                 request=request,
                 town_id_override=saved_list.town_id,
+                skiptrace_record=skiptrace_record,
             )
             scripts_to_render.append(script)
             html_pages.append(html)

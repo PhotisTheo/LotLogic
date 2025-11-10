@@ -25,13 +25,41 @@
   </div>
 
   <div class="d-flex flex-wrap gap-2 mb-4">
-    <a class="btn btn-outline-secondary btn-sm" href="{% url 'parcel_search' %}">⬅ Back to Search</a>
+    {% if from_list %}
+      <a class="btn btn-outline-secondary btn-sm" href="{{ list_url }}">⬅ Back to {{ list_name }}</a>
+    {% else %}
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'parcel_search' %}">⬅ Back to Search</a>
+    {% endif %}
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'saved_parcel_lists' %}">📁 Saved Lists</a>
     <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#savePropertyModal">
       <i class="bi bi-bookmark-plus"></i> Save Property
     </button>
     {% if zillow_url %}
       <a class="btn btn-outline-primary btn-sm" href="{{ zillow_url }}" target="_blank" rel="noopener">View on Zillow</a>
+    {% endif %}
+
+    {% if from_list %}
+      <div class="ms-auto d-flex gap-2 align-items-center">
+        <span class="text-muted small">{{ current_index|add:1 }} of {{ total_parcels }}</span>
+        {% if prev_parcel %}
+          <a class="btn btn-outline-secondary btn-sm" href="{{ prev_parcel.url }}" id="prevParcelBtn" title="Previous parcel (Left Arrow)">
+            ← Previous
+          </a>
+        {% else %}
+          <button class="btn btn-outline-secondary btn-sm" disabled title="No previous parcel">
+            ← Previous
+          </button>
+        {% endif %}
+        {% if next_parcel %}
+          <a class="btn btn-outline-secondary btn-sm" href="{{ next_parcel.url }}" id="nextParcelBtn" title="Next parcel (Right Arrow)">
+            Next →
+          </a>
+        {% else %}
+          <button class="btn btn-outline-secondary btn-sm" disabled title="No next parcel">
+            Next →
+          </button>
+        {% endif %}
+      </div>
     {% endif %}
   </div>
 
@@ -1259,4 +1287,63 @@
       }
     })();
   </script>
+
+  {# Keyboard navigation for list browsing #}
+  {% if from_list %}
+  <script>
+    (function() {
+      'use strict';
+
+      // Get navigation URLs
+      const prevUrl = {% if prev_parcel %}'{{ prev_parcel.url }}'{% else %}null{% endif %};
+      const nextUrl = {% if next_parcel %}'{{ next_parcel.url }}'{% else %}null{% endif %};
+
+      // Handle keyboard navigation
+      document.addEventListener('keydown', function(e) {
+        // Ignore if user is typing in an input, textarea, or select element
+        const target = e.target;
+        if (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.isContentEditable) {
+          return;
+        }
+
+        // Left arrow key - go to previous parcel
+        if (e.key === 'ArrowLeft' && prevUrl) {
+          e.preventDefault();
+          window.location.href = prevUrl;
+        }
+
+        // Right arrow key - go to next parcel
+        if (e.key === 'ArrowRight' && nextUrl) {
+          e.preventDefault();
+          window.location.href = nextUrl;
+        }
+      });
+
+      // Add visual feedback on button hover
+      const prevBtn = document.getElementById('prevParcelBtn');
+      const nextBtn = document.getElementById('nextParcelBtn');
+
+      if (prevBtn) {
+        prevBtn.addEventListener('mouseenter', function() {
+          this.innerHTML = '← Previous <small class="text-muted">(←)</small>';
+        });
+        prevBtn.addEventListener('mouseleave', function() {
+          this.innerHTML = '← Previous';
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('mouseenter', function() {
+          this.innerHTML = 'Next → <small class="text-muted">(→)</small>';
+        });
+        nextBtn.addEventListener('mouseleave', function() {
+          this.innerHTML = 'Next →';
+        });
+      }
+    })();
+  </script>
+  {% endif %}
 {% endblock %}

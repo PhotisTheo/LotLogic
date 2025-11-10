@@ -15,6 +15,11 @@ urlpatterns = [
         name="parcel_detail",
     ),
     path(
+        "search/parcel/<int:town_id>/<slug:loc_id>/from-list/<int:list_id>/",
+        views.parcel_search_detail,
+        name="parcel_detail_from_list",
+    ),
+    path(
         "mailer/download/<int:town_id>/<str:loc_id>/",
         views.mailer_download_pdf,
         name="mailer_download_pdf",

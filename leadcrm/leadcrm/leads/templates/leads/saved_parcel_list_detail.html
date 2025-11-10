@@ -146,7 +146,7 @@
                 <td>{% if parcel.equity_percent is not None %}{{ parcel.equity_percent|floatformat:1 }}%{% else %}—{% endif %}</td>
                 <td>{% if parcel.total_value %}${{ parcel.total_value|floatformat:0 }}{% else %}—{% endif %}</td>
                 <td class="text-end">
-                  <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'parcel_detail' town_id=parcel.town.town_id loc_id=parcel.loc_id %}">Details</a>
+                  <a class="btn btn-sm btn-outline-primary me-2" href="{% url 'parcel_detail_from_list' town_id=parcel.town.town_id loc_id=parcel.loc_id list_id=saved_list.pk %}">Details</a>
                 </td>
               </tr>
               {% endwith %}
