@@ -721,6 +721,37 @@ class SettingsView(LoginRequiredMixin, TemplateView):
 
 
 @login_required
+@require_POST
+def update_notifications(request):
+    """
+    Update user notification preferences.
+    """
+    profile = request.user.profile
+
+    profile.notify_qr_scan = request.POST.get("notify_qr_scan") == "on"
+    profile.notify_call_request = request.POST.get("notify_call_request") == "on"
+    profile.notify_lead_activity = request.POST.get("notify_lead_activity") == "on"
+    profile.notify_team_activity = request.POST.get("notify_team_activity") == "on"
+
+    profile.save(
+        update_fields=[
+            "notify_qr_scan",
+            "notify_call_request",
+            "notify_lead_activity",
+            "notify_team_activity",
+        ]
+    )
+
+    logger.info(
+        f"Notification preferences updated for user {request.user.username}",
+        extra={"user_id": request.user.id},
+    )
+
+    messages.success(request, "Your notification preferences have been updated.")
+    return redirect("accounts:settings")
+
+
+@login_required
 def change_password(request):
     """
     Handle password change requests.

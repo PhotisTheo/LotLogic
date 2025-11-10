@@ -4899,7 +4899,22 @@ def schedule_call_request(request, town_id, loc_id):
     recipient_name = raw_recipient or _extract_owner_first_name(raw_recipient) or "Neighbor"
     recipient_name = _normalize_capitalization(recipient_name) or recipient_name
 
+    # Send QR scan notification on first GET (when owner scans QR code)
     script_param = request.GET.get("script") or request.POST.get("script")
+    if request.method == "GET" and not request.GET.get("submitted"):
+        owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
+        if owner_user:
+            from accounts.emails import send_qr_scan_notification
+            from django.utils import timezone
+            try:
+                crm_url = request.build_absolute_uri(reverse("crm_overview"))
+                send_qr_scan_notification(owner_user, parcel, timezone.now(), crm_url)
+            except Exception as e:
+                # Don't fail the page load if notification fails
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Failed to send QR scan notification: {e}")
+
     if request.method == "POST":
         form = ScheduleCallRequestForm(request.POST)
         if form.is_valid():
@@ -4919,6 +4934,42 @@ def schedule_call_request(request, town_id, loc_id):
             if owner_user and call_request.created_by_id is None:
                 call_request.created_by = owner_user
             call_request.save()
+
+            # Send notification to the workspace owner
+            if owner_user:
+                from accounts.emails import send_call_request_notification
+                try:
+                    # Create a mock lead object with the call request data
+                    class CallRequestLead:
+                        def __init__(self, call_req, parcel_obj):
+                            self.owner_name = call_req.owner_name
+                            self.phone = call_req.phone
+                            self.email = call_req.email_address
+                            self.interest_level = call_req.interest_level
+                            self.preferred_contact_time = call_req.preferred_contact_time
+                            self.notes = call_req.notes
+                            self.created_at = call_req.created_at
+                            self.parcel = parcel_obj
+
+                        def get_interest_level_display(self):
+                            levels = {
+                                "very_interested": "Very Interested",
+                                "somewhat_interested": "Somewhat Interested",
+                                "just_browsing": "Just Browsing",
+                            }
+                            return levels.get(self.interest_level, "Interested")
+
+                    mock_lead = CallRequestLead(call_request, parcel)
+                    lead_url = request.build_absolute_uri(
+                        reverse("crm_overview")
+                    )
+                    send_call_request_notification(owner_user, mock_lead, lead_url)
+                except Exception as e:
+                    # Don't fail the request if notification fails
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Failed to send call request notification: {e}")
+
             messages.success(request, "Thanks! We'll be in touch shortly.")
             redirect_url = reverse("schedule_call_request", args=[town_id, loc_id])
             if script_param:

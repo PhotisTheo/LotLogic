@@ -44,6 +44,12 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
+    # Notification preferences
+    notify_qr_scan = models.BooleanField(default=True, help_text="Email when owner scans QR code")
+    notify_call_request = models.BooleanField(default=True, help_text="Email when owner submits call request")
+    notify_lead_activity = models.BooleanField(default=True, help_text="Email for lead status changes")
+    notify_team_activity = models.BooleanField(default=True, help_text="Email for team collaboration")
+
     def __str__(self) -> str:
         label = dict(self.ACCOUNT_TYPE_CHOICES).get(self.account_type, self.account_type)
         return f"{self.user.username} ({label})"

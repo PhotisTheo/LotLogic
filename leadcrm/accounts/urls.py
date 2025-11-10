@@ -53,6 +53,7 @@ urlpatterns = [
     ),
     path("profile/", views.ProfileView.as_view(), name="profile"),
     path("settings/", views.SettingsView.as_view(), name="settings"),
+    path("settings/notifications/", views.update_notifications, name="update_notifications"),
     path("settings/password/", views.change_password, name="change_password"),
     path("settings/delete/", views.delete_account, name="delete_account"),
     path(

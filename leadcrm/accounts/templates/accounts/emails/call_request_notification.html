@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="background-color: #198754; color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px;">📞 New Call Request!</h1>
+        </div>
+
+        <p style="margin-bottom: 20px; font-size: 18px; font-weight: 600;">
+            Hi {{ user.get_full_name|default:user.username }},
+        </p>
+
+        <p style="margin-bottom: 20px;">
+            Excellent! A property owner has requested a call with you.
+        </p>
+
+        <div style="background-color: #d1e7dd; padding: 20px; border-radius: 6px; border-left: 4px solid #198754; margin-bottom: 20px;">
+            <h2 style="margin-top: 0; font-size: 18px; color: #198754;">🔥 Hot Lead Details</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #0f5132;">Owner Name:</td>
+                    <td style="padding: 8px 0;">{{ lead.owner_name }}</td>
+                </tr>
+                {% if lead.phone %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #0f5132;">Phone:</td>
+                    <td style="padding: 8px 0; font-size: 18px; font-weight: 600;"><a href="tel:{{ lead.phone }}" style="color: #198754; text-decoration: none;">{{ lead.phone }}</a></td>
+                </tr>
+                {% endif %}
+                {% if lead.email %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #0f5132;">Email:</td>
+                    <td style="padding: 8px 0;"><a href="mailto:{{ lead.email }}" style="color: #198754; text-decoration: none;">{{ lead.email }}</a></td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #0f5132;">Interest Level:</td>
+                    <td style="padding: 8px 0;">
+                        <span style="background-color: #198754; color: white; padding: 4px 12px; border-radius: 999px; font-size: 14px; font-weight: 600;">
+                            {{ lead.get_interest_level_display|default:"Interested" }}
+                        </span>
+                    </td>
+                </tr>
+                {% if lead.preferred_contact_time %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #0f5132;">Preferred Time:</td>
+                    <td style="padding: 8px 0;">{{ lead.preferred_contact_time }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+        <div style="background-color: #fff; padding: 20px; border-radius: 6px; border: 1px solid #dee2e6; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; font-size: 16px; color: #495057;">Property Information</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #6c757d;">Address:</td>
+                    <td style="padding: 8px 0;">{{ lead.parcel.street_name }}, {{ lead.parcel.city }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #6c757d;">Parcel ID:</td>
+                    <td style="padding: 8px 0; font-family: monospace;">{{ lead.parcel.map_par_id }}</td>
+                </tr>
+                {% if lead.parcel.total_value %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #6c757d;">Assessed Value:</td>
+                    <td style="padding: 8px 0;">${{ lead.parcel.total_value|floatformat:0 }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; color: #6c757d;">Submitted:</td>
+                    <td style="padding: 8px 0;">{{ lead.created_at|date:"F j, Y g:i A" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        {% if lead.notes %}
+        <div style="background-color: #fff; padding: 20px; border-radius: 6px; border: 1px solid #dee2e6; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; font-size: 16px; color: #495057;">Owner's Message</h3>
+            <p style="margin: 0; font-style: italic; color: #495057;">
+                "{{ lead.notes }}"
+            </p>
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ lead_url }}"
+               style="background-color: #198754; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600; font-size: 16px;">
+                View Lead in CRM
+            </a>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #dee2e6; margin: 30px 0;">
+
+        <div style="background-color: #fff3cd; padding: 15px; border-radius: 6px;">
+            <p style="margin: 0; font-weight: 600; color: #856404;">
+                ⚡ <strong>Action Required:</strong> This lead is hot! Call them within 1 hour for the best conversion rate.
+            </p>
+        </div>
+    </div>
+
+    <div style="text-align: center; color: #6c757d; font-size: 12px; margin-top: 20px;">
+        <p>Lead CRM | © {% now "Y" %}</p>
+        <p>
+            <a href="{{ settings_url }}" style="color: #6c757d; text-decoration: underline;">Manage notification preferences</a>
+        </p>
+    </div>
+</body>
+</html>

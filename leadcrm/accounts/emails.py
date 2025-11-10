@@ -57,3 +57,66 @@ def send_email_verification(verification, confirmation_url: str) -> None:
         [verification.email or user.email],
         html_message=html_body,
     )
+
+
+def send_qr_scan_notification(user, parcel, scan_time, crm_url: str) -> None:
+    """Send notification when an owner scans a QR code from a mailer."""
+    # Check if user has this notification enabled
+    profile = getattr(user, "profile", None)
+    if not profile or not profile.notify_qr_scan:
+        return
+
+    if not user.email:
+        return
+
+    context = {
+        "user": user,
+        "parcel": parcel,
+        "scan_time": scan_time,
+        "crm_url": crm_url,
+        "settings_url": f"{settings.DEFAULT_FROM_EMAIL.split('@')[1]}/accounts/settings/",
+    }
+
+    subject = f"🔔 Owner viewed your mailer - {parcel.street_name}"
+    html_body = render_to_string(
+        "accounts/emails/qr_scan_notification.html", context
+    )
+
+    send_mail(
+        subject,
+        strip_tags(html_body),
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        html_message=html_body,
+    )
+
+
+def send_call_request_notification(user, lead, lead_url: str) -> None:
+    """Send notification when an owner submits a call request."""
+    # Check if user has this notification enabled
+    profile = getattr(user, "profile", None)
+    if not profile or not profile.notify_call_request:
+        return
+
+    if not user.email:
+        return
+
+    context = {
+        "user": user,
+        "lead": lead,
+        "lead_url": lead_url,
+        "settings_url": f"{settings.DEFAULT_FROM_EMAIL.split('@')[1]}/accounts/settings/",
+    }
+
+    subject = f"📞 New call request from {lead.owner_name}"
+    html_body = render_to_string(
+        "accounts/emails/call_request_notification.html", context
+    )
+
+    send_mail(
+        subject,
+        strip_tags(html_body),
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        html_message=html_body,
+    )

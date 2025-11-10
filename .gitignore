@@ -70,7 +70,7 @@ Icon
 gisdata/
 /gisdata/
 !gisdata/README.md
-!leadcrm/gisdata/
+leadcrm/gisdata/
 
 # Generated GeoJSON
 static/geojson/towns/*.geojson
