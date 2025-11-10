@@ -386,20 +386,19 @@ if USE_S3:
     }
     AWS_QUERYSTRING_AUTH = False
 
-    # Static files location in S3
-    AWS_STATIC_LOCATION = "static"
+    # Use WhiteNoise for static files (more reliable for admin assets)
+    # and S3 only for media files
+    STATIC_URL = "static/"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+    # Media files location in S3
+    AWS_MEDIA_LOCATION = "media"
     STORAGES = {
         "default": {
             "BACKEND": "leadcrm.storage_backends.MediaStorage",
         },
-        "staticfiles": {
-            "BACKEND": "leadcrm.storage_backends.StaticStorage",
-        },
     }
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_STATIC_LOCATION}/"
-
-    # Media files location in S3
-    AWS_MEDIA_LOCATION = "media"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_MEDIA_LOCATION}/"
 else:
     # Local storage fallback
