@@ -1,29 +1,23 @@
 # Python
 *.py[cod]
 *$py.class
+*.pyc
 *.so
 .Python
 __pycache__/
-*.py[cod]
-*$py.class
 
-# Virtual Environment
+# Virtual Environments
 venv/
-<<<<<<< HEAD
-*.pyc
-/gisdata/
-!leadcrm/gisdata/
-
-# Generated GeoJSON files (stored in S3, not in git)
-static/geojson/towns/*.geojson
-leadcrm/leadcrm/static/geojson/towns/*.geojson
-!leadcrm/leadcrm/static/geojson/towns/.gitkeep
-=======
 env/
 ENV/
 .venv
 
-# Django
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Django / runtime artifacts
 *.log
 local_settings.py
 db.sqlite3
@@ -31,19 +25,7 @@ db.sqlite3-journal
 /media
 /staticfiles
 /static
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+/tmp/
 
 # Testing
 .coverage
@@ -51,10 +33,8 @@ db.sqlite3-journal
 htmlcov/
 .tox/
 
-# Distribution / packaging
-.Python
+# Packaging
 build/
-develop-eggs/
 dist/
 downloads/
 eggs/
@@ -72,30 +52,27 @@ wheels/
 # Backup files
 *.bak
 *.backup
-/tmp/
 *.json.backup
 
-# GIS Data - Exclude all GIS data files (too large for git)
-gisdata/
-!gisdata/README.md
-
-# macOS
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 .AppleDouble
 .LSOverride
 Icon
 ._*
 
-# Django
-*.sqlite3
-/db.sqlite3
-/media/
-/staticfiles/
-.env
-__pycache__/
-*.py[cod]
-*.log
-/local_settings.py
-/venv/
-.DS_Store
->>>>>>> b48c60e (Describe the documentation + config updates)
+# GIS Data (large)
+gisdata/
+/gisdata/
+!gisdata/README.md
+!leadcrm/gisdata/
+
+# Generated GeoJSON
+static/geojson/towns/*.geojson
+leadcrm/static/geojson/towns/*.geojson
+!leadcrm/static/geojson/towns/.gitkeep
