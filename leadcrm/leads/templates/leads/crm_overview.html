@@ -102,7 +102,7 @@
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 0.75rem;
-    cursor: move;
+    cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
@@ -115,6 +115,24 @@
   .lead-card.dragging {
     opacity: 0.5;
     transform: rotate(2deg);
+    cursor: move;
+  }
+
+  /* Collapsed state */
+  .lead-card.collapsed {
+    padding: 0.75rem 1rem;
+  }
+
+  .lead-card.collapsed .lead-card-body {
+    display: none;
+  }
+
+  .lead-card.collapsed .lead-card-header {
+    margin-bottom: 0;
+  }
+
+  .lead-card-body {
+    display: block;
   }
 
   .lead-card-header {
@@ -587,15 +605,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.success) {
         // Update column counts
         updateColumnCounts();
-        showToast('Lead stage updated successfully', 'success');
+        // Silent success - no notification needed
       } else {
-        showToast('Failed to update lead stage', 'error');
+        console.error('Failed to update lead stage');
         location.reload();
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      showToast('An error occurred', 'error');
       location.reload();
     });
   }
@@ -701,11 +718,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Toast notification
-  function showToast(message, type) {
-    // Simple alert for now - you can replace with a nicer toast library
-    alert(message);
-  }
+  // Lead card collapse/expand functionality
+  document.querySelectorAll('.lead-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Don't collapse if clicking on buttons or links
+      if (e.target.closest('.lead-card-menu') || e.target.closest('a')) {
+        return;
+      }
+      this.classList.toggle('collapsed');
+    });
+  });
 });
 </script>
 {% endblock %}
