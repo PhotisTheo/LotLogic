@@ -5328,6 +5328,9 @@ def lead_upload(request):
 @require_http_methods(["GET", "POST"])
 # --- Public scheduling form hit from QR codes.
 def schedule_call_request(request, town_id, loc_id):
+    import logging
+    logger = logging.getLogger(__name__)
+
     try:
         parcel = get_massgis_parcel_detail(town_id, loc_id)
     except MassGISDataError as exc:
@@ -5353,8 +5356,6 @@ def schedule_call_request(request, town_id, loc_id):
                 send_qr_scan_notification(owner_user, parcel, timezone.now(), crm_url)
             except Exception as e:
                 # Don't fail the page load if notification fails
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.error(f"Failed to send QR scan notification: {e}")
 
     if request.method == "POST":
