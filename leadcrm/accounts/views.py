@@ -555,6 +555,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         from leads.models import (  # local import to avoid circular dependency
             Lead,
             SavedParcelList,
+            ScheduleCallRequest,
         )
         from leads.mailers import get_mailer_script_options
 
@@ -568,7 +569,10 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             created_by=workspace_owner
         )
         saved_list_count = saved_lists_qs.count()
-        active_lead_count = Lead.objects.filter(created_by=workspace_owner).count()
+        active_lead_count = ScheduleCallRequest.objects.filter(
+            created_by=workspace_owner,
+            is_archived=False
+        ).count()
 
         mailer_saved_lists: list[dict[str, object]] = []
         if workspace_owner:
