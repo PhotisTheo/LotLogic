@@ -83,9 +83,7 @@
               <th>Units</th>
               <th>Absentee</th>
               <th>Skip Trace</th>
-              <th>Pre-foreclosure</th>
-              <th>Mortgage Default</th>
-              <th>Tax Default</th>
+              <th>Legal Info</th>
               <th>Equity %</th>
               <th>Total Value</th>
               <th></th>
@@ -123,21 +121,7 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% if parcel.attom_data.pre_foreclosure %}
-                      <span class="badge text-bg-danger">Yes</span>
-                  {% else %}
-                      <span class="badge text-bg-secondary">No</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if parcel.attom_data.mortgage_default %}
-                      <span class="badge text-bg-danger">Yes</span>
-                  {% else %}
-                      <span class="badge text-bg-secondary">No</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if parcel.attom_data.tax_default %}
+                  {% if parcel.attom_data.pre_foreclosure or parcel.attom_data.mortgage_default or parcel.attom_data.tax_default %}
                       <span class="badge text-bg-danger">Yes</span>
                   {% else %}
                       <span class="badge text-bg-secondary">No</span>
