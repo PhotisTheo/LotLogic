@@ -5375,11 +5375,14 @@ def schedule_call_request(request, town_id, loc_id):
             owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
             if owner_user and call_request.created_by_id is None:
                 call_request.created_by = owner_user
-                logger.info(f"Assigned ScheduleCallRequest for {loc_id} to user {owner_user.username}")
+                owner_username = getattr(owner_user, 'username', str(owner_user))
+                logger.info(f"Assigned ScheduleCallRequest for {loc_id} to user {owner_username}")
             else:
-                logger.warning(f"Creating ScheduleCallRequest for {loc_id} with no owner (owner_user={owner_user}, existing_created_by={call_request.created_by_id})")
+                owner_info = f"{owner_user.username if owner_user else None}"
+                logger.warning(f"Creating ScheduleCallRequest for {loc_id} with no owner (owner_user={owner_info}, existing_created_by={call_request.created_by_id})")
             call_request.save()
-            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id}, created_by={call_request.created_by}")
+            created_by_info = f"{call_request.created_by.username if call_request.created_by else None}"
+            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id}, created_by={created_by_info}")
 
             # Send notification to the workspace owner
             if owner_user:
@@ -6188,8 +6191,9 @@ def crm_overview(request):
         )
 
         unassigned_count = unassigned_requests.count()
+        workspace_username = getattr(workspace_owner, 'username', str(workspace_owner))
         if unassigned_count > 0:
-            logger.info(f"CRM: Found {unassigned_count} unassigned requests, checking {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_owner.username}")
+            logger.info(f"CRM: Found {unassigned_count} unassigned requests, checking {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_username}")
 
         assigned_count = 0
         for call_request in unassigned_requests:
@@ -6207,12 +6211,13 @@ def crm_overview(request):
                     call_request.created_by = workspace_owner
                     call_request.save(update_fields=["created_by"])
                     assigned_count += 1
-                    logger.info(f"CRM: Auto-assigned ScheduleCallRequest {call_request.pk} (loc_id={request_loc_id}) to {workspace_owner.username}")
+                    logger.info(f"CRM: Auto-assigned ScheduleCallRequest {call_request.pk} (loc_id={request_loc_id}) to {workspace_username}")
                 else:
-                    logger.debug(f"CRM: Request {call_request.pk} matches loc_id but belongs to different owner: {owner_user}")
+                    owner_info = f"{owner_user.username if owner_user else None}"
+                    logger.debug(f"CRM: Request {call_request.pk} matches loc_id but belongs to different owner: {owner_info}")
 
         if assigned_count > 0:
-            logger.info(f"CRM: Successfully auto-assigned {assigned_count} requests to {workspace_owner.username}")
+            logger.info(f"CRM: Successfully auto-assigned {assigned_count} requests to {workspace_username}")
 
     # Get active leads (not archived)
     active_leads = ScheduleCallRequest.objects.filter(
