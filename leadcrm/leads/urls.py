@@ -121,6 +121,11 @@ urlpatterns = [
         name="saved_parcel_list_mailers",
     ),
     path(
+        "saved-lists/<int:pk>/labels/",
+        views.saved_parcel_list_labels,
+        name="saved_parcel_list_labels",
+    ),
+    path(
         "saved-lists/<int:pk>/legal-search/",
         views.bulk_legal_search,
         name="bulk_legal_search",

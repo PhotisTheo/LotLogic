@@ -1766,7 +1766,169 @@ def _render_mailer_pdf(scripts: Iterable[dict]) -> bytes:
     return _build_simple_pdf(pdf_pages)
 
 
+def _generate_label_sheet_pdf(parcels: list, format_spec: dict) -> bytes:
+    """
+    Generate a PDF of mailing labels formatted for label sheets (e.g., Avery 5160).
 
+    Args:
+        parcels: List of parcel objects with owner_name, mailing_address, etc.
+        format_spec: Dictionary with label dimensions and layout
+            - cols: number of columns
+            - rows: number of rows per page
+            - width: label width in inches
+            - height: label height in inches
+            - margin_top: top margin in inches
+            - margin_left: left margin in inches
+            - gutter_h: horizontal gutter (space between columns) in inches
+            - gutter_v: vertical gutter (space between rows) in inches
+
+    Returns:
+        PDF bytes
+    """
+    # Convert inches to points (72 points per inch)
+    cols = format_spec["cols"]
+    rows = format_spec["rows"]
+    label_width = format_spec["width"] * 72
+    label_height = format_spec["height"] * 72
+    margin_top = format_spec["margin_top"] * 72
+    margin_left = format_spec["margin_left"] * 72
+    gutter_h = format_spec["gutter_h"] * 72
+    gutter_v = format_spec["gutter_v"] * 72
+
+    labels_per_page = cols * rows
+    pdf_pages = []
+
+    # Process parcels in batches of labels_per_page
+    for page_start in range(0, len(parcels), labels_per_page):
+        page_parcels = parcels[page_start:page_start + labels_per_page]
+        page_content = []
+
+        page_content.append("BT")
+        page_content.append("/F1 9 Tf")  # 9pt font for labels
+
+        for idx, parcel in enumerate(page_parcels):
+            row = idx // cols
+            col = idx % cols
+
+            # Calculate label position
+            x = margin_left + col * (label_width + gutter_h) + 4  # 4pt padding
+            y = 792 - margin_top - row * (label_height + gutter_v) - 12  # Start from top, 12pt down
+
+            # Format the mailing address
+            owner_name = getattr(parcel, 'owner_name', '') or ''
+            mailing_address = getattr(parcel, 'mailing_address', '') or ''
+            mailing_city = getattr(parcel, 'mailing_city', '') or ''
+            mailing_state = getattr(parcel, 'mailing_state', '') or ''
+            mailing_zip = getattr(parcel, 'mailing_zip', '') or ''
+
+            # Build address lines
+            address_lines = []
+            if owner_name:
+                address_lines.append(owner_name[:35])  # Truncate if too long
+            if mailing_address:
+                address_lines.append(mailing_address[:35])
+
+            city_state_zip = f"{mailing_city}, {mailing_state} {mailing_zip}".strip(", ")
+            if city_state_zip:
+                address_lines.append(city_state_zip[:35])
+
+            # If no mailing address, use site address as fallback
+            if not address_lines or len(address_lines) < 2:
+                site_address = getattr(parcel, 'site_address', '') or ''
+                site_city = getattr(parcel, 'site_city', '') or ''
+                site_zip = getattr(parcel, 'site_zip', '') or ''
+
+                address_lines = []
+                if owner_name:
+                    address_lines.append(owner_name[:35])
+                if site_address:
+                    address_lines.append(site_address[:35])
+
+                site_city_zip = f"{site_city}, MA {site_zip}".strip(", ")
+                if site_city_zip != ", MA":
+                    address_lines.append(site_city_zip[:35])
+
+            # Write address lines to PDF
+            for line_idx, line in enumerate(address_lines[:4]):  # Max 4 lines per label
+                line_y = y - (line_idx * 11)  # 11pt line spacing
+                page_content.append(f"{x:.2f} {line_y:.2f} Td")
+                page_content.append(f"({_pdf_escape(line)}) Tj")
+                page_content.append(f"{-x:.2f} {-line_y:.2f} Td")  # Reset position
+
+        page_content.append("ET")
+
+        content_stream = "\n".join(page_content).encode("latin-1", "ignore")
+        stream_bytes = (
+            f"<< /Length {len(content_stream)} >>\n".encode("latin-1")
+            + b"stream\n"
+            + content_stream
+            + b"\nendstream"
+        )
+
+        pdf_pages.append({"stream": stream_bytes, "lines": [], "image": None})
+
+    # Use custom PDF builder for labels
+    return _build_label_pdf(pdf_pages)
+
+
+def _build_label_pdf(pages: List[dict]) -> bytes:
+    """Build a simple PDF for label sheets."""
+    if not pages:
+        return b""
+
+    pdf_objects: List[Optional[bytes]] = []
+
+    def add_object(payload: Optional[bytes]) -> int:
+        pdf_objects.append(payload)
+        return len(pdf_objects)
+
+    catalog_obj_id = add_object(None)
+    pages_obj_id = add_object(None)
+    font_obj_id = add_object(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+
+    page_obj_ids: List[int] = []
+
+    for page in pages:
+        stream_bytes = page.get("stream", b"")
+        content_obj_id = add_object(stream_bytes)
+
+        page_obj_bytes = (
+            f"<< /Type /Page /Parent {pages_obj_id} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 {font_obj_id} 0 R >> >> /Contents [{content_obj_id} 0 R] >>"
+        ).encode("latin-1")
+        page_obj_id = add_object(page_obj_bytes)
+        page_obj_ids.append(page_obj_id)
+
+    kids = " ".join(f"{obj_id} 0 R" for obj_id in page_obj_ids)
+    pages_obj = f"<< /Type /Pages /Kids [{kids}] /Count {len(page_obj_ids)} >>".encode("latin-1")
+    catalog_obj = f"<< /Type /Catalog /Pages {pages_obj_id} 0 R >>".encode("latin-1")
+
+    pdf_objects[catalog_obj_id - 1] = catalog_obj
+    pdf_objects[pages_obj_id - 1] = pages_obj
+
+    xref_offsets = [0]
+    output = BytesIO()
+    output.write(b"%PDF-1.4\n")
+
+    for obj_id, obj_data in enumerate(pdf_objects, start=1):
+        xref_offsets.append(output.tell())
+        output.write(f"{obj_id} 0 obj\n".encode("latin-1"))
+        if obj_data:
+            output.write(obj_data)
+        output.write(b"\nendobj\n")
+
+    xref_start = output.tell()
+    output.write(b"xref\n")
+    output.write(f"0 {len(xref_offsets)}\n".encode("latin-1"))
+    for offset in xref_offsets:
+        output.write(f"{offset:010d} {'65535' if offset == 0 else '00000'} {'f' if offset == 0 else 'n'} \n".encode("latin-1"))
+
+    output.write(b"trailer\n")
+    output.write(f"<< /Size {len(xref_offsets)} /Root {catalog_obj_id} 0 R >>\n".encode("latin-1"))
+    output.write(b"startxref\n")
+    output.write(f"{xref_start}\n".encode("latin-1"))
+    output.write(b"%%EOF\n")
+
+    return output.getvalue()
 
 
 def _get_skiptrace_cost_per_lookup() -> Optional[Decimal]:
@@ -5517,6 +5679,71 @@ def saved_parcel_list_mailers(request, pk):
     response["X-Mailers-Skipped"] = str(skipped)
     response["X-Mailers-Reused"] = "0"
     return response
+
+
+@login_required
+@require_http_methods(["POST"])
+def saved_parcel_list_labels(request, pk):
+    """
+    Generate a PDF of mailing labels for all parcels in a saved list.
+    Supports multiple label formats (Avery 5160, 5163, etc.)
+    """
+    saved_list = get_object_or_404(
+        _saved_list_queryset_for_user(request.user), pk=pk
+    )
+
+    # Get label format from request (default to Avery 5160)
+    label_format = request.POST.get("label_format", "5160")
+
+    # Define label formats with dimensions in inches
+    LABEL_FORMATS = {
+        "5160": {"name": "Avery 5160", "cols": 3, "rows": 10, "width": 2.625, "height": 1.0, "margin_top": 0.5, "margin_left": 0.1875, "gutter_h": 0.125, "gutter_v": 0},
+        "5163": {"name": "Avery 5163", "cols": 2, "rows": 5, "width": 4.0, "height": 2.0, "margin_top": 0.5, "margin_left": 0.15625, "gutter_h": 0.1875, "gutter_v": 0},
+        "5167": {"name": "Avery 5167", "cols": 4, "rows": 20, "width": 1.75, "height": 0.5, "margin_top": 0.5, "margin_left": 0.3125, "gutter_h": 0.125, "gutter_v": 0},
+    }
+
+    format_spec = LABEL_FORMATS.get(label_format, LABEL_FORMATS["5160"])
+
+    # Get all parcels in the list
+    parcel_refs = list(_iter_saved_list_parcel_refs(saved_list))
+    if not parcel_refs:
+        return JsonResponse({"error": "No parcels in this list."}, status=400)
+
+    # Load parcel data
+    parcels_by_key = {}
+    grouped_loc_ids = defaultdict(list)
+    for ref in parcel_refs:
+        grouped_loc_ids[ref.town_id].append(ref.loc_id)
+
+    for town_id, loc_list in grouped_loc_ids.items():
+        for parcel in load_massgis_parcels_by_ids(town_id, loc_list, saved_list=saved_list):
+            normalized = _normalize_loc_id(parcel.loc_id)
+            if normalized:
+                parcels_by_key[(town_id, normalized)] = parcel
+
+    parcels = []
+    for ref in parcel_refs:
+        parcel = parcels_by_key.get((ref.town_id, ref.normalized_loc_id))
+        if parcel:
+            parcels.append(parcel)
+
+    if not parcels:
+        return JsonResponse({"error": "No parcels available for labels."}, status=400)
+
+    # Generate labels HTML
+    try:
+        pdf_bytes = _generate_label_sheet_pdf(parcels, format_spec)
+        filename_base = slugify(saved_list.name or f"saved-list-{saved_list.pk}") or f"saved-list-{saved_list.pk}"
+        filename = f"{filename_base}-labels-{label_format}.pdf"
+
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response["Content-Length"] = str(len(pdf_bytes))
+        return response
+
+    except Exception as exc:
+        logger.exception("Failed to generate label sheet PDF for list %s", saved_list.pk, exc_info=exc)
+        return JsonResponse({"error": "Failed to generate label sheet."}, status=500)
 
 
 @login_required
