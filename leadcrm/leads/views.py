@@ -5568,7 +5568,10 @@ def bulk_legal_search(request, pk):
     searches_skipped = 0
 
     for parcel in parcels:
-        town_id = parcel.town_id
+        town_id = parcel.town.town_id if hasattr(parcel, 'town') else None
+        if not town_id:
+            searches_skipped += 1
+            continue
         loc_id = parcel.loc_id
         property_category = getattr(parcel, 'property_category', '')
 
