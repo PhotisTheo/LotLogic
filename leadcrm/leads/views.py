@@ -1766,6 +1766,126 @@ def _render_mailer_pdf(scripts: Iterable[dict]) -> bytes:
     return _build_simple_pdf(pdf_pages)
 
 
+def _render_mailer_docx(scripts: list[dict]) -> bytes:
+    """
+    Generate a Word document (.docx) containing all mailer letters.
+    Each letter includes formatted text, value propositions, and QR code if available.
+
+    Args:
+        scripts: List of mailer script dictionaries with letter_lines, value_props, qr_image_url, etc.
+
+    Returns:
+        Bytes of the generated .docx file
+    """
+    try:
+        from docx import Document
+        from docx.shared import Inches, Pt, RGBColor
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+    except ImportError:
+        logger.error("python-docx not installed")
+        raise ImportError("python-docx library is required for Word document generation")
+
+    doc = Document()
+
+    # Set up document margins (1 inch all around)
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(1)
+        section.bottom_margin = Inches(1)
+        section.left_margin = Inches(1)
+        section.right_margin = Inches(1)
+
+    for idx, script in enumerate(scripts):
+        if idx > 0:
+            # Add page break between letters
+            doc.add_page_break()
+
+        # Add letter content
+        letter_lines = script.get("letter_lines", [])
+        for line in letter_lines:
+            if line:
+                p = doc.add_paragraph(line)
+                p.style = 'Normal'
+                # Set font
+                for run in p.runs:
+                    run.font.name = 'Arial'
+                    run.font.size = Pt(11)
+            else:
+                # Empty line for spacing
+                doc.add_paragraph()
+
+        # Add value propositions if present
+        value_props = script.get("value_props") or []
+        if value_props:
+            doc.add_paragraph()  # Spacing
+
+            value_props_title = script.get("value_props_title", "Why work with us:")
+            title_p = doc.add_paragraph(value_props_title)
+            title_p.style = 'Normal'
+            for run in title_p.runs:
+                run.font.name = 'Arial'
+                run.font.size = Pt(11)
+                run.font.bold = True
+
+            for prop in value_props:
+                p = doc.add_paragraph(f"• {prop}")
+                p.style = 'Normal'
+                p.paragraph_format.left_indent = Inches(0.25)
+                for run in p.runs:
+                    run.font.name = 'Arial'
+                    run.font.size = Pt(10)
+
+        # Add QR code if present
+        qr_image_url = script.get("qr_image_url")
+        qr_caption = script.get("qr_caption")
+
+        if qr_image_url:
+            doc.add_paragraph()  # Spacing before QR code
+
+            # Add caption if present
+            if qr_caption:
+                caption_p = doc.add_paragraph(qr_caption)
+                caption_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in caption_p.runs:
+                    run.font.name = 'Arial'
+                    run.font.size = Pt(10)
+                    run.font.italic = True
+
+            # Fetch and add QR code image
+            try:
+                if qr_image_url.startswith('data:') and ';base64,' in qr_image_url:
+                    _, encoded = qr_image_url.split(',', 1)
+                    image_bytes = base64.b64decode(encoded)
+                else:
+                    response = requests.get(qr_image_url, timeout=5)
+                    response.raise_for_status()
+                    image_bytes = response.content
+
+                image_stream = BytesIO(image_bytes)
+
+                # Add centered paragraph for QR code
+                qr_paragraph = doc.add_paragraph()
+                qr_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                qr_run = qr_paragraph.add_run()
+                qr_run.add_picture(image_stream, width=Inches(2))
+
+            except Exception as exc:
+                logger.warning(f"Failed to add QR code to Word doc: {exc}")
+                # Add fallback text
+                fallback_p = doc.add_paragraph("[QR code unavailable]")
+                fallback_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for run in fallback_p.runs:
+                    run.font.name = 'Arial'
+                    run.font.size = Pt(9)
+                    run.font.italic = True
+                    run.font.color.rgb = RGBColor(128, 128, 128)
+
+    # Save document to bytes
+    output = BytesIO()
+    doc.save(output)
+    return output.getvalue()
+
+
 def _generate_label_sheet_pdf(parcels: list, format_spec: dict) -> bytes:
     """
     Generate a PDF of mailing labels formatted for label sheets (e.g., Avery 5160).
@@ -5633,19 +5753,24 @@ def saved_parcel_list_mailers(request, pk):
     filename_base = (
         slugify(saved_list.name or f"saved-list-{saved_list.pk}") or f"saved-list-{saved_list.pk}"
     )
+
+    # Try Word document generation first
     try:
-        pdf_bytes = _render_mailer_pdf(scripts_to_render)
-        filename = f"{filename_base}-{script_id}.pdf"
-        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        docx_bytes = _render_mailer_docx(scripts_to_render)
+        filename = f"{filename_base}-{script_id}.docx"
+        response = HttpResponse(
+            docx_bytes,
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        response["Content-Length"] = str(len(pdf_bytes))
+        response["Content-Length"] = str(len(docx_bytes))
         response["X-Mailers-Generated"] = str(generated)
         response["X-Mailers-Skipped"] = str(skipped)
         response["X-Mailers-Reused"] = "0"
         return response
     except Exception as exc:  # noqa: BLE001
         logger.exception(
-            "Failed to generate bulk mailer PDF for list %s", saved_list.pk, exc_info=exc
+            "Failed to generate bulk mailer Word doc for list %s", saved_list.pk, exc_info=exc
         )
 
     body_html = '<div class="mailer-page-break"></div>'.join(html_pages)
