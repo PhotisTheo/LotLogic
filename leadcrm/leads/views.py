@@ -5375,7 +5375,11 @@ def schedule_call_request(request, town_id, loc_id):
             owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
             if owner_user and call_request.created_by_id is None:
                 call_request.created_by = owner_user
+                logger.info(f"Assigned ScheduleCallRequest for {loc_id} to user {owner_user.username}")
+            else:
+                logger.warning(f"Creating ScheduleCallRequest for {loc_id} with no owner (owner_user={owner_user}, existing_created_by={call_request.created_by_id})")
             call_request.save()
+            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id}, created_by={call_request.created_by}")
 
             # Send notification to the workspace owner
             if owner_user:
@@ -5871,6 +5875,8 @@ def saved_parcel_list_mailers(request, pk):
     generated = 0
     skipped = 0
 
+    logger.info(f"Generating mailers for {len(parcels)} parcels in list '{saved_list.name}' (ID: {saved_list.pk})")
+
     for parcel in parcels:
         try:
             full_address = _compose_full_address(parcel)
@@ -5889,14 +5895,18 @@ def saved_parcel_list_mailers(request, pk):
             scripts_to_render.append(script)
             html_pages.append(html)
             generated += 1
+            logger.debug(f"✓ Generated mailer for parcel {parcel.loc_id}")
         except Exception as exc:  # noqa: BLE001
             skipped += 1
             logger.exception(
-                "Bulk mailer generation failed for list %s (loc_id=%s)",
+                "Bulk mailer generation failed for list %s (loc_id=%s): %s",
                 saved_list.pk,
                 getattr(parcel, "loc_id", None),
+                str(exc),
                 exc_info=exc,
             )
+
+    logger.info(f"Mailer generation complete: {generated} generated, {skipped} skipped")
 
     if not scripts_to_render:
         return JsonResponse(
@@ -6177,6 +6187,11 @@ def crm_overview(request):
             created_at__gte=cutoff_date
         )
 
+        unassigned_count = unassigned_requests.count()
+        if unassigned_count > 0:
+            logger.info(f"CRM: Found {unassigned_count} unassigned requests, checking {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_owner.username}")
+
+        assigned_count = 0
         for call_request in unassigned_requests:
             # Check if this request's loc_id matches any in our candidate set
             # Use both raw and normalized loc_id for matching
@@ -6191,6 +6206,13 @@ def crm_overview(request):
                 if owner_user == workspace_owner:
                     call_request.created_by = workspace_owner
                     call_request.save(update_fields=["created_by"])
+                    assigned_count += 1
+                    logger.info(f"CRM: Auto-assigned ScheduleCallRequest {call_request.pk} (loc_id={request_loc_id}) to {workspace_owner.username}")
+                else:
+                    logger.debug(f"CRM: Request {call_request.pk} matches loc_id but belongs to different owner: {owner_user}")
+
+        if assigned_count > 0:
+            logger.info(f"CRM: Successfully auto-assigned {assigned_count} requests to {workspace_owner.username}")
 
     # Get active leads (not archived)
     active_leads = ScheduleCallRequest.objects.filter(
