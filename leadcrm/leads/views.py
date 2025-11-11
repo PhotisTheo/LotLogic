@@ -6178,6 +6178,7 @@ def crm_overview(request):
                 candidate_loc_ids.add(ref.normalized_loc_id)
 
     workspace_owner = get_workspace_owner(request.user)
+    logger.info(f"CRM: Loaded CRM for user {request.user.username}, workspace_owner={workspace_owner.username if workspace_owner else None}")
 
     if candidate_loc_ids and workspace_owner:
         # Try to assign unassigned requests to the workspace owner
@@ -6225,6 +6226,8 @@ def crm_overview(request):
         created_by=workspace_owner,
         is_archived=False
     ).order_by("-created_at")
+
+    logger.info(f"CRM: Querying for active leads with created_by={workspace_username}, found {active_leads.count()} leads")
 
     # Organize leads by stage
     leads_by_stage = {
