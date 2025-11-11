@@ -5533,9 +5533,30 @@ def bulk_legal_search(request, pk):
         _saved_list_queryset_for_user(request.user), pk=pk
     )
 
-    parcels, _, _ = _pending_parcels_for_saved_list(
-        saved_list, user=request.user
-    )
+    # Get all parcels in the list (not filtered by skip trace status)
+    parcel_refs = list(_iter_saved_list_parcel_refs(saved_list))
+    if not parcel_refs:
+        return JsonResponse(
+            {"error": "No parcels in this list."}, status=400
+        )
+
+    # Load the actual parcel data
+    parcels_by_key = {}
+    grouped_loc_ids = defaultdict(list)
+    for ref in parcel_refs:
+        grouped_loc_ids[ref.town_id].append(ref.loc_id)
+
+    for town_id, loc_list in grouped_loc_ids.items():
+        for parcel in load_massgis_parcels_by_ids(town_id, loc_list, saved_list=saved_list):
+            normalized = _normalize_loc_id(parcel.loc_id)
+            if normalized:
+                parcels_by_key[(town_id, normalized)] = parcel
+
+    parcels = []
+    for ref in parcel_refs:
+        parcel = parcels_by_key.get((ref.town_id, ref.normalized_loc_id))
+        if parcel:
+            parcels.append(parcel)
 
     if not parcels:
         return JsonResponse(
