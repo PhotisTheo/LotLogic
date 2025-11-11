@@ -893,17 +893,15 @@ class MailerTemplateListView(LoginRequiredMixin, TemplateView):
             )
             return redirect("accounts:profile")
 
-        form = MailerTemplateForm(request.POST)
-        if form.is_valid():
-            template = form.save(commit=False)
-            template.owner = owner
-            template.created_by = request.user
-            template.save()
-            messages.success(request, "Mailer template created.")
-            return redirect("accounts:mailer_templates")
-
-        context = self.get_context_data(create_form=form)
-        return self.render_to_response(context)
+        # Create a blank template and redirect to edit page with tabs
+        template = MailerTemplate.objects.create(
+            owner=owner,
+            created_by=request.user,
+            name="Untitled Template",
+            is_active=False
+        )
+        messages.info(request, "New template created. Use AI or write your own content below.")
+        return redirect("accounts:mailer_template_edit", pk=template.pk)
 
 
 @login_required

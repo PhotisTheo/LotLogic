@@ -18,67 +18,28 @@
     </div>
   </div>
 
+  <!-- Create New Template Button -->
+  <div class="mb-4">
+    <form method="post" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Create New Template
+      </button>
+    </form>
+    <p class="text-muted mt-2 mb-0 small">
+      Create templates with AI or write your own. Available placeholders:
+      {% for placeholder, help_text in placeholder_hints %}
+        <span class="badge bg-light text-body border">{{ placeholder }}</span>{% if not forloop.last %} {% endif %}
+      {% endfor %}
+    </p>
+  </div>
+
   <div class="row g-4">
-    <div class="col-lg-5">
-      <div class="card shadow-sm h-100">
-        <div class="card-body p-4">
-          <h2 class="h5 fw-semibold mb-3">New template</h2>
-          <p class="small text-muted">
-            Placeholders available:
-            {% for placeholder, help_text in placeholder_hints %}
-              <span class="badge bg-light text-body border">{{ placeholder }}</span>{% if not forloop.last %} {% endif %}
-            {% endfor %}
-          </p>
-          <form method="post" novalidate>
-            {% csrf_token %}
-            {% if create_form.non_field_errors %}
-              <div class="alert alert-danger">
-                {% for error in create_form.non_field_errors %}
-                  <div>{{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endif %}
-
-            {% for field in create_form %}
-              {% if field.name == "is_active" %}
-                <div class="form-check form-switch mb-3">
-                  {{ field }}
-                  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                  {{ field }}
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endfor %}
-
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">Save template</button>
-              <button type="reset" class="btn btn-outline-secondary">Reset</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-7">
-      <div class="card shadow-sm h-100">
+    <div class="col-12">
+      <div class="card shadow-sm">
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 fw-semibold mb-0">Workspace templates</h2>
+            <h2 class="h5 fw-semibold mb-0">Your Templates</h2>
             <span class="badge bg-primary-subtle text-primary-emphasis">
               {{ templates|length }} total
             </span>
@@ -140,7 +101,7 @@
             <div class="alert alert-info mb-0">
               <div class="fw-semibold mb-1">No custom templates yet.</div>
               <p class="mb-0 small">
-                Create your first template on the left. Saved templates are shared across your workspace.
+                Click "Create New Template" above to get started. Saved templates are shared across your workspace.
               </p>
             </div>
           {% endif %}
