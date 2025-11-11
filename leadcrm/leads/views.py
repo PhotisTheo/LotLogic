@@ -1840,9 +1840,12 @@ def _render_mailer_docx(scripts: list[dict]) -> bytes:
         section.right_margin = Inches(1)
 
     for idx, script in enumerate(scripts):
+        # Add page break before each letter (except the first)
         if idx > 0:
-            # Add page break between letters
-            doc.add_page_break()
+            # Insert page break at the end of previous content using run.add_break()
+            last_paragraph = doc.paragraphs[-1] if doc.paragraphs else doc.add_paragraph()
+            run = last_paragraph.add_run()
+            run.add_break(6)  # WD_BREAK.PAGE
 
         # Add letter content
         letter_lines = script.get("letter_lines", [])
