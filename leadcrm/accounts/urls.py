@@ -67,6 +67,16 @@ urlpatterns = [
         name="mailer_template_edit",
     ),
     path(
+        "mailers/templates/<int:pk>/generate-ai/",
+        views.mailer_template_generate_ai,
+        name="mailer_template_generate_ai",
+    ),
+    path(
+        "mailers/templates/<int:pk>/save-ai/",
+        views.mailer_template_save_ai,
+        name="mailer_template_save_ai",
+    ),
+    path(
         "mailers/templates/<int:pk>/delete/",
         views.mailer_template_delete,
         name="mailer_template_delete",

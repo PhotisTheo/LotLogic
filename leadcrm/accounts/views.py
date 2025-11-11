@@ -942,6 +942,137 @@ def mailer_template_edit(request, pk):
 
 @login_required
 @require_POST
+def mailer_template_generate_ai(request, pk):
+    """Generate mailer content using AI based on user prompt."""
+    owner = get_workspace_owner(request.user)
+    if owner is None:
+        return JsonResponse({"error": "Could not determine workspace owner"}, status=400)
+
+    template = get_object_or_404(MailerTemplate, pk=pk, owner=owner)
+
+    try:
+        data = json.loads(request.body)
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    prompt = data.get("prompt", "").strip()
+    if not prompt:
+        return JsonResponse({"error": "Prompt is required"}, status=400)
+
+    # Import OpenAI (lazy import to avoid issues if not installed)
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return JsonResponse({"error": "OpenAI library not installed"}, status=500)
+
+    # Get OpenAI API key from settings
+    api_key = getattr(settings, "OPENAI_API_KEY", "")
+    if not api_key:
+        return JsonResponse({"error": "OpenAI API key not configured"}, status=500)
+
+    model = getattr(settings, "MAILER_OPENAI_MODEL", "gpt-4o-mini")
+    temperature = float(getattr(settings, "MAILER_OPENAI_TEMPERATURE", 0.65))
+
+    # Build system prompt
+    system_prompt = """You are a professional direct mail copywriter specializing in real estate investor letters.
+Your task is to generate compelling, personalized mailer content based on the user's instructions.
+
+IMPORTANT RULES:
+1. Use these exact placeholders in your letter (they will be replaced with actual data):
+   - {salutation_name} - Owner's first name for greeting
+   - {property_address} - Full mailing address
+   - {property_descriptor} - Property description (e.g., "3-family home")
+   - {agent_name} - The sender's name
+   - {contact_phone} - Phone number for contact
+
+2. Write in a friendly, conversational tone that feels personal, not automated
+3. Keep it concise (150-250 words ideal)
+4. Always include a clear call to action
+5. Use the placeholders naturally throughout the letter
+6. Do NOT include any subject lines, titles, or "Dear" - just the letter body
+7. Use proper paragraph breaks for readability
+8. Focus on benefits to the homeowner, not features of your business"""
+
+    user_prompt = f"""Generate a direct mail letter based on these instructions:
+
+{prompt}
+
+Remember to use the placeholders: {{salutation_name}}, {{property_address}}, {{property_descriptor}}, {{agent_name}}, and {{contact_phone}} naturally throughout the letter."""
+
+    try:
+        client = OpenAI(api_key=api_key)
+        timeout_seconds = int(getattr(settings, "MAILER_OPENAI_TIMEOUT", 15))
+
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=temperature,
+            max_tokens=800,
+            timeout=timeout_seconds
+        )
+
+        generated_text = response.choices[0].message.content.strip()
+
+        # Save the prompt to the template
+        template.prompt_text = prompt
+        template.save(update_fields=["prompt_text"])
+
+        return JsonResponse({
+            "success": True,
+            "letter_body": generated_text,
+            "prompt": prompt
+        })
+
+    except Exception as e:
+        logger.exception("AI generation failed", extra={"user_id": request.user.id, "template_id": pk})
+        return JsonResponse({"error": f"AI generation failed: {str(e)}"}, status=500)
+
+
+@login_required
+@require_POST
+def mailer_template_save_ai(request, pk):
+    """Save AI-generated mailer template."""
+    owner = get_workspace_owner(request.user)
+    if owner is None:
+        return JsonResponse({"error": "Could not determine workspace owner"}, status=400)
+
+    template = get_object_or_404(MailerTemplate, pk=pk, owner=owner)
+
+    try:
+        data = json.loads(request.body)
+    except (ValueError, json.JSONDecodeError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    name = data.get("name", "").strip()
+    summary = data.get("summary", "").strip()
+    sector = data.get("sector", "residential")
+    letter_body = data.get("letter_body", "").strip()
+
+    if not name:
+        return JsonResponse({"error": "Template name is required"}, status=400)
+    if not letter_body:
+        return JsonResponse({"error": "Letter body is required"}, status=400)
+
+    # Update template
+    template.name = name
+    template.summary = summary
+    template.sector = sector
+    template.letter_body = letter_body
+    template.is_active = True
+    template.save()
+
+    return JsonResponse({
+        "success": True,
+        "message": "Template saved successfully",
+        "redirect_url": reverse("accounts:mailer_templates")
+    })
+
+
+@login_required
+@require_POST
 def mailer_template_delete(request, pk):
     owner = get_workspace_owner(request.user)
     if owner is None:

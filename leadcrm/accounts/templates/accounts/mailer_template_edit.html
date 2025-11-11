@@ -1,73 +1,571 @@
 {% extends "leads/base.html" %}
 
-{% block title %}Edit Mailer Template · Lead CRM{% endblock %}
+{% block title %}Edit Mailer Template · LotLogic{% endblock %}
+
+{% block extra_css %}
+<style>
+  .template-editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    min-height: 600px;
+  }
+
+  .editor-panel, .preview-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-header {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 2rem;
+  }
+
+  .nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .nav-tabs .nav-link:hover {
+    border-bottom-color: #dee2e6;
+    color: #495057;
+  }
+
+  .nav-tabs .nav-link.active {
+    border-bottom-color: #667eea;
+    color: #667eea;
+    background: none;
+  }
+
+  .ai-prompt-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ai-prompt-section textarea {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .ai-prompt-section textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  }
+
+  .generate-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .generate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .preview-container {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 70vh;
+  }
+
+  .preview-letter {
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .preview-placeholder {
+    background: #fffbea;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: #856404;
+    font-weight: 600;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  .placeholder-guide {
+    background: #e7f3ff;
+    border-left: 4px solid #667eea;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+  }
+
+  .placeholder-guide h6 {
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .placeholder-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .placeholder-tag {
+    background: white;
+    border: 1px solid #667eea;
+    color: #667eea;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .placeholder-tag:hover {
+    background: #667eea;
+    color: white;
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+  }
+
+  @media (max-width: 992px) {
+    .template-editor-container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container py-4 py-lg-5">
   <div class="row mb-4 align-items-center">
     <div class="col-lg-8">
-      <h1 class="h3 fw-semibold mb-2">Edit template</h1>
+      <h1 class="h3 fw-semibold mb-2">{{ template_obj.name|default:"New Mailer Template" }}</h1>
       <p class="text-muted mb-0">
-        Update <strong>{{ template_obj.name }}</strong>. Changes apply immediately to new mailers.
-        Existing downloads are unaffected. Use placeholders to personalize each letter:
-        {% for placeholder, help_text in placeholder_hints %}
-          <span class="badge bg-light text-body border">{{ placeholder }}</span>{% if not forloop.last %} {% endif %}
-        {% endfor %}
+        Create compelling mailer copy with AI or write your own. Changes apply to all new mailers.
       </p>
     </div>
     <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
-      <a class="btn btn-outline-secondary" href="{% url 'accounts:mailer_templates' %}">Back to templates</a>
+      <a class="btn btn-outline-secondary" href="{% url 'accounts:mailer_templates' %}">
+        <i class="bi bi-arrow-left"></i> Back to templates
+      </a>
     </div>
   </div>
 
-  <div class="row justify-content-center">
-    <div class="col-lg-9 col-xl-8">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <form method="post" novalidate>
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-              <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                  <div>{{ error }}</div>
-                {% endfor %}
-              </div>
-            {% endif %}
+  <!-- Tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-panel" type="button" role="tab">
+        <i class="bi bi-stars"></i> AI Generated
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-panel" type="button" role="tab">
+        <i class="bi bi-pencil-square"></i> Write Your Own
+      </button>
+    </li>
+  </ul>
 
-            {% for field in form %}
-              {% if field.name == "is_active" %}
-                <div class="form-check form-switch mb-4">
-                  {{ field }}
-                  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <div class="mb-4">
-                  <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                  {{ field }}
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endfor %}
+  <div class="tab-content">
+    <!-- AI Tab -->
+    <div class="tab-pane fade show active" id="ai-panel" role="tabpanel">
+      <div class="template-editor-container">
+        <!-- Left: AI Prompt Section -->
+        <div class="editor-panel">
+          <div class="panel-header">
+            <i class="bi bi-magic"></i> AI Prompt
+          </div>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary">Save changes</button>
-              <a class="btn btn-outline-secondary" href="{% url 'accounts:mailer_templates' %}">Cancel</a>
+          <div class="placeholder-guide">
+            <h6>Available Placeholders</h6>
+            <p class="small mb-2">Click to insert into your prompt. The AI will automatically use these in the generated letter:</p>
+            <div class="placeholder-tags">
+              <span class="placeholder-tag" data-placeholder="{salutation_name}">{salutation_name}</span>
+              <span class="placeholder-tag" data-placeholder="{property_address}">{property_address}</span>
+              <span class="placeholder-tag" data-placeholder="{agent_name}">{agent_name}</span>
+              <span class="placeholder-tag" data-placeholder="{contact_phone}">{contact_phone}</span>
+              <span class="placeholder-tag" data-placeholder="{property_descriptor}">{property_descriptor}</span>
             </div>
+          </div>
+
+          <div class="ai-prompt-section">
+            <label class="form-label fw-semibold mb-2">
+              Describe the mailer you want to create
+            </label>
+            <textarea
+              class="form-control"
+              id="ai-prompt-input"
+              rows="8"
+              placeholder="Example: Write a friendly letter to homeowners who have owned their property for 10+ years. Emphasize that I'm a local investor who can close quickly with cash and handle any property condition. Mention that I can help them avoid the hassle of repairs and realtor fees."
+            >{{ template_obj.prompt_text|default:"" }}</textarea>
+            <div class="form-text">
+              Be specific about your target audience, tone, and key selling points. The AI will create a professional letter based on your instructions.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Template Name</label>
+            <input type="text" class="form-control" id="template-name" value="{{ template_obj.name|default:"" }}" placeholder="e.g., Long-term Owners - Cash Offer">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Summary</label>
+            <input type="text" class="form-control" id="template-summary" value="{{ template_obj.summary|default:"" }}" placeholder="Short description for template picker">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Sector</label>
+            <select class="form-select" id="template-sector">
+              <option value="residential" {% if template_obj.sector == "residential" %}selected{% endif %}>Residential</option>
+              <option value="commercial" {% if template_obj.sector == "commercial" %}selected{% endif %}>Commercial</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn generate-btn w-100" id="generate-ai-btn">
+            <i class="bi bi-stars"></i> Generate Letter with AI
+          </button>
+        </div>
+
+        <!-- Right: Preview Section -->
+        <div class="preview-panel">
+          <div class="panel-header">
+            <i class="bi bi-eye"></i> Preview
+          </div>
+
+          <div class="preview-container" id="ai-preview">
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-file-text" style="font-size: 3rem; opacity: 0.3;"></i>
+              <p class="mt-3">Your AI-generated letter will appear here</p>
+              <p class="small">Click "Generate Letter with AI" to see the preview</p>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary w-100" id="save-ai-template-btn" disabled>
+              <i class="bi bi-check-circle"></i> Save Template
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual Tab -->
+    <div class="tab-pane fade" id="manual-panel" role="tabpanel">
+      <div class="template-editor-container">
+        <!-- Left: Manual Editor -->
+        <div class="editor-panel">
+          <div class="panel-header">
+            <i class="bi bi-pencil"></i> Write Your Letter
+          </div>
+
+          <div class="placeholder-guide">
+            <h6>Available Placeholders</h6>
+            <p class="small mb-2">Click to insert into your letter:</p>
+            <div class="placeholder-tags">
+              <span class="placeholder-tag manual-placeholder" data-placeholder="{salutation_name}">{salutation_name}</span>
+              <span class="placeholder-tag manual-placeholder" data-placeholder="{property_address}">{property_address}</span>
+              <span class="placeholder-tag manual-placeholder" data-placeholder="{agent_name}">{agent_name}</span>
+              <span class="placeholder-tag manual-placeholder" data-placeholder="{contact_phone}">{contact_phone}</span>
+              <span class="placeholder-tag manual-placeholder" data-placeholder="{property_descriptor}">{property_descriptor}</span>
+            </div>
+          </div>
+
+          <form method="post" id="manual-template-form">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Template Name</label>
+              {{ form.name }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Summary</label>
+              {{ form.summary }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Sector</label>
+              {{ form.sector }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Letter Body</label>
+              {{ form.letter_body }}
+              <div class="form-text">Use placeholders to personalize each letter.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Bullet Points Title (Optional)</label>
+              {{ form.value_props_title }}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Bullet Points (Optional)</label>
+              {{ form.value_props_raw }}
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              {{ form.is_active }}
+              <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-check-circle"></i> Save Template
+            </button>
           </form>
+        </div>
+
+        <!-- Right: Manual Preview -->
+        <div class="preview-panel">
+          <div class="panel-header">
+            <i class="bi bi-eye"></i> Live Preview
+          </div>
+
+          <div class="preview-container" id="manual-preview">
+            <div class="preview-letter">
+              <p class="text-muted small">Type in the editor to see a live preview...</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Insert placeholder tags on click (AI tab)
+  document.querySelectorAll('.placeholder-tag:not(.manual-placeholder)').forEach(tag => {
+    tag.addEventListener('click', function() {
+      const placeholder = this.dataset.placeholder;
+      const promptInput = document.getElementById('ai-prompt-input');
+      const cursorPos = promptInput.selectionStart;
+      const textBefore = promptInput.value.substring(0, cursorPos);
+      const textAfter = promptInput.value.substring(cursorPos);
+      promptInput.value = textBefore + placeholder + textAfter;
+      promptInput.focus();
+      promptInput.setSelectionRange(cursorPos + placeholder.length, cursorPos + placeholder.length);
+    });
+  });
+
+  // Insert placeholder tags on click (Manual tab)
+  document.querySelectorAll('.manual-placeholder').forEach(tag => {
+    tag.addEventListener('click', function() {
+      const placeholder = this.dataset.placeholder;
+      const letterBody = document.getElementById('{{ form.letter_body.id_for_label }}');
+      const cursorPos = letterBody.selectionStart;
+      const textBefore = letterBody.value.substring(0, cursorPos);
+      const textAfter = letterBody.value.substring(cursorPos);
+      letterBody.value = textBefore + placeholder + textAfter;
+      letterBody.focus();
+      letterBody.setSelectionRange(cursorPos + placeholder.length, cursorPos + placeholder.length);
+      updateManualPreview();
+    });
+  });
+
+  // Manual preview update
+  function updateManualPreview() {
+    const letterBody = document.getElementById('{{ form.letter_body.id_for_label }}').value;
+    const preview = document.getElementById('manual-preview');
+
+    if (!letterBody.trim()) {
+      preview.innerHTML = '<div class="preview-letter"><p class="text-muted small">Type in the editor to see a live preview...</p></div>';
+      return;
+    }
+
+    // Replace placeholders with highlighted versions
+    let previewHtml = letterBody
+      .replace(/\{salutation_name\}/g, '<span class="preview-placeholder">{salutation_name}</span>')
+      .replace(/\{property_address\}/g, '<span class="preview-placeholder">{property_address}</span>')
+      .replace(/\{agent_name\}/g, '<span class="preview-placeholder">{agent_name}</span>')
+      .replace(/\{contact_phone\}/g, '<span class="preview-placeholder">{contact_phone}</span>')
+      .replace(/\{property_descriptor\}/g, '<span class="preview-placeholder">{property_descriptor}</span>')
+      .replace(/\n/g, '<br>');
+
+    preview.innerHTML = `<div class="preview-letter">${previewHtml}</div>`;
+  }
+
+  // Listen for changes in manual editor
+  const letterBodyField = document.getElementById('{{ form.letter_body.id_for_label }}');
+  if (letterBodyField) {
+    letterBodyField.addEventListener('input', updateManualPreview);
+    // Initialize preview
+    updateManualPreview();
+  }
+
+  // Store generated letter body
+  let generatedLetterBody = '';
+
+  // AI Generation
+  document.getElementById('generate-ai-btn').addEventListener('click', function() {
+    const prompt = document.getElementById('ai-prompt-input').value;
+
+    if (!prompt.trim()) {
+      alert('Please enter a prompt describing the mailer you want to create.');
+      return;
+    }
+
+    const preview = document.getElementById('ai-preview');
+    const generateBtn = document.getElementById('generate-ai-btn');
+
+    // Disable button and show loading
+    generateBtn.disabled = true;
+    preview.innerHTML = `
+      <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Generating...</span>
+        </div>
+      </div>
+    `;
+
+    // Call AI generation endpoint
+    fetch('{% url "accounts:mailer_template_generate_ai" template_obj.pk %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ prompt: prompt })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        generatedLetterBody = data.letter_body;
+
+        // Replace placeholders with highlighted versions for preview
+        let previewHtml = generatedLetterBody
+          .replace(/\{salutation_name\}/g, '<span class="preview-placeholder">{salutation_name}</span>')
+          .replace(/\{property_address\}/g, '<span class="preview-placeholder">{property_address}</span>')
+          .replace(/\{agent_name\}/g, '<span class="preview-placeholder">{agent_name}</span>')
+          .replace(/\{contact_phone\}/g, '<span class="preview-placeholder">{contact_phone}</span>')
+          .replace(/\{property_descriptor\}/g, '<span class="preview-placeholder">{property_descriptor}</span>')
+          .replace(/\n/g, '<br>');
+
+        preview.innerHTML = `<div class="preview-letter">${previewHtml}</div>`;
+        document.getElementById('save-ai-template-btn').disabled = false;
+      } else {
+        preview.innerHTML = `
+          <div class="text-center text-danger py-5">
+            <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+            <p class="mt-3">Failed to generate letter</p>
+            <p class="small">${data.error || 'Unknown error'}</p>
+          </div>
+        `;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      preview.innerHTML = `
+        <div class="text-center text-danger py-5">
+          <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+          <p class="mt-3">Failed to generate letter</p>
+          <p class="small">Network error. Please try again.</p>
+        </div>
+      `;
+    })
+    .finally(() => {
+      generateBtn.disabled = false;
+    });
+  });
+
+  // Save AI-generated template
+  document.getElementById('save-ai-template-btn').addEventListener('click', function() {
+    const name = document.getElementById('template-name').value.trim();
+    const summary = document.getElementById('template-summary').value.trim();
+    const sector = document.getElementById('template-sector').value;
+
+    if (!name) {
+      alert('Please enter a template name.');
+      return;
+    }
+
+    if (!generatedLetterBody) {
+      alert('Please generate a letter first.');
+      return;
+    }
+
+    const saveBtn = this;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch('{% url "accounts:mailer_template_save_ai" template_obj.pk %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({
+        name: name,
+        summary: summary,
+        sector: sector,
+        letter_body: generatedLetterBody
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = data.redirect_url;
+      } else {
+        alert(data.error || 'Failed to save template');
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="bi bi-check-circle"></i> Save Template';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Failed to save template. Please try again.');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="bi bi-check-circle"></i> Save Template';
+    });
+  });
+});
+</script>
 {% endblock %}
