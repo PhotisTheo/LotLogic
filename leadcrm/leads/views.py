@@ -1186,6 +1186,7 @@ def _generate_mailer_bundle(
     request=None,
     town_id_override: Optional[int] = None,
     skiptrace_record=None,
+    user=None,
 ) -> dict:
     property_address_parts = [
         full_address,
@@ -1308,6 +1309,17 @@ def _generate_mailer_bundle(
     if town_id and slug_loc:
         try:
             schedule_path = reverse("schedule_call_request", args=[int(town_id), slug_loc])
+
+            # Add user_id parameter to ensure leads are attributed to the correct user
+            user_id = getattr(user, 'id', None) if user else None
+            if user_id:
+                from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+                parsed = urlparse(schedule_path)
+                query_params = parse_qs(parsed.query)
+                query_params['user_id'] = [str(user_id)]
+                new_query = urlencode(query_params, doseq=True)
+                schedule_path = urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+
             if request is not None:
                 schedule_url = request.build_absolute_uri(schedule_path)
             else:
@@ -1464,6 +1476,7 @@ def _build_mailer_context(
     request=None,
     town_id_override: Optional[int] = None,
     skiptrace_record=None,
+    user=None,
 ) -> dict:
     bundle = _generate_mailer_bundle(
         parcel,
@@ -1474,6 +1487,7 @@ def _build_mailer_context(
         request=request,
         town_id_override=town_id_override,
         skiptrace_record=skiptrace_record,
+        user=user,
     )
 
     scripts = bundle["scripts"]
@@ -1525,6 +1539,7 @@ def _render_mailer_script_for_parcel(
     request=None,
     town_id_override: Optional[int] = None,
     skiptrace_record=None,
+    user=None,
 ) -> tuple[str, dict, str]:
     bundle = _generate_mailer_bundle(
         parcel,
@@ -1534,6 +1549,7 @@ def _render_mailer_script_for_parcel(
         request=request,
         town_id_override=town_id_override,
         skiptrace_record=skiptrace_record,
+        user=user,
     )
     scripts = bundle["scripts"]
     selected_id = script_id if script_id in scripts else bundle["default_id"]
@@ -3088,6 +3104,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         download_endpoint=mailer_download_base,
         request=request,
         skiptrace_record=record,
+        user=request.user,
     )
     record_is_fresh = _skiptrace_record_is_fresh(record) if record else False
     saved_match = _saved_list_contains_loc_id(
@@ -5347,7 +5364,17 @@ def schedule_call_request(request, town_id, loc_id):
     # Send QR scan notification on first GET (when owner scans QR code)
     script_param = request.GET.get("script") or request.POST.get("script")
     if request.method == "GET" and not request.GET.get("submitted"):
-        owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
+        # Get user from QR code parameter
+        user_id_param = request.GET.get("user_id")
+        owner_user = None
+        if user_id_param:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            try:
+                owner_user = User.objects.get(id=int(user_id_param))
+            except (ValueError, User.DoesNotExist):
+                logger.warning(f"Invalid user_id {user_id_param} in QR code for scan notification")
+
         if owner_user:
             from accounts.emails import send_qr_scan_notification
             from django.utils import timezone
@@ -5373,14 +5400,29 @@ def schedule_call_request(request, town_id, loc_id):
                     call_request.notes = f"{note_prefix}\n\n{call_request.notes.strip()}"
                 else:
                     call_request.notes = note_prefix
-            # Don't assign owner during form submission - let CRM auto-assign when user views their CRM
-            # This ensures each user only sees leads for parcels they own
-            call_request.save()
-            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id} with created_by=None (will be auto-assigned in CRM)")
 
-            # Send notification to the workspace owner
-            owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
-            if owner_user:
+            # Extract user_id from QR code URL and assign lead to that specific user
+            user_id_param = request.GET.get("user_id") or request.POST.get("user_id")
+            if user_id_param:
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                try:
+                    owner_user = User.objects.get(id=int(user_id_param))
+                    call_request.created_by = owner_user
+                    logger.info(f"Assigning ScheduleCallRequest for {loc_id} to user {owner_user.username} (ID: {owner_user.id}) from QR code")
+                except (ValueError, User.DoesNotExist) as e:
+                    logger.warning(f"Invalid user_id {user_id_param} in QR code, lead will be unassigned: {e}")
+                    call_request.created_by = None
+            else:
+                # Fallback: no user_id in QR code (shouldn't happen with new QR codes)
+                logger.warning(f"No user_id in QR code for {loc_id}, lead will be unassigned")
+                call_request.created_by = None
+
+            call_request.save()
+            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id} with created_by={getattr(call_request.created_by, 'username', None)}")
+
+            # Send notification to the user who sent the mailer (from QR code)
+            if call_request.created_by:
                 from accounts.emails import send_call_request_notification
                 try:
                     # Create a mock lead object with the call request data
@@ -5407,7 +5449,7 @@ def schedule_call_request(request, town_id, loc_id):
                     lead_url = request.build_absolute_uri(
                         reverse("crm_overview")
                     )
-                    send_call_request_notification(owner_user, mock_lead, lead_url)
+                    send_call_request_notification(call_request.created_by, mock_lead, lead_url)
                 except Exception as e:
                     # Don't fail the request if notification fails
                     import logging
@@ -5476,6 +5518,7 @@ def mailer_download_pdf(request, town_id, loc_id):
             request=request,
             town_id_override=town_id,
             skiptrace_record=skiptrace_record,
+            user=request.user,
         )
         scripts = bundle["scripts"]
         requested_script = request.GET.get("script") or bundle["default_id"]
@@ -5499,6 +5542,7 @@ def mailer_download_pdf(request, town_id, loc_id):
             request=request,
             town_id_override=town_id,
             skiptrace_record=skiptrace_record,
+            user=request.user,
         )
         html = render_to_string(
             "leads/mailer_pdf.html",
@@ -5556,6 +5600,7 @@ def parcel_generate_mailer(request, town_id, loc_id):
         download_endpoint=download_base,
         request=request,
         skiptrace_record=skiptrace_record,
+        user=request.user,
     )
     payload = {
         "locId": parcel.loc_id,
@@ -5889,6 +5934,7 @@ def saved_parcel_list_mailers(request, pk):
                 request=request,
                 town_id_override=saved_list.town_id,
                 skiptrace_record=skiptrace_record,
+                user=request.user,
             )
             scripts_to_render.append(script)
             html_pages.append(html)
@@ -6154,81 +6200,11 @@ def crm_overview(request):
     )
     city_names = list(distinct_cities_qs)
 
-    candidate_loc_ids: set[str] = set()
-
-    for loc in lead_queryset.exclude(loc_id__isnull=True).values_list("loc_id", flat=True):
-        if not loc:
-            continue
-        candidate_loc_ids.add(loc)
-        normalized = _normalize_loc_id(loc)
-        if normalized:
-            candidate_loc_ids.add(normalized)
-
-    for saved_list in _saved_list_queryset_for_user(request.user):
-        for ref in _iter_saved_list_parcel_refs(saved_list):
-            if ref.loc_id:
-                candidate_loc_ids.add(ref.loc_id)
-            if ref.normalized_loc_id:
-                candidate_loc_ids.add(ref.normalized_loc_id)
-
     workspace_owner = get_workspace_owner(request.user)
     logger.info(f"CRM: Loaded CRM for user {request.user.username}, workspace_owner={workspace_owner.username if workspace_owner else None}")
 
-    if candidate_loc_ids and workspace_owner:
-        # Try to assign unassigned requests to the workspace owner
-        # Limit to recent unassigned requests (last 90 days) for performance
-        from django.utils import timezone
-        from datetime import timedelta
-        cutoff_date = timezone.now() - timedelta(days=90)
-
-        # Get all recent requests (both assigned and unassigned) to check for cloning
-        all_recent_requests = ScheduleCallRequest.objects.filter(
-            created_at__gte=cutoff_date
-        ).exclude(
-            created_by=workspace_owner  # Exclude requests already owned by this user
-        )
-
-        recent_count = all_recent_requests.count()
-        workspace_username = getattr(workspace_owner, 'username', str(workspace_owner))
-        if recent_count > 0:
-            logger.info(f"CRM: Found {recent_count} requests to check, validating against {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_username}")
-
-        assigned_count = 0
-        for call_request in all_recent_requests:
-            # Check if this request's loc_id matches any in THIS user's candidate set
-            # Use both raw and normalized loc_id for matching
-            request_loc_id = call_request.loc_id
-            normalized_loc = _normalize_loc_id(request_loc_id)
-
-            # If THIS user has this parcel in their saved lists, assign it to them
-            if request_loc_id in candidate_loc_ids or (normalized_loc and normalized_loc in candidate_loc_ids):
-                # Clone the request for this user if it's already been assigned to someone else
-                # This ensures complete data isolation - each user gets their own copy
-                if call_request.created_by and call_request.created_by != workspace_owner:
-                    # Create a duplicate for this user
-                    cloned_request = ScheduleCallRequest.objects.create(
-                        created_by=workspace_owner,
-                        town_id=call_request.town_id,
-                        loc_id=call_request.loc_id,
-                        property_address=call_request.property_address,
-                        property_city=call_request.property_city,
-                        recipient_name=call_request.recipient_name,
-                        contact_phone=call_request.contact_phone,
-                        preferred_call_time=call_request.preferred_call_time,
-                        notes=call_request.notes,
-                        stage=call_request.stage,
-                    )
-                    assigned_count += 1
-                    logger.info(f"CRM: Cloned ScheduleCallRequest {call_request.pk} -> {cloned_request.pk} for {workspace_username}")
-                else:
-                    # Assign the original request to this user
-                    call_request.created_by = workspace_owner
-                    call_request.save(update_fields=["created_by"])
-                    assigned_count += 1
-                    logger.info(f"CRM: Auto-assigned ScheduleCallRequest {call_request.pk} (loc_id={request_loc_id}) to {workspace_username}")
-
-        if assigned_count > 0:
-            logger.info(f"CRM: Successfully auto-assigned {assigned_count} requests to {workspace_username}")
+    # Note: Auto-assignment logic removed - leads are now directly assigned via user_id in QR code URL
+    # Each QR code is user-specific, so leads are assigned immediately when the form is submitted
 
     # Get active leads (not archived)
     active_leads = ScheduleCallRequest.objects.filter(
