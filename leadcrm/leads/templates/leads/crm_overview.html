@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Update lead stage via AJAX
   function updateLeadStage(leadId, newStage) {
-    fetch(`/leads/crm/update-stage/${leadId}/`, {
+    fetch(`/crm/update-stage/${leadId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function archiveLead(leadId) {
-    fetch(`/leads/crm/archive/${leadId}/`, {
+    fetch(`/crm/archive/${leadId}/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': csrftoken
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function deleteLead(leadId) {
-    fetch(`/leads/crm/delete/${leadId}/`, {
+    fetch(`/crm/delete/${leadId}/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': csrftoken
@@ -663,7 +663,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function unarchiveLead(leadId) {
-    fetch(`/leads/crm/unarchive/${leadId}/`, {
+    fetch(`/crm/unarchive/${leadId}/`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': csrftoken
