@@ -1785,6 +1785,34 @@ def _render_mailer_docx(scripts: list[dict]) -> bytes:
         logger.error("python-docx not installed")
         raise ImportError("python-docx library is required for Word document generation")
 
+    # Pre-fetch all QR codes in parallel for better performance
+    qr_cache = {}
+    qr_urls_to_fetch = []
+    for script in scripts:
+        qr_url = script.get("qr_image_url")
+        if qr_url and not (qr_url.startswith('data:') and ';base64,' in qr_url):
+            qr_urls_to_fetch.append(qr_url)
+
+    # Fetch QR codes in parallel using ThreadPoolExecutor
+    if qr_urls_to_fetch:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        def fetch_qr(url):
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                return url, response.content
+            except Exception as exc:
+                logger.warning(f"Failed to fetch QR code from {url}: {exc}")
+                return url, None
+
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = {executor.submit(fetch_qr, url): url for url in qr_urls_to_fetch}
+            for future in as_completed(futures):
+                url, content = future.result()
+                if content:
+                    qr_cache[url] = content
+
     doc = Document()
 
     # Set up document margins (1 inch all around)
@@ -1851,23 +1879,23 @@ def _render_mailer_docx(scripts: list[dict]) -> bytes:
                     run.font.size = Pt(10)
                     run.font.italic = True
 
-            # Fetch and add QR code image
+            # Add QR code image from cache or decode base64
             try:
                 if qr_image_url.startswith('data:') and ';base64,' in qr_image_url:
                     _, encoded = qr_image_url.split(',', 1)
                     image_bytes = base64.b64decode(encoded)
                 else:
-                    response = requests.get(qr_image_url, timeout=5)
-                    response.raise_for_status()
-                    image_bytes = response.content
+                    image_bytes = qr_cache.get(qr_image_url)
 
-                image_stream = BytesIO(image_bytes)
-
-                # Add centered paragraph for QR code
-                qr_paragraph = doc.add_paragraph()
-                qr_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                qr_run = qr_paragraph.add_run()
-                qr_run.add_picture(image_stream, width=Inches(2))
+                if image_bytes:
+                    image_stream = BytesIO(image_bytes)
+                    # Add centered paragraph for QR code
+                    qr_paragraph = doc.add_paragraph()
+                    qr_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    qr_run = qr_paragraph.add_run()
+                    qr_run.add_picture(image_stream, width=Inches(2))
+                else:
+                    raise ValueError("QR code not available")
 
             except Exception as exc:
                 logger.warning(f"Failed to add QR code to Word doc: {exc}")
@@ -1886,9 +1914,134 @@ def _render_mailer_docx(scripts: list[dict]) -> bytes:
     return output.getvalue()
 
 
+def _generate_label_sheet_docx(parcels: list, format_spec: dict) -> bytes:
+    """
+    Generate a Word document of mailing labels formatted for label sheets (e.g., Avery 5160).
+
+    Args:
+        parcels: List of parcel objects with owner_name, mailing_address, etc.
+        format_spec: Dictionary with label dimensions and layout
+            - cols: number of columns
+            - rows: number of rows per page
+            - width: label width in inches
+            - height: label height in inches
+            - margin_top: top margin in inches
+            - margin_left: left margin in inches
+            - gutter_h: horizontal gutter (space between columns) in inches
+            - gutter_v: vertical gutter (space between rows) in inches
+
+    Returns:
+        Word document bytes
+    """
+    from docx import Document
+    from docx.shared import Inches, Pt
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+
+    doc = Document()
+
+    # Set page margins to match format_spec
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(format_spec["margin_top"])
+        section.bottom_margin = Inches(0.5)  # Small bottom margin
+        section.left_margin = Inches(format_spec["margin_left"])
+        section.right_margin = Inches(0.5)  # Small right margin
+
+    cols = format_spec["cols"]
+    rows = format_spec["rows"]
+    labels_per_page = cols * rows
+
+    # Process parcels in batches of labels_per_page
+    for page_idx, page_start in enumerate(range(0, len(parcels), labels_per_page)):
+        if page_idx > 0:
+            # Add page break between pages
+            doc.add_page_break()
+
+        page_parcels = parcels[page_start:page_start + labels_per_page]
+
+        # Create a table for this page of labels
+        table = doc.add_table(rows=rows, cols=cols)
+        table.autofit = False
+        table.allow_autofit = False
+
+        # Set column widths and row heights
+        for row in table.rows:
+            row.height = Inches(format_spec["height"])
+            for cell in row.cells:
+                cell.width = Inches(format_spec["width"])
+                # Remove cell padding for tighter fit
+                tc = cell._element
+                tcPr = tc.get_or_add_tcPr()
+                tcMar = OxmlElement('w:tcMar')
+                for margin_name in ['top', 'left', 'bottom', 'right']:
+                    node = OxmlElement(f'w:{margin_name}')
+                    node.set(qn('w:w'), '0')
+                    node.set(qn('w:type'), 'dxa')
+                    tcMar.append(node)
+                tcPr.append(tcMar)
+
+        # Fill in the labels
+        for idx, parcel in enumerate(page_parcels):
+            row_idx = idx // cols
+            col_idx = idx % cols
+            cell = table.rows[row_idx].cells[col_idx]
+
+            # Format the mailing address
+            owner_name = getattr(parcel, 'owner_name', '') or ''
+            mailing_address = getattr(parcel, 'mailing_address', '') or ''
+            mailing_city = getattr(parcel, 'mailing_city', '') or ''
+            mailing_state = getattr(parcel, 'mailing_state', '') or ''
+            mailing_zip = getattr(parcel, 'mailing_zip', '') or ''
+
+            # Build address lines
+            address_lines = []
+            if owner_name:
+                address_lines.append(owner_name[:35])  # Truncate if too long
+            if mailing_address:
+                address_lines.append(mailing_address[:35])
+
+            city_state_zip = f"{mailing_city}, {mailing_state} {mailing_zip}".strip(", ")
+            if city_state_zip:
+                address_lines.append(city_state_zip[:35])
+
+            # If no mailing address, use site address as fallback
+            if not address_lines or len(address_lines) < 2:
+                site_address = getattr(parcel, 'site_address', '') or ''
+                site_city = getattr(parcel, 'site_city', '') or ''
+                site_zip = getattr(parcel, 'site_zip', '') or ''
+
+                address_lines = []
+                if owner_name:
+                    address_lines.append(owner_name[:35])
+                if site_address:
+                    address_lines.append(site_address[:35])
+
+                site_city_zip = f"{site_city}, MA {site_zip}".strip(", ")
+                if site_city_zip != ", MA":
+                    address_lines.append(site_city_zip[:35])
+
+            # Add address to cell with small font
+            for line in address_lines[:4]:  # Max 4 lines per label
+                p = cell.add_paragraph(line)
+                p.style.font.size = Pt(9)
+                p.style.font.name = 'Arial'
+                # Remove spacing
+                p_format = p.paragraph_format
+                p_format.space_before = Pt(0)
+                p_format.space_after = Pt(0)
+                p_format.line_spacing = 1.0
+
+    output = BytesIO()
+    doc.save(output)
+    return output.getvalue()
+
+
 def _generate_label_sheet_pdf(parcels: list, format_spec: dict) -> bytes:
     """
     Generate a PDF of mailing labels formatted for label sheets (e.g., Avery 5160).
+
+    DEPRECATED: Use _generate_label_sheet_docx instead for Word document output.
 
     Args:
         parcels: List of parcel objects with owner_name, mailing_address, etc.
@@ -5810,7 +5963,7 @@ def saved_parcel_list_mailers(request, pk):
 @require_http_methods(["POST"])
 def saved_parcel_list_labels(request, pk):
     """
-    Generate a PDF of mailing labels for all parcels in a saved list.
+    Generate a Word document of mailing labels for all parcels in a saved list.
     Supports multiple label formats (Avery 5160, 5163, etc.)
     """
     saved_list = get_object_or_404(
@@ -5855,19 +6008,22 @@ def saved_parcel_list_labels(request, pk):
     if not parcels:
         return JsonResponse({"error": "No parcels available for labels."}, status=400)
 
-    # Generate labels HTML
+    # Generate labels as Word document
     try:
-        pdf_bytes = _generate_label_sheet_pdf(parcels, format_spec)
+        docx_bytes = _generate_label_sheet_docx(parcels, format_spec)
         filename_base = slugify(saved_list.name or f"saved-list-{saved_list.pk}") or f"saved-list-{saved_list.pk}"
-        filename = f"{filename_base}-labels-{label_format}.pdf"
+        filename = f"{filename_base}-labels-{label_format}.docx"
 
-        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response = HttpResponse(
+            docx_bytes,
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
         response["Content-Disposition"] = f'attachment; filename="{filename}"'
-        response["Content-Length"] = str(len(pdf_bytes))
+        response["Content-Length"] = str(len(docx_bytes))
         return response
 
     except Exception as exc:
-        logger.exception("Failed to generate label sheet PDF for list %s", saved_list.pk, exc_info=exc)
+        logger.exception("Failed to generate label sheet for list %s", saved_list.pk, exc_info=exc)
         return JsonResponse({"error": "Failed to generate label sheet."}, status=500)
 
 
