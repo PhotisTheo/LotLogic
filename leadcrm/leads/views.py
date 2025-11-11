@@ -6166,16 +6166,31 @@ def crm_overview(request):
     workspace_owner = get_workspace_owner(request.user)
 
     if candidate_loc_ids and workspace_owner:
+        # Try to assign unassigned requests to the workspace owner
+        # Limit to recent unassigned requests (last 90 days) for performance
+        from django.utils import timezone
+        from datetime import timedelta
+        cutoff_date = timezone.now() - timedelta(days=90)
+
         unassigned_requests = ScheduleCallRequest.objects.filter(
-            created_by__isnull=True, loc_id__in=candidate_loc_ids
+            created_by__isnull=True,
+            created_at__gte=cutoff_date
         )
+
         for call_request in unassigned_requests:
-            owner_user = _resolve_owner_for_loc_id(
-                call_request.loc_id, town_id=call_request.town_id
-            )
-            if owner_user == workspace_owner:
-                call_request.created_by = workspace_owner
-                call_request.save(update_fields=["created_by"])
+            # Check if this request's loc_id matches any in our candidate set
+            # Use both raw and normalized loc_id for matching
+            request_loc_id = call_request.loc_id
+            normalized_loc = _normalize_loc_id(request_loc_id)
+
+            # Check if either the raw or normalized loc_id is in our candidate set
+            if request_loc_id in candidate_loc_ids or (normalized_loc and normalized_loc in candidate_loc_ids):
+                owner_user = _resolve_owner_for_loc_id(
+                    call_request.loc_id, town_id=call_request.town_id
+                )
+                if owner_user == workspace_owner:
+                    call_request.created_by = workspace_owner
+                    call_request.save(update_fields=["created_by"])
 
     # Get active leads (not archived)
     active_leads = ScheduleCallRequest.objects.filter(
