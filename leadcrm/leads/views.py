@@ -6181,36 +6181,51 @@ def crm_overview(request):
         from datetime import timedelta
         cutoff_date = timezone.now() - timedelta(days=90)
 
-        unassigned_requests = ScheduleCallRequest.objects.filter(
-            created_by__isnull=True,
+        # Get all recent requests (both assigned and unassigned) to check for cloning
+        all_recent_requests = ScheduleCallRequest.objects.filter(
             created_at__gte=cutoff_date
+        ).exclude(
+            created_by=workspace_owner  # Exclude requests already owned by this user
         )
 
-        unassigned_count = unassigned_requests.count()
+        recent_count = all_recent_requests.count()
         workspace_username = getattr(workspace_owner, 'username', str(workspace_owner))
-        if unassigned_count > 0:
-            logger.info(f"CRM: Found {unassigned_count} unassigned requests, checking {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_username}")
+        if recent_count > 0:
+            logger.info(f"CRM: Found {recent_count} requests to check, validating against {len(candidate_loc_ids)} candidate loc_ids for workspace owner {workspace_username}")
 
         assigned_count = 0
-        for call_request in unassigned_requests:
-            # Check if this request's loc_id matches any in our candidate set
+        for call_request in all_recent_requests:
+            # Check if this request's loc_id matches any in THIS user's candidate set
             # Use both raw and normalized loc_id for matching
             request_loc_id = call_request.loc_id
             normalized_loc = _normalize_loc_id(request_loc_id)
 
-            # Check if either the raw or normalized loc_id is in our candidate set
+            # If THIS user has this parcel in their saved lists, assign it to them
             if request_loc_id in candidate_loc_ids or (normalized_loc and normalized_loc in candidate_loc_ids):
-                owner_user = _resolve_owner_for_loc_id(
-                    call_request.loc_id, town_id=call_request.town_id
-                )
-                if owner_user == workspace_owner:
+                # Clone the request for this user if it's already been assigned to someone else
+                # This ensures complete data isolation - each user gets their own copy
+                if call_request.created_by and call_request.created_by != workspace_owner:
+                    # Create a duplicate for this user
+                    cloned_request = ScheduleCallRequest.objects.create(
+                        created_by=workspace_owner,
+                        town_id=call_request.town_id,
+                        loc_id=call_request.loc_id,
+                        property_address=call_request.property_address,
+                        property_city=call_request.property_city,
+                        recipient_name=call_request.recipient_name,
+                        contact_phone=call_request.contact_phone,
+                        preferred_call_time=call_request.preferred_call_time,
+                        notes=call_request.notes,
+                        stage=call_request.stage,
+                    )
+                    assigned_count += 1
+                    logger.info(f"CRM: Cloned ScheduleCallRequest {call_request.pk} -> {cloned_request.pk} for {workspace_username}")
+                else:
+                    # Assign the original request to this user
                     call_request.created_by = workspace_owner
                     call_request.save(update_fields=["created_by"])
                     assigned_count += 1
                     logger.info(f"CRM: Auto-assigned ScheduleCallRequest {call_request.pk} (loc_id={request_loc_id}) to {workspace_username}")
-                else:
-                    owner_info = f"{owner_user.username if owner_user else None}"
-                    logger.debug(f"CRM: Request {call_request.pk} matches loc_id but belongs to different owner: {owner_info}")
 
         if assigned_count > 0:
             logger.info(f"CRM: Successfully auto-assigned {assigned_count} requests to {workspace_username}")
