@@ -1862,6 +1862,11 @@ def _build_skiptrace_pricing(count: int) -> dict[str, object]:
     if base_per_lookup_q is None:
         return {}
 
+    # Enforce minimum price of $0.20 per property for bulk orders
+    minimum_per_lookup = Decimal("0.20")
+    if base_per_lookup_q < minimum_per_lookup:
+        base_per_lookup_q = minimum_per_lookup
+
     vendor_cost_per_lookup_q = _quantize_currency(vendor_cost_per_lookup)
     markup_amount_per_lookup_q = _quantize_currency(markup_amount_per_lookup)
 
