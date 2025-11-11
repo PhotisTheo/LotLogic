@@ -6201,7 +6201,8 @@ def crm_overview(request):
     city_names = list(distinct_cities_qs)
 
     workspace_owner = get_workspace_owner(request.user)
-    logger.info(f"CRM: Loaded CRM for user {request.user.username}, workspace_owner={workspace_owner.username if workspace_owner else None}")
+    workspace_username = getattr(workspace_owner, 'username', str(workspace_owner))
+    logger.info(f"CRM: Loaded CRM for user {request.user.username}, workspace_owner={workspace_username}")
 
     # Note: Auto-assignment logic removed - leads are now directly assigned via user_id in QR code URL
     # Each QR code is user-specific, so leads are assigned immediately when the form is submitted
