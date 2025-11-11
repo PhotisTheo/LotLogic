@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('leads', '0008_massogisparcellcache_legalaction_lienrecord_and_more'),
+        ('leads', '0026_add_massgis_parcel_cache'),
     ]
 
     operations = [
