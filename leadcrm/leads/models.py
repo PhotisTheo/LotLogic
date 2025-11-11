@@ -618,3 +618,163 @@ class LienSearchAttempt(models.Model):
 
     def __str__(self):
         return f"Search for {self.town_id}/{self.loc_id} at {self.searched_at}"
+
+
+class CorporateEntity(models.Model):
+    """
+    Stores corporate entity data scraped from MA Secretary of Commonwealth.
+    Used to resolve LLC owners when GIS parcels show corporate ownership.
+
+    Sources: MA Secretary of Commonwealth Corporate Database
+    Cache: 180 days (LLC officers change infrequently)
+    """
+    ENTITY_TYPE_CHOICES = [
+        ('llc', 'Limited Liability Company'),
+        ('corp', 'Corporation'),
+        ('lp', 'Limited Partnership'),
+        ('gp', 'General Partnership'),
+        ('trust', 'Business Trust'),
+        ('other', 'Other'),
+    ]
+
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+        ('dissolved', 'Dissolved'),
+        ('suspended', 'Suspended'),
+        ('cancelled', 'Cancelled'),
+        ('merged', 'Merged'),
+        ('unknown', 'Unknown'),
+    ]
+
+    # Entity Identification
+    entity_id = models.CharField(
+        max_length=50,
+        unique=True,
+        db_index=True,
+        help_text="State-issued entity ID number"
+    )
+    entity_name = models.CharField(
+        max_length=255,
+        db_index=True,
+        help_text="Legal name of the entity"
+    )
+    entity_type = models.CharField(
+        max_length=20,
+        choices=ENTITY_TYPE_CHOICES,
+        default='llc'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active',
+        db_index=True
+    )
+
+    # Principal Information (the actual owner/manager we want)
+    principal_name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Name of managing member, president, or principal officer"
+    )
+    principal_title = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Title (e.g., Managing Member, President, Manager)"
+    )
+
+    # Registered Agent
+    registered_agent = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Name of registered agent for legal service"
+    )
+
+    # Business Contact Info
+    business_phone = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text="Primary business phone number"
+    )
+    business_email = models.EmailField(
+        blank=True,
+        null=True,
+        help_text="Primary business email"
+    )
+    business_address = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Principal office address"
+    )
+
+    # Dates
+    formation_date = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Date entity was formed/incorporated"
+    )
+    last_annual_report = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Date of most recent annual report filing"
+    )
+
+    # Data Management
+    source_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL of the source record"
+    )
+    raw_data = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Raw scraped data for audit trail"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(
+        auto_now=True,
+        db_index=True,
+        help_text="Used for 180-day cache freshness checks"
+    )
+
+    class Meta:
+        db_table = 'leads_corporate_entity'
+        ordering = ['-last_updated', 'entity_name']
+        indexes = [
+            models.Index(fields=['entity_name']),
+            models.Index(fields=['entity_id']),
+            models.Index(fields=['status']),
+            models.Index(fields=['last_updated']),
+            models.Index(fields=['principal_name']),
+        ]
+        verbose_name = 'Corporate Entity'
+        verbose_name_plural = 'Corporate Entities'
+
+    def __str__(self):
+        return f"{self.entity_name} ({self.entity_id})"
+
+    @property
+    def is_cache_fresh(self, max_age_days=180):
+        """Check if cached data is still fresh (default 180 days)."""
+        from django.utils import timezone
+        from datetime import timedelta
+
+        if not self.last_updated:
+            return False
+
+        age = timezone.now() - self.last_updated
+        return age < timedelta(days=max_age_days)
+
+    @property
+    def display_principal(self):
+        """Return formatted principal with title if available."""
+        if not self.principal_name:
+            return "Unknown"
+        if self.principal_title:
+            return f"{self.principal_name} ({self.principal_title})"
+        return self.principal_name

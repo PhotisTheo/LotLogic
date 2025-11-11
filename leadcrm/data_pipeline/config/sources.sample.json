@@ -1,0 +1,135 @@
+{
+  "registries": [
+    {
+      "id": "suffolk",
+      "name": "Suffolk County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Suffolk",
+      "throttle_rps": 0.4,
+      "notes": "Instrument filter required for performance.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner": "ctl00$cphMain$txtName"
+          },
+          "submit_field": "ctl00$cphMain$btnSearchName"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "ctl00$cphMain$txtStreetNo",
+            "street_name": "ctl00$cphMain$txtStreetName"
+          },
+          "submit_field": "ctl00$cphMain$btnSearchStreet"
+        }
+      }
+    },
+    {
+      "id": "essex_template",
+      "name": "Essex County (ALIS example)",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/EssexNorth",
+      "notes": "Legacy ALIS interface uses W9*** field names.",
+      "results_table_selector": "table",
+      "search_modes": {
+        "owner": {
+          "form_path": "ALIS/WW400R.HTM?WSIQTP=LR01D&WSKYCD=N",
+          "fields": {
+            "owner": "W9SNM"
+          },
+          "static_fields": {
+            "W9GNM": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "middlesex_template",
+      "name": "Middlesex Registry (first/last form example)",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/MiddlesexNorth",
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "worcester_template",
+      "name": "Worcester Registry (same SearchFormEx1 layout)",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/WorcesterNorth",
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "static_fields": {
+            "SearchCriteriaName1$DDL_SearchName": "Street Name"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "franklin_template",
+      "name": "Franklin Registry (owner + address inputs)",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Franklin",
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    }
+  ],
+  "municipalities": [
+    {
+      "muni_code": "2507000",
+      "name": "Boston",
+      "platform": "vision",
+      "url": "https://gis.vgsi.com/boston/",
+      "download": "https://data.boston.gov/dataset/property-assessment",
+      "refresh_days": 90,
+      "captcha": false
+    }
+  ]
+}

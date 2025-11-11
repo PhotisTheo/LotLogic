@@ -1,0 +1,588 @@
+{
+  "_comment": "Auto-generated starter config. Update with full registry/municipality list as you build the pipeline.",
+  "registries": [
+    {
+      "id": "suffolk",
+      "name": "Suffolk County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Suffolk",
+      "throttle_rps": 0.4,
+      "notes": "Instrument filter required for performance.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner": "ctl00$cphMain$txtName"
+          },
+          "submit_field": "ctl00$cphMain$btnSearchName"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "ctl00$cphMain$txtStreetNo",
+            "street_name": "ctl00$cphMain$txtStreetName"
+          },
+          "submit_field": "ctl00$cphMain$btnSearchStreet"
+        }
+      }
+    },
+    {
+      "id": "essex_north",
+      "name": "Essex North Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/EssexNorth",
+      "throttle_rps": 0.4,
+      "notes": "Uses ALIS WW400 form; owner search fields W9SNM/W9GNM.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_selector": "table",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "ALIS/WW400R.HTM?WSIQTP=LR01D&WSKYCD=N",
+          "fields": {
+            "owner": "W9SNM"
+          },
+          "static_fields": {
+            "W9GNM": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "essex_south",
+      "name": "Essex South Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/EssexSouth",
+      "throttle_rps": 0.4,
+      "notes": "Uses ALIS WW400 form; owner search fields W9SNM/W9GNM.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_selector": "table",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "ALIS/WW400R.HTM?WSIQTP=LR01D&WSKYCD=N",
+          "fields": {
+            "owner": "W9SNM"
+          },
+          "static_fields": {
+            "W9GNM": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "middlesex_north",
+      "name": "Middlesex North Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/MiddlesexNorth",
+      "throttle_rps": 0.4,
+      "notes": "Requires owner first/middle/last form fields.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "middlesex_south",
+      "name": "Middlesex South Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/MiddlesexSouth",
+      "throttle_rps": 0.4,
+      "notes": "Requires owner first/middle/last form fields.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "worcester_north",
+      "name": "Worcester North Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/WorcesterNorth",
+      "throttle_rps": 0.4,
+      "notes": "Owner search uses SearchFormEx1 first/middle/last fields.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "static_fields": {
+            "SearchCriteriaName1$DDL_SearchName": "Street Name"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "worcester_south",
+      "name": "Worcester South Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/WorcesterSouth",
+      "throttle_rps": 0.4,
+      "notes": "Owner search uses SearchFormEx1 first/middle/last fields.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "static_fields": {
+            "SearchCriteriaName1$DDL_SearchName": "Street Name"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "franklin",
+      "name": "Franklin County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Franklin",
+      "throttle_rps": 0.4,
+      "notes": "SearchFormEx1 layout with both owner and address modes.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "barnstable",
+      "name": "Barnstable County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Barnstable",
+      "throttle_rps": 0.4,
+      "notes": "Cape Cod registry. ASP.NET form with book/page and party search. TIFF images need OCR.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "berkshire_middle",
+      "name": "Berkshire Middle Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/BerkshireMiddle",
+      "throttle_rps": 0.3,
+      "notes": "Pittsfield area. Rate-limits after ~50 docs/hour, use slower throttle.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "berkshire_north",
+      "name": "Berkshire North Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/BerkshireNorth",
+      "throttle_rps": 0.4,
+      "notes": "Williamstown/North Adams. Occasionally redirects, persist cookies.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "berkshire_south",
+      "name": "Berkshire South Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/BerkshireSouth",
+      "throttle_rps": 0.4,
+      "notes": "Great Barrington region. Low traffic, uses same viewstate tokens.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "bristol_north",
+      "name": "Bristol North Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/BristolNorth",
+      "throttle_rps": 0.4,
+      "notes": "Taunton area. Large volume, enable paging support for >50 results.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "bristol_south",
+      "name": "Bristol South Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/BristolSouth",
+      "throttle_rps": 0.4,
+      "notes": "Fall River/New Bedford. Party search recommended, use instrument filters.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "dukes",
+      "name": "Dukes County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Dukes",
+      "throttle_rps": 0.4,
+      "notes": "Martha's Vineyard. Low volume, documents often PDF (no TIFF conversion needed).",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "hampden",
+      "name": "Hampden County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Hampden",
+      "throttle_rps": 0.3,
+      "notes": "Springfield region. Heavy traffic, throttle to <1 req/s.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "hampshire",
+      "name": "Hampshire County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Hampshire",
+      "throttle_rps": 0.4,
+      "notes": "Northampton/Amherst. Document viewer returns PDF by default.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "nantucket",
+      "name": "Nantucket County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Nantucket",
+      "throttle_rps": 0.4,
+      "notes": "Nantucket County. Mirrors MassLandRecords, alternate site at nantucket-ma.gov.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "norfolk",
+      "name": "Norfolk County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Norfolk",
+      "throttle_rps": 0.4,
+      "notes": "Dedham + South Shore. Provides JSON index endpoint behind UI.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    },
+    {
+      "id": "plymouth",
+      "name": "Plymouth County Registry of Deeds",
+      "adapter": "masslandrecords",
+      "base_url": "https://www.masslandrecords.com/Plymouth",
+      "throttle_rps": 0.4,
+      "notes": "Whole Plymouth County. Offers nightly 'Recorded Today' export.",
+      "instrument_types": ["MORTGAGE", "LIS PENDENS"],
+      "results_table_id": "ctl00_cphMain_gvDocuments",
+      "document_link_selector": "a",
+      "search_modes": {
+        "owner": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
+        }
+      }
+    }
+  ],
+  "municipalities": [
+    {
+      "muni_code": "2507000",
+      "name": "Boston",
+      "platform": "vision",
+      "url": "https://gis.vgsi.com/boston/",
+      "download": "https://data.boston.gov/dataset/property-assessment",
+      "refresh_days": 90,
+      "captcha": false
+    }
+  ]
+}

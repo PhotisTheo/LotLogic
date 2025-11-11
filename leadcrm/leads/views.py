@@ -2956,6 +2956,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 ("Site Address", parcel.site_address),
                 ("Absentee Owner", "Yes" if parcel.absentee else "No"),
             ],
+            "corporate_entity": None,  # Will be populated if LLC/Corp detected
         },
         {
             "title": "Skip Trace",
@@ -3198,6 +3199,56 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         "payment": payment_config,
     }
     skiptrace_config_json = json.dumps(skiptrace_config, ensure_ascii=False)
+
+    # Check if owner is an LLC/Corporation and look up actual owner
+    corporate_entity = None
+    if parcel.owner_name:
+        # Detect corporate ownership
+        corporate_keywords = ['LLC', 'L.L.C.', 'Inc.', 'Inc', 'Corp.', 'Corp', 'LLP', 'L.L.P.', 'Corporation', 'Company', 'Trust']
+        owner_name_upper = parcel.owner_name.upper()
+        is_corporate = any(keyword.upper() in owner_name_upper for keyword in corporate_keywords)
+
+        if is_corporate:
+            from .models import CorporateEntity
+            from data_pipeline.jobs.corporate_job import CorporateJob
+
+            # Check cache first (180 days)
+            try:
+                corporate_entity = CorporateEntity.objects.filter(
+                    entity_name__iexact=parcel.owner_name.strip()
+                ).order_by('-last_updated').first()
+
+                # Check if cache is fresh (180 days)
+                if corporate_entity and corporate_entity.last_updated:
+                    cache_age = timezone.now() - corporate_entity.last_updated
+                    if cache_age.days > 180:
+                        corporate_entity = None  # Cache is stale
+
+                # If no fresh cache, scrape MA Secretary of Commonwealth
+                if not corporate_entity:
+                    try:
+                        corporate_config = {
+                            "id": "ma_secretary",
+                            "name": "Massachusetts Secretary of Commonwealth",
+                            "adapter": "ma_secretary",
+                        }
+                        job = CorporateJob(corporate_config)
+                        result = job.run(
+                            entity_name=parcel.owner_name,
+                            dry_run=False,
+                            force_refresh=False,
+                            max_cache_age_days=180
+                        )
+
+                        # Reload from database
+                        if result:
+                            corporate_entity = CorporateEntity.objects.filter(
+                                entity_name__iexact=parcel.owner_name.strip()
+                            ).order_by('-last_updated').first()
+                    except Exception as e:
+                        logger.warning(f"Failed to look up LLC owner for '{parcel.owner_name}': {e}")
+            except Exception as e:
+                logger.warning(f"Error checking corporate entity cache: {e}")
 
     # Retrieve or fetch AttomData for the parcel using cross-user cache
     from .attom_service import get_or_fetch_attom_data
@@ -3444,6 +3495,39 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                     ("─" * 30, ""),
                     ("Data Source", "MassGIS (ATTOM data not available)"),
                 ])
+
+    # Add corporate entity information to Owner & Mailing section if available
+    if corporate_entity:
+        for section in sections:
+            if section["title"] == "Owner & Mailing":
+                section["corporate_entity"] = corporate_entity
+                # Add LLC owner details after the owner name
+                corporate_items = []
+                if corporate_entity.principal_name:
+                    title_str = f" ({corporate_entity.principal_title})" if corporate_entity.principal_title else ""
+                    corporate_items.append(("Actual Owner (LLC)", f"{corporate_entity.principal_name}{title_str}"))
+                if corporate_entity.business_phone:
+                    corporate_items.append(("Business Phone", corporate_entity.business_phone))
+                if corporate_entity.business_address:
+                    corporate_items.append(("Business Address", corporate_entity.business_address))
+                if corporate_entity.status:
+                    corporate_items.append(("Entity Status", corporate_entity.status))
+                if corporate_entity.entity_type:
+                    corporate_items.append(("Entity Type", corporate_entity.entity_type))
+
+                # Insert corporate items after "Owner" field
+                owner_items = section["items"]
+                new_items = []
+                for label, value in owner_items:
+                    new_items.append((label, value))
+                    if label == "Owner":
+                        # Add divider and corporate items
+                        if corporate_items:
+                            new_items.append(("─" * 20, ""))
+                            new_items.extend(corporate_items)
+                            new_items.append(("─" * 20, ""))
+                section["items"] = new_items
+                break
 
     # Now filter out empty items and empty sections (after ATTOM data has been added)
     for section in sections:
