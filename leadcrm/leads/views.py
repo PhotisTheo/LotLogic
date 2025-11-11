@@ -5373,19 +5373,13 @@ def schedule_call_request(request, town_id, loc_id):
                     call_request.notes = f"{note_prefix}\n\n{call_request.notes.strip()}"
                 else:
                     call_request.notes = note_prefix
-            owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
-            if owner_user and call_request.created_by_id is None:
-                call_request.created_by = owner_user
-                owner_username = getattr(owner_user, 'username', str(owner_user))
-                logger.info(f"Assigned ScheduleCallRequest for {loc_id} to user {owner_username}")
-            else:
-                owner_info = f"{owner_user.username if owner_user else None}"
-                logger.warning(f"Creating ScheduleCallRequest for {loc_id} with no owner (owner_user={owner_info}, existing_created_by={call_request.created_by_id})")
+            # Don't assign owner during form submission - let CRM auto-assign when user views their CRM
+            # This ensures each user only sees leads for parcels they own
             call_request.save()
-            created_by_info = f"{call_request.created_by.username if call_request.created_by else None}"
-            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id}, created_by={created_by_info}")
+            logger.info(f"Saved ScheduleCallRequest (ID: {call_request.pk}) for {loc_id} with created_by=None (will be auto-assigned in CRM)")
 
             # Send notification to the workspace owner
+            owner_user = _resolve_owner_for_loc_id(loc_id, town_id=town_id)
             if owner_user:
                 from accounts.emails import send_call_request_notification
                 try:
