@@ -6,7 +6,11 @@
 nixPkgs = ["tesseract", "libtiff", "libjpeg", "zlib"]
 
 [phases.install]
-commands = ["cd leadcrm && python -m pip install -r requirements.txt"]
+commands = ["cd leadcrm && python3 -m pip install -r requirements.txt"]
+
+[phases.build]
+commands = ["cd leadcrm && python3 -m pip install -r requirements.txt"]
+
 
 
 [start]
