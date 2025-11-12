@@ -2,7 +2,7 @@
 # Installs system dependencies needed for the Lead CRM data pipeline
 
 [phases.setup]
-# Install Python, pip, and OCR dependencies via nixpkgs
+# Install Python + OCR deps via nixpkgs
 nixPkgs = [
   "python311",
   "python311Packages.pip",
@@ -16,12 +16,14 @@ nixPkgs = [
 
 [phases.install]
 commands = [
-  "cd leadcrm && pip3 install --upgrade pip",
-  "cd leadcrm && pip3 install -r requirements.txt"
+  "cd leadcrm && python3 -m venv .venv",
+  "cd leadcrm && .venv/bin/pip install --upgrade pip",
+  "cd leadcrm && .venv/bin/pip install -r requirements.txt"
 ]
 
 [phases.build]
-commands = ["cd leadcrm && pip3 install -r requirements.txt"]
+commands = ["cd leadcrm && .venv/bin/pip install -r requirements.txt"]
+
 
 
 
