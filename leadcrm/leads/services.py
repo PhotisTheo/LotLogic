@@ -4952,25 +4952,12 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                 if enforce_neighborhood and not _neighborhood_contains_point(boston_neighborhood, lng, lat):
                     continue
 
-                # Skip parcels without addresses
-                site_addr = _clean_string(attributes.get('SITE_ADDR')) or ""
+                # Skip parcels only if we truly have no reasonable address fallback
+                site_addr = _resolve_parcel_address(attributes, town)
+                if not site_addr:
+                    continue
+                attributes["SITE_ADDR"] = site_addr
                 loc_addr = _clean_string(attributes.get('LOC_ADDR')) or ""
-                if not site_addr and not loc_addr:
-                    fallback_addr = None
-                    if town_id == BOSTON_TOWN_ID:
-                        fallback_source = (
-                            _clean_string(attributes.get("SITE_ADDR"))
-                            or _clean_string(attributes.get("LOC_ADDR"))
-                            or _clean_string(attributes.get("MAP_PAR_ID"))
-                            or _clean_string(attributes.get("LOC_ID"))
-                        )
-                        if fallback_source:
-                            fallback_addr = f"Parcel {fallback_source}"
-                    if fallback_addr:
-                        site_addr = fallback_addr
-                        attributes["SITE_ADDR"] = site_addr
-                    else:
-                        continue
 
                 if not attributes.get("SITE_CITY"):
                     attributes["SITE_CITY"] = town.name.title()
@@ -5112,13 +5099,9 @@ def _format_address(attributes: Dict[str, Any]) -> str:
     """Format parcel address from attributes."""
     parts = []
 
-    # Try SITE_ADDR first, then LOC_ADDR as fallback
-    site_addr = _clean_string(attributes.get('SITE_ADDR'))
-    if not site_addr:
-        site_addr = _clean_string(attributes.get('LOC_ADDR'))
-
-    if site_addr:
-        parts.append(site_addr)
+    resolved = _resolve_parcel_address(attributes)
+    if resolved:
+        parts.append(resolved)
 
     site_city = _clean_string(attributes.get('SITE_CITY'))
     if site_city:
@@ -5137,6 +5120,46 @@ def _format_address(attributes: Dict[str, Any]) -> str:
         return f'Parcel {loc_id}'
 
     return 'Unknown parcel'
+
+
+def _resolve_parcel_address(attributes: Dict[str, Any], town: Optional[MassGISTown] = None) -> Optional[str]:
+    """
+    Build the most reasonable site address we can from the available record fields.
+    Many L3 parcel datasets leave SITE_ADDR/LOC_ADDR blank but include FULL_STR or
+    LOCATION fields that contain the civic address. We only skip parcels after all
+    fallbacks are exhausted.
+    """
+    site_addr = _clean_string(attributes.get('SITE_ADDR'))
+    loc_addr = _clean_string(attributes.get('LOC_ADDR'))
+    if site_addr:
+        return site_addr
+    if loc_addr:
+        return loc_addr
+
+    fallback_candidates = [
+        _clean_string(attributes.get('FULL_STR')),
+        _clean_string(attributes.get('LOCATION')),
+    ]
+    for candidate in fallback_candidates:
+        if candidate:
+            return candidate
+
+    map_par = _clean_string(attributes.get('MAP_PAR_ID'))
+    loc_id = _clean_string(attributes.get('LOC_ID'))
+    if map_par or loc_id:
+        label = map_par or loc_id
+        return f"Parcel {label}"
+
+    if town is not None and town.town_id == BOSTON_TOWN_ID:
+        # Boston datasets sometimes have enough context in other identifier fields.
+        fallback_source = (
+            _clean_string(attributes.get("MAP_PAR_ID"))
+            or _clean_string(attributes.get("LOC_ID"))
+        )
+        if fallback_source:
+            return f"Parcel {fallback_source}"
+
+    return None
 
 
 def _shape_to_geojson_geometry(shape) -> Optional[Dict[str, Any]]:
