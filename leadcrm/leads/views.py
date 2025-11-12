@@ -1204,14 +1204,21 @@ def _generate_mailer_bundle(
     property_address = property_address.strip(", ")
     property_address = _normalize_capitalization(property_address) or property_address
 
-    # Use skip trace name if available, otherwise fall back to parcel owner name
-    owner_name = None
-    if skiptrace_record and hasattr(skiptrace_record, "owner_name"):
-        owner_name = skiptrace_record.owner_name
-    if not owner_name:
-        owner_name = getattr(parcel, "owner_name", None)
+    skiptrace_owner_name = (
+        getattr(skiptrace_record, "owner_name", None) if skiptrace_record else None
+    )
+    parcel_owner_name = getattr(parcel, "owner_name", None)
 
-    greeting_name = _extract_owner_first_name(owner_name) or "Neighbor"
+    if skiptrace_owner_name:
+        recipient_full_name = (
+            _extract_owner_first_name(skiptrace_owner_name) or skiptrace_owner_name
+        )
+        greeting_source = skiptrace_owner_name
+    else:
+        recipient_full_name = parcel_owner_name
+        greeting_source = parcel_owner_name
+
+    greeting_name = _extract_owner_first_name(greeting_source) or "Neighbor"
     greeting_name = _normalize_capitalization(greeting_name) or greeting_name
 
     contact_phone_default = getattr(settings, "MAILER_CONTACT_PHONE", "555-555-5555")
@@ -1390,7 +1397,7 @@ def _generate_mailer_bundle(
         property_address=property_address_display,
         full_address=full_address,
         greeting_name=greeting_name,
-        recipient_full_name=getattr(parcel, "owner_name", None),
+        recipient_full_name=recipient_full_name,
         contact_phone=contact_phone,
         text_keyword=text_keyword,
         text_keyword_upper=text_keyword_upper,
