@@ -22,11 +22,11 @@ commands = [
 ]
 
 [phases.build]
-commands = ["cd leadcrm && .venv/bin/pip install -r requirements.txt"]
+commands = []
 
 
 
 
 
 [start]
-# Start command handled by railway.json
+cmd = "cd leadcrm && .venv/bin/python manage.py migrate && .venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -"
