@@ -2,18 +2,26 @@
 # Installs system dependencies needed for the Lead CRM data pipeline
 
 [phases.setup]
-# Install system packages required for OCR/document parsing and Python runtime
-nixPkgs = ["python311", "tesseract", "libtiff", "libjpeg", "zlib"]
+# Install Python, pip, and OCR dependencies via nixpkgs
+nixPkgs = [
+  "python311",
+  "python311Packages.pip",
+  "python311Packages.setuptools",
+  "python311Packages.wheel",
+  "tesseract",
+  "libtiff",
+  "libjpeg",
+  "zlib"
+]
 
 [phases.install]
 commands = [
-  "cd leadcrm && python3 -m ensurepip --upgrade",
-  "cd leadcrm && python3 -m pip install --upgrade pip",
-  "cd leadcrm && python3 -m pip install -r requirements.txt"
+  "cd leadcrm && pip3 install --upgrade pip",
+  "cd leadcrm && pip3 install -r requirements.txt"
 ]
 
 [phases.build]
-commands = ["cd leadcrm && python3 -m pip install -r requirements.txt"]
+commands = ["cd leadcrm && pip3 install -r requirements.txt"]
 
 
 
