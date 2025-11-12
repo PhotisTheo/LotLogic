@@ -1106,8 +1106,25 @@ def _extract_owner_first_name(owner_name: Optional[str]) -> Optional[str]:
     tokens = [token for token in cleaned.split() if token]
     if not tokens:
         return None
-    candidate = tokens[1] if len(tokens) >= 2 else tokens[0]
-    return candidate.title()
+    honorifics = {
+        "mr",
+        "mrs",
+        "ms",
+        "miss",
+        "dr",
+        "doctor",
+        "estate",
+        "est",
+        "rev",
+        "sir",
+        "madam",
+    }
+    for token in tokens:
+        normalized = token.lower()
+        if normalized in honorifics:
+            continue
+        return token.title()
+    return tokens[0].title()
 
 
 def _build_zillow_screenshot_url(zillow_url: Optional[str]) -> Optional[str]:
