@@ -3269,8 +3269,6 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         try:
             from data_pipeline.town_registry_map import get_registry_for_town
             from data_pipeline.jobs.task_queue import run_registry_task
-            import json
-
             registry_id = get_registry_for_town(town_id)
             if registry_id:
                 # Load registry config
@@ -6209,7 +6207,6 @@ def bulk_legal_search(request, pk):
     Trigger manual lien and legal action search for all parcels in a saved list.
     This is the new UX - users explicitly request legal info instead of automatic searches.
     """
-    import json
     from .background_lien_search import search_parcel_background, should_search_parcel
 
     saved_list = get_object_or_404(
@@ -7113,7 +7110,6 @@ def town_geojson(request, town_id):
                 logger.info(f"Serving pre-generated GeoJSON for {town.name} from {geojson_path}")
 
                 # Serve the static file with optimal caching headers
-                import json
                 with open(geojson_path, 'r') as f:
                     geojson_data = json.load(f)
 
