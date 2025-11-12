@@ -1842,10 +1842,7 @@ def _render_mailer_docx(scripts: list[dict]) -> bytes:
     for idx, script in enumerate(scripts):
         # Add page break before each letter (except the first)
         if idx > 0:
-            # Insert page break at the end of previous content using run.add_break()
-            last_paragraph = doc.paragraphs[-1] if doc.paragraphs else doc.add_paragraph()
-            run = last_paragraph.add_run()
-            run.add_break(6)  # WD_BREAK.PAGE
+            doc.add_page_break()
 
         # Add letter content
         letter_lines = script.get("letter_lines", [])
@@ -5652,7 +5649,7 @@ def mailer_download_pdf(request, town_id, loc_id):
         return response
     except Exception as exc:  # noqa: BLE001
         logger.exception("Failed to build PDF mailer for %s/%s", town_id, loc_id, exc_info=exc)
-        # Fallback to HTML so the user still gets the content.
+        # Fallback to a simplified PDF so the user still gets the content.
         mailer_ctx = _build_mailer_context(
             parcel,
             full_address=full_address,
@@ -5663,19 +5660,25 @@ def mailer_download_pdf(request, town_id, loc_id):
             skiptrace_record=skiptrace_record,
             user=request.user,
         )
-        html = render_to_string(
-            "leads/mailer_pdf.html",
-            {
-                "parcel": parcel,
-                "address": full_address,
-                "mailer": mailer_ctx,
-                "zillow_url": zillow_url,
-                "hero_image_url": hero_image_url,
-            },
-        )
-        response = HttpResponse(html, content_type="text/html; charset=utf-8")
-        response["Content-Disposition"] = f'attachment; filename="mailer-{loc_id}.html"'
-        return response
+        try:
+            pdf_bytes = _render_mailer_pdf([mailer_ctx])
+            fallback_name = f"mailer-{loc_id}-fallback.pdf"
+            response = HttpResponse(pdf_bytes, content_type="application/pdf")
+            response["Content-Disposition"] = f'attachment; filename="{fallback_name}"'
+            response["Content-Length"] = str(len(pdf_bytes))
+            return response
+        except Exception as pdf_exc:  # noqa: BLE001
+            logger.exception(
+                "Failed to generate fallback PDF mailer for %s/%s",
+                town_id,
+                loc_id,
+                exc_info=pdf_exc,
+            )
+            return HttpResponse(
+                "Failed to generate mailer PDF.",
+                status=500,
+                content_type="text/plain; charset=utf-8",
+            )
 
 
 @login_required
@@ -6033,7 +6036,6 @@ def saved_parcel_list_mailers(request, pk):
         )
 
     scripts_to_render: list[dict] = []
-    html_pages: list[str] = []
     generated = 0
     skipped = 0
 
@@ -6045,7 +6047,7 @@ def saved_parcel_list_mailers(request, pk):
             zillow_url = _build_zillow_url(full_address)
             normalized_loc_id = _normalize_loc_id(parcel.loc_id)
             skiptrace_record = skiptrace_records.get(normalized_loc_id) if normalized_loc_id else None
-            _, script, html = _render_mailer_script_for_parcel(
+            _, script, _ = _render_mailer_script_for_parcel(
                 parcel,
                 script_id,
                 full_address=full_address,
@@ -6056,7 +6058,6 @@ def saved_parcel_list_mailers(request, pk):
                 user=request.user,
             )
             scripts_to_render.append(script)
-            html_pages.append(html)
             generated += 1
             logger.debug(f"✓ Generated mailer for parcel {parcel.loc_id}")
         except Exception as exc:  # noqa: BLE001
@@ -6099,37 +6100,23 @@ def saved_parcel_list_mailers(request, pk):
             "Failed to generate bulk mailer Word doc for list %s", saved_list.pk, exc_info=exc
         )
 
-    body_html = '<div class="mailer-page-break"></div>'.join(html_pages)
-    combined_html = f"""<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>{saved_list.name} Mailers</title>
-    <style>
-      body {{
-        margin: 0;
-        background: #f3f3f3;
-        padding: 24px;
-      }}
-      .mailer-page-break {{
-        page-break-after: always;
-        height: 32px;
-      }}
-    </style>
-  </head>
-  <body>
-    {body_html}
-  </body>
-</html>"""
-
-    filename = f"{filename_base}-{script_id}.html"
-
-    response = HttpResponse(combined_html, content_type="text/html; charset=utf-8")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    response["X-Mailers-Generated"] = str(generated)
-    response["X-Mailers-Skipped"] = str(skipped)
-    response["X-Mailers-Reused"] = "0"
-    return response
+    try:
+        pdf_bytes = _render_mailer_pdf(scripts_to_render)
+        filename = f"{filename_base}-{script_id}.pdf"
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response["Content-Length"] = str(len(pdf_bytes))
+        response["X-Mailers-Generated"] = str(generated)
+        response["X-Mailers-Skipped"] = str(skipped)
+        response["X-Mailers-Reused"] = "0"
+        return response
+    except Exception as exc:  # noqa: BLE001
+        logger.exception(
+            "Failed to generate bulk mailer PDF fallback for list %s", saved_list.pk, exc_info=exc
+        )
+        return JsonResponse(
+            {"error": "Failed to generate mailers for this list."}, status=500
+        )
 
 
 @login_required
