@@ -114,6 +114,11 @@ The job queue consumes this JSON to decide which adapter to instantiate.
 - Some counties (Essex, Nantucket) still use the legacy ALIS interface instead of ASP.NET. The same adapter works—just point `form_path` at the `ALIS/WW400R.HTM?...` URL and map the `W9***` field names you captured from dev tools.
 - When registries require separate first/last/middle name inputs (Middlesex), use the logical keys `owner_first`, `owner_middle`, and `owner_last`. The scraper splits the owner string accordingly before submitting the form.
 
+**Vision assessor config tips**
+- For CKAN-backed cities (Boston), set `resource_id`, `tax_year`, and `source_url`. The adapter will call `/api/3/action/datastore_search` and handle pagination automatically.
+- For CSV-only Vision towns, set `download_url`; the adapter will eventually stream and parse the file (placeholder today).
+- Run `python -m leadcrm.data_pipeline.cli assessor-run --municipality <code>` to execute a one-off ingestion once the config entry exists.
+
 ## 3. Task Queue & Scheduling
 - Use Celery (with Redis) so we can schedule daily registry refreshes and weekly/monthly assessor loads. Each task includes:
   - `source_id` (registry or municipality)

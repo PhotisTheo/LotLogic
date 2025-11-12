@@ -25,6 +25,7 @@ class RegistryRecord:
     lender: Optional[str]
     amount: Optional[float]
     raw_document_path: Optional[str]
+    document_text: Optional[str] = None
     raw_metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -54,6 +55,9 @@ class BaseRegistrySource:
     def _download_document(self, url: str, suffix: str = ".pdf", metadata: Optional[Dict[str, Any]] = None) -> str:
         """Download document to storage, return path."""
         self._throttle()
+        if not url.lower().startswith("http"):
+            base = self.config.get("base_url", "")
+            url = base.rstrip("/") + "/" + url.lstrip("/")
         self.logger.info(f"Downloading document from: {url}")
         resp = self.session.get(url, timeout=60)
         resp.raise_for_status()

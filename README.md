@@ -140,6 +140,33 @@ Core lead management functionality including:
 - Mailer generation
 - Saved parcel lists
 
+## Celery & Background Jobs
+
+The mortgage/assessor scraping pipeline runs via Celery workers backed by Redis.
+
+### Local
+1. Start Redis locally (`brew services start redis` or `docker run redis`).
+2. Ensure `REDIS_URL` is set (defaults to `redis://localhost:6379/0` in `.env`).
+3. Run the worker from the repo root:
+   ```bash
+   cd leadcrm
+   celery -A leadcrm worker --loglevel=INFO --concurrency=4
+   ```
+4. In a separate shell, start the Django server as usual.
+
+### Railway (Production)
+1. **Provision Redis**: add Railway’s Redis plugin or create a Redis service.
+2. **Set `REDIS_URL`**: add the connection string to BOTH the `web` service and the new `worker` service environment variables.
+3. **Web service command** (Procfile already handles this):
+   ```
+   web: cd leadcrm && gunicorn leadcrm.wsgi --bind 0.0.0.0:$PORT --workers 4 --timeout 120
+   ```
+4. **Worker service command**:
+   ```
+   worker: cd leadcrm && celery -A leadcrm worker --loglevel=INFO --concurrency=4
+   ```
+5. Deploy/Restart both services; verify the worker logs show `ready` and that it picks up scraping tasks.
+
 ## Contributing
 
 1. Create a new branch for your feature

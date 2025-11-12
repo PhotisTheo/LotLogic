@@ -3263,8 +3263,42 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         last_updated__gte=cache_cutoff
     ).order_by('-last_updated').first()
 
-    # If no fresh cache exists, fetch from API and save
+    # If no fresh cache exists, trigger background scraping and fall back to ATTOM API
     if not attom_data:
+        # Trigger background scraping from Registry of Deeds
+        try:
+            from data_pipeline.town_registry_map import get_registry_for_town
+            from data_pipeline.jobs.task_queue import run_registry_task
+            import json
+
+            registry_id = get_registry_for_town(town_id)
+            if registry_id:
+                # Load registry config
+                import os
+                from pathlib import Path
+                config_path = Path(__file__).resolve().parent.parent / "data_pipeline" / "config" / "sources.json"
+                with open(config_path) as f:
+                    sources_config = json.load(f)
+
+                # Find the registry config
+                registry_config = next(
+                    (reg for reg in sources_config.get("registries", []) if reg["id"] == registry_id),
+                    None
+                )
+
+                if registry_config:
+                    # Trigger async scraping in background (won't block page load)
+                    run_registry_task.delay(
+                        config=registry_config,
+                        loc_id=loc_id,
+                        force_refresh=False,
+                        max_cache_age_days=90,
+                    )
+                    logger.info(f"Triggered background registry scraping for {loc_id} in {registry_id}")
+        except Exception as e:
+            logger.warning(f"Could not trigger background registry scraping: {e}")
+
+        # Fall back to ATTOM API for immediate display
         attom_dict = get_or_fetch_attom_data(town_id, loc_id, max_age_days)
 
         # Check if we got valid data from the endpoint

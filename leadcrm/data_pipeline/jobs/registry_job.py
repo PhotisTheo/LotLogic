@@ -75,6 +75,8 @@ class RegistryJob:
                     record.amount = float(parsed_data['amount'])
                 if parsed_data.get('lender') and not record.lender:
                     record.lender = parsed_data['lender']
+                if parsed_data.get("raw_text"):
+                    record.document_text = parsed_data["raw_text"]
 
                 # Add parsed data to metadata
                 record.raw_metadata['parsed_interest_rate'] = str(parsed_data.get('interest_rate')) if parsed_data.get('interest_rate') else None

@@ -580,7 +580,9 @@
       "name": "Boston",
       "platform": "vision",
       "url": "https://gis.vgsi.com/boston/",
-      "download": "https://data.boston.gov/dataset/property-assessment",
+      "source_url": "https://data.boston.gov/dataset/property-assessment",
+      "resource_id": "cecdf003-9348-4ddb-94e1-673b63940bb8",
+      "tax_year": 2025,
       "refresh_days": 90,
       "captcha": false
     }

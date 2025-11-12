@@ -7,19 +7,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-# Try to import PDF parsing libraries
-try:
-    import pdfplumber
-    HAS_PDFPLUMBER = True
-except ImportError:
-    HAS_PDFPLUMBER = False
-
-try:
-    from pdf2image import convert_from_path
-    import pytesseract
-    HAS_OCR = True
-except ImportError:
-    HAS_OCR = False
+from .document_text import extract_text
 
 
 def parse_mortgage_document(file_path: Union[str, Path]) -> Dict[str, Optional[Union[str, Decimal, int]]]:
@@ -37,17 +25,13 @@ def parse_mortgage_document(file_path: Union[str, Path]) -> Dict[str, Optional[U
     if not file_path.exists():
         return _empty_result()
 
-    # Try to extract text from PDF first
-    text = None
-    if file_path.suffix.lower() in ['.pdf']:
-        text = _extract_pdf_text(file_path)
-    elif file_path.suffix.lower() in ['.tif', '.tiff']:
-        text = _extract_tiff_text(file_path)
-
+    text = extract_text(str(file_path))
     if not text:
         return _empty_result()
 
-    return parse_mortgage_text(text)
+    result = parse_mortgage_text(text)
+    result["raw_text"] = text
+    return result
 
 
 def parse_mortgage_text(text: str) -> Dict[str, Optional[Union[str, Decimal, int]]]:
@@ -79,42 +63,8 @@ def _empty_result() -> Dict[str, Optional[Union[str, Decimal, int]]]:
         "amount": None,
         "interest_rate": None,
         "term_years": None,
+        "raw_text": None,
     }
-
-
-def _extract_pdf_text(file_path: Path) -> Optional[str]:
-    """Extract text from PDF using pdfplumber."""
-    if not HAS_PDFPLUMBER:
-        return None
-
-    try:
-        with pdfplumber.open(file_path) as pdf:
-            text_parts = []
-            for page in pdf.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text_parts.append(page_text)
-            return "\n".join(text_parts) if text_parts else None
-    except Exception:
-        return None
-
-
-def _extract_tiff_text(file_path: Path) -> Optional[str]:
-    """Extract text from TIFF using OCR."""
-    if not HAS_OCR:
-        return None
-
-    try:
-        # Convert TIFF to images and run OCR
-        images = convert_from_path(str(file_path))
-        text_parts = []
-        for image in images:
-            text = pytesseract.image_to_string(image)
-            if text:
-                text_parts.append(text)
-        return "\n".join(text_parts) if text_parts else None
-    except Exception:
-        return None
 
 
 def _extract_amount(text: str) -> Optional[Decimal]:

@@ -76,3 +76,5 @@ leadcrm/gisdata/
 static/geojson/towns/*.geojson
 leadcrm/static/geojson/towns/*.geojson
 !leadcrm/static/geojson/towns/.gitkeep
+leadcrm/staticfiles/
+backup_*.json

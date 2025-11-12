@@ -1,0 +1,13 @@
+# Nixpacks configuration for Railway deployment
+# Installs system dependencies needed for the Lead CRM data pipeline
+
+[phases.setup]
+# Install system packages required for OCR/document parsing
+nixPkgs = ["tesseract", "libtiff", "libjpeg", "zlib"]
+
+[phases.install]
+# Python dependencies installed via requirements.txt
+cmds = ["cd leadcrm && pip install -r requirements.txt"]
+
+[start]
+# Start command handled by railway.json
