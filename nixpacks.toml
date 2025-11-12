@@ -6,8 +6,8 @@
 nixPkgs = ["tesseract", "libtiff", "libjpeg", "zlib"]
 
 [phases.install]
-# Python dependencies installed via requirements.txt
-cmds = ["cd leadcrm && pip install -r requirements.txt"]
+commands = ["cd leadcrm && python -m pip install -r requirements.txt"]
+
 
 [start]
 # Start command handled by railway.json
