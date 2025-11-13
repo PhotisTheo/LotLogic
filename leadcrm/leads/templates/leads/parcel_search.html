@@ -28,6 +28,16 @@
     height: 100vh;
     z-index: 1;
   }
+  .boundary-draw-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+    background: transparent;
+  }
 
   /* Frosted glass search overlay - now a left sidebar */
   .search-overlay {
@@ -673,6 +683,7 @@
 <div class="parcel-search-container">
   <!-- Full-screen map -->
   <div id="parcel-search-map" class="parcel-search-map-fullscreen"></div>
+  <div id="boundaryDrawOverlay" class="boundary-draw-overlay"></div>
 
   <div id="townLoadingOverlay" class="town-loading-overlay" role="status" aria-live="polite">
     <div class="town-loading-content">
@@ -1212,6 +1223,7 @@
   var boundaryLayerGroup = null;
   var activeBoundaryMeta = null;
   var finishPolygonBtn = null;
+  var boundaryDrawOverlay = null;
   var drawingMode = null;
   var drawingPoints = [];
   var drawingPreviewLayer = null;
@@ -1255,6 +1267,57 @@
       }
     }
     return inside;
+  }
+
+  function setBoundaryOverlayActive(active, cursor = 'crosshair') {
+    if (!boundaryDrawOverlay) return;
+    boundaryDrawOverlay.style.pointerEvents = active ? 'auto' : 'none';
+    boundaryDrawOverlay.style.cursor = active ? cursor : '';
+  }
+
+  function overlayEventToLatLng(event) {
+    if (!boundaryDrawOverlay || !globalMap || !event) {
+      return null;
+    }
+    const rect = boundaryDrawOverlay.getBoundingClientRect();
+    const point = L.point(event.clientX - rect.left, event.clientY - rect.top);
+    return globalMap.containerPointToLatLng(point);
+  }
+
+  function attachBoundaryOverlayEvents() {
+    boundaryDrawOverlay = document.getElementById('boundaryDrawOverlay');
+    if (!boundaryDrawOverlay || !globalMap) {
+      return;
+    }
+    boundaryDrawOverlay.addEventListener('click', (event) => {
+      if (!drawingMode) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const latlng = overlayEventToLatLng(event);
+      if (latlng) {
+        handleBoundaryMapClick({ latlng, originalEvent: event });
+      }
+    });
+    boundaryDrawOverlay.addEventListener('mousemove', (event) => {
+      if (!drawingMode) {
+        return;
+      }
+      const latlng = overlayEventToLatLng(event);
+      if (latlng) {
+        handleBoundaryMouseMove({ latlng, originalEvent: event });
+      }
+    });
+    boundaryDrawOverlay.addEventListener('dblclick', (event) => {
+      if (!drawingMode) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const latlng = overlayEventToLatLng(event);
+      handleBoundaryDoubleClick({ latlng, originalEvent: event });
+    });
   }
 
   function updateBoundaryStatusUI() {
@@ -1341,6 +1404,7 @@
       finishPolygonBtn.style.display = 'none';
       finishPolygonBtn.disabled = true;
     }
+    setBoundaryOverlayActive(false);
     updateActiveFilterCount();
     if (triggerRefresh) {
       refreshParcelsForFilters({ immediate: true, force: true });
@@ -1397,6 +1461,7 @@
       finishPolygonBtn.style.display = 'none';
       finishPolygonBtn.disabled = true;
     }
+    setBoundaryOverlayActive(false);
     updateBoundaryStatusUI();
     updateActiveFilterCount();
     refreshParcelsForFilters({ immediate: true, force: true });
@@ -1423,6 +1488,7 @@
       finishPolygonBtn.style.display = 'none';
       finishPolygonBtn.disabled = true;
     }
+    setBoundaryOverlayActive(false);
     updateBoundaryStatusUI();
     updateActiveFilterCount();
     refreshParcelsForFilters({ immediate: true, force: true });
@@ -1439,6 +1505,7 @@
     }
 
     if (mode === 'circle') {
+      setBoundaryOverlayActive(true, 'crosshair');
       drawingMode = 'circle-center';
       drawingPoints = [];
       if (drawingPreviewLayer) {
@@ -1447,6 +1514,7 @@
       }
       updateBoundaryStatusUI();
     } else if (mode === 'polygon') {
+      setBoundaryOverlayActive(true, 'crosshair');
       drawingMode = 'polygon';
       drawingPoints = [];
       if (drawingPreviewLayer) {
@@ -1555,11 +1623,15 @@
 
   function handleBoundaryDoubleClick(e) {
     if (drawingMode === 'polygon' && drawingPoints.length >= 3) {
-      if (e && e.originalEvent) {
-        e.originalEvent.preventDefault();
-        e.originalEvent.stopPropagation();
+      const evt = (e && e.originalEvent) ? e.originalEvent : e;
+      if (evt) {
+        if (typeof evt.preventDefault === 'function') {
+          evt.preventDefault();
+        }
+        if (typeof evt.stopPropagation === 'function') {
+          evt.stopPropagation();
+        }
       }
-      L.DomEvent.stop(e);
       finalizePolygonBoundary(drawingPoints.slice());
     }
   }
@@ -3092,6 +3164,8 @@
 
       console.log('Map tiles added');
       boundaryLayerGroup = L.featureGroup().addTo(globalMap);
+      attachBoundaryOverlayEvents();
+      setBoundaryOverlayActive(false);
       globalMap.on('click', handleBoundaryMapClick);
       globalMap.on('mousemove', handleBoundaryMouseMove);
       globalMap.on('dblclick', handleBoundaryDoubleClick);
@@ -4851,7 +4925,8 @@
           clearBoundaryBtn.addEventListener('click', () => clearBoundaryShape(true));
         }
         if (finishPolygonBtn) {
-          finishPolygonBtn.addEventListener('click', () => {
+          finishPolygonBtn.addEventListener('click', (event) => {
+            event.preventDefault();
             if (drawingMode === 'polygon' && drawingPoints.length >= 3) {
               finalizePolygonBoundary(drawingPoints.slice());
             }
