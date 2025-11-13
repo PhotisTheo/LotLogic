@@ -1172,6 +1172,8 @@
   var bostonNeighborhoodSelectEl = null;
   var bostonNeighborhoodContainerEl = null;
   var townGeojsonCache = new Map();
+  var townGeojsonUnavailable = new Set();
+  var currentFocusedTownId = null;
   var townGeojsonRequests = new Map();
   var bostonNeighborhoodPolygonIndex = new Map();
   var bostonNeighborhoodBBoxIndex = new Map();
@@ -1624,7 +1626,10 @@
     // Update header
     const addressEl = document.getElementById('overviewAddress');
     const locationEl = document.getElementById('overviewLocation');
-    if (addressEl) addressEl.textContent = parcel.address || 'Unknown Address';
+    if (addressEl) {
+      const resolvedAddress = parcel.address || parcel.site_address || 'Unknown Address';
+      addressEl.textContent = resolvedAddress;
+    }
     if (locationEl) {
       const locationParts = [];
       if (parcel.site_city || parcel.city) locationParts.push(parcel.site_city || parcel.city);
@@ -1715,7 +1720,7 @@
         streetViewFrame.src = `https://maps.google.com/maps?${params.toString()}`;
       } else {
         // Fallback to address-based Street View
-        const address = parcel.address || '';
+        const address = parcel.address || parcel.site_address || '';
         if (address) {
           streetViewFrame.src = `https://maps.google.com/maps?q=${encodeURIComponent(address)}&layer=c&output=svembed`;
         }
@@ -1786,11 +1791,15 @@
         .then(response => {
           if (!response.ok) {
             console.error(`❌ GeoJSON fetch failed: HTTP ${response.status} for town ${key}`);
+            if (response.status === 404) {
+              townGeojsonUnavailable.add(key);
+            }
             const error = new Error(`HTTP ${response.status}`);
             error.status = response.status;
             throw error;
           }
           console.log(`✅ GeoJSON fetch successful for town ${key}`);
+          townGeojsonUnavailable.delete(key);
           return response.json();
         })
         .then(data => {
@@ -1800,6 +1809,9 @@
           return data;
         })
         .catch(error => {
+          if (error && error.status === 404) {
+            townGeojsonUnavailable.add(key);
+          }
           console.error(`❌ Error fetching GeoJSON for town ${key}:`, error);
           throw error;
         })
@@ -1877,6 +1889,20 @@
       };
     }
 
+    function getBoundsForTown(townId) {
+      if (!townId) {
+        return null;
+      }
+      const layer = townLayerIndex.get(String(townId));
+      if (layer && typeof layer.getBounds === 'function') {
+        const bounds = layer.getBounds();
+        if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+          return bounds;
+        }
+      }
+      return null;
+    }
+
     function parseMassGisDate(value) {
       if (!value) {
         return null;
@@ -1907,6 +1933,14 @@
         return null;
       }
       const parcel = { ...feature.properties };
+      // Ensure both address fields exist so downstream UI + filters stay consistent
+      const bestAddress = parcel.site_address || parcel.address || parcel.SITE_ADDR || parcel.LOC_ADDR || null;
+      if (bestAddress && !parcel.site_address) {
+        parcel.site_address = bestAddress;
+      }
+      if (!parcel.address && bestAddress) {
+        parcel.address = bestAddress;
+      }
       const geometryLatLng = geometryToLeafletLatLngs(feature.geometry);
       if (!geometryLatLng.length) {
         return null;
@@ -1944,10 +1978,18 @@
     }
 
     function shouldUseTownGeojson(filters, townId) {
-      // Using legacy API for all towns (server-side filtering preferred)
-      // Legacy API provides better performance and more reliable data consistency
-      console.log('shouldUseTownGeojson: false (using legacy API for production)');
-      return false;
+      const normalizedTownId = String(townId || '').trim();
+      if (!normalizedTownId) {
+        console.log('shouldUseTownGeojson: false (missing resolved town id)');
+        return false;
+      }
+      if (townGeojsonUnavailable.has(normalizedTownId)) {
+        console.log(`shouldUseTownGeojson: false (no static GeoJSON available for town ${normalizedTownId})`);
+        return false;
+      }
+
+      console.log(`shouldUseTownGeojson: true (static GeoJSON enabled for town ${normalizedTownId})`);
+      return true;
     }
 
     function filterParcelsClientSide(parcels, viewportBounds, filters) {
@@ -2000,7 +2042,8 @@
           }
         }
         if (addressQuery) {
-          const addressText = (parcel.address || '').toLowerCase();
+          const addressSource = parcel.address || parcel.site_address || '';
+          const addressText = addressSource.toLowerCase();
           if (!addressText.includes(addressQuery)) {
             return false;
           }
@@ -2100,7 +2143,7 @@
           loc_id: parcel.loc_id,
           property_category: parcel.property_category,
           owner: parcel.owner,
-          address: parcel.address,
+          address: parcel.address || parcel.site_address || '',
           town_name: parcel.town_name,
         })),
       };
@@ -2206,6 +2249,7 @@
         return;
       }
 
+      currentFocusedTownId = normalizedId;
       clearViewportParcels();
 
       const bounds = layer.getBounds();
@@ -3129,7 +3173,7 @@
 
         row.innerHTML = `
           <td class="fw-semibold">
-            ${parcel.address || '—'}
+            ${parcel.address || parcel.site_address || '—'}
             <div class="text-muted small">${parcel.site_city || parcel.town_name || ''}${parcel.site_zip ? ' ' + parcel.site_zip : ''}</div>
           </td>
           <td>${parcel.owner || '—'}</td>
@@ -3232,7 +3276,7 @@
       clearTimeout(quickViewHideTimeout);
 
       const targetUrl = detailUrl || buildParcelDetailUrl(parcel);
-      const address = parcel.address || 'Unknown address';
+      const address = parcel.address || parcel.site_address || 'Unknown address';
       const owner = parcel.owner || 'Owner unknown';
       const value = parcel.value_display || 'Value unavailable';
       const category = parcel.property_category || '—';
@@ -3499,11 +3543,11 @@
 
         pendingViewportReload = null;
 
-        const bounds = globalMap.getBounds();
-        const north = bounds.getNorth();
-        const south = bounds.getSouth();
-        const east = bounds.getEast();
-        const west = bounds.getWest();
+        const townInput = document.querySelector('input[name="town_id"]');
+        const resolvedTownId = townInput?.dataset?.resolvedTownId;
+        const normalizedTownName = townInput?.dataset?.townName
+          || (townInput && townInput.value ? townInput.value.split(' (', 1)[0] : null);
+        console.log('Town input value:', townInput ? townInput.value : 'NOT FOUND', 'resolved ID:', resolvedTownId, 'normalized name:', normalizedTownName);
 
         // Get filter values from form
         const filters = {};
@@ -3541,11 +3585,6 @@
         if (minYearsOwnedInput && minYearsOwnedInput.value) {
           filters.min_years_owned = minYearsOwnedInput.value;
         }
-        const townInput = document.querySelector('input[name="town_id"]');
-        const resolvedTownId = townInput?.dataset?.resolvedTownId;
-        const normalizedTownName = townInput?.dataset?.townName
-          || (townInput && townInput.value ? townInput.value.split(' (', 1)[0] : null);
-        console.log('Town input value:', townInput ? townInput.value : 'NOT FOUND', 'resolved ID:', resolvedTownId, 'normalized name:', normalizedTownName);
         if (normalizedTownName) {
           filters.town_name = normalizedTownName;
         }
@@ -3567,6 +3606,26 @@
 
         // Debug: Log filters object before building params
         console.log('Filters object before URLSearchParams:', JSON.stringify(filters));
+
+        const useStaticGeojson = shouldUseTownGeojson(filters, resolvedTownId);
+        let bounds = globalMap.getBounds();
+        let usingTownWideBounds = false;
+        if (!useStaticGeojson && resolvedTownId) {
+          const skipTownWide = String(resolvedTownId) === '35' && !filters.neighborhood;
+          if (!skipTownWide) {
+            const townBounds = getBoundsForTown(resolvedTownId);
+            if (townBounds) {
+              bounds = townBounds;
+              usingTownWideBounds = true;
+              console.log(`📍 Using town-wide bounds for legacy API request (town ${resolvedTownId})`);
+            }
+          }
+        }
+
+        const north = bounds.getNorth();
+        const south = bounds.getSouth();
+        const east = bounds.getEast();
+        const west = bounds.getWest();
 
         // Build query string - manually append filters to avoid spread operator issues
         const params = new URLSearchParams();
@@ -3630,6 +3689,7 @@
 
         let parcelLoadHadError = false;
         let usedStaticGeojson = false;
+        let loadedFullTownViaLegacy = false;
 
         const hasPendingReload = () => Boolean(pendingViewportReload);
 
@@ -3647,6 +3707,9 @@
 
           // Clear existing parcels before rendering new ones to prevent overlaps
           clearViewportParcels();
+          if (!useStaticGeojson && usingTownWideBounds) {
+            loadedFullTownViaLegacy = true;
+          }
 
           window.parcelAutoLienSearchEnabled = Boolean(data.autoLienSearchEnabled);
 
@@ -3951,7 +4014,7 @@
         const finalizeParcelLoad = (hadError) => {
           isLoadingParcels = false;
 
-          if (!hadError && (forceReload || usedStaticGeojson)) {
+          if (!hadError && (forceReload || usedStaticGeojson || loadedFullTownViaLegacy)) {
             hasLoadedFullCurrentTown = true;
           }
 
@@ -4023,7 +4086,6 @@
             });
         };
 
-        const useStaticGeojson = shouldUseTownGeojson(filters, resolvedTownId);
         console.log(`Using ${useStaticGeojson ? 'STATIC GEOJSON' : 'LEGACY API'} for town_id=${resolvedTownId}`);
         const loaderPromise = (useStaticGeojson
           ? loadStaticGeojson().catch(error => {

@@ -291,6 +291,7 @@ class Command(BaseCommand):
                 "town_id": town_id,
                 "town_name": town.name,
                 "address": _format_address(attributes),
+                "site_address": site_addr,
                 "owner": attributes.get("OWNER1") or attributes.get("OWNER_NAME", "Unknown"),
                 "owner_address": _compose_owner_address(attributes),
                 "total_value": attributes.get("TOTAL_VAL"),

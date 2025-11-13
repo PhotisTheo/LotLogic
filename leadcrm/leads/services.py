@@ -3556,8 +3556,14 @@ def _compose_owner_address(record: Dict[str, object]) -> Optional[str]:
 
 
 def _extract_site_address(record: Dict[str, object]) -> Optional[str]:
+    """
+    Return the best available street address for a parcel record.
+    Some towns only populate LOC_ADDR (or other derived fields) instead of SITE_ADDR,
+    so we need to check multiple sources before giving up.
+    """
     candidates = [
         _clean_string(record.get("SITE_ADDR")),
+        _clean_string(record.get("LOC_ADDR")),
         _clean_string(record.get("LOCATION")),
         _clean_string(record.get("FULL_STR")),
     ]
