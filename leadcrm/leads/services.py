@@ -4794,6 +4794,29 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             else:
                 logger.warning("Radius filter: geocode miss for '%s'", geocode_query)
 
+    if radius_limit_miles is not None and reference_point is not None:
+        wgs_point = _ensure_wgs84(reference_point)
+        if wgs_point:
+            ref_lon, ref_lat = wgs_point
+            lat_delta = radius_limit_miles / 69.0
+            lon_scale = max(math.cos(math.radians(ref_lat)) * 69.0, 1e-6)
+            lon_delta = radius_limit_miles / lon_scale
+            west = max(west, ref_lon - lon_delta)
+            east = min(east, ref_lon + lon_delta)
+            south = max(south, ref_lat - lat_delta)
+            north = min(north, ref_lat + lat_delta)
+            viewport_bbox = (west, south, east, north)
+            logger.info(
+                "Radius filter: adjusted viewport to W%.6f E%.6f S%.6f N%.6f for %.2f mi around (%s,%s)",
+                west,
+                east,
+                south,
+                north,
+                radius_limit_miles,
+                ref_lat,
+                ref_lon,
+            )
+
     neighborhood_filter = _clean_string(filters.pop('neighborhood', None))
     boston_neighborhood = (
         _get_boston_neighborhood(neighborhood_filter) if neighborhood_filter else None
@@ -4907,6 +4930,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
         return []
 
     parcels = []
+    radius_removed = 0
 
     # Query parcels from each town
     for town_id in town_ids:
@@ -5076,27 +5100,28 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                         continue
 
                 # Years owned filter
-                if filters.get('min_years_owned'):
+                if filters.get('min_years_owned') or filters.get('max_years_owned'):
                     from datetime import date
                     sale_date = _parse_massgis_date(attributes.get("LS_DATE"))
                     if not sale_date:
                         continue
                     owned_years = (date.today() - sale_date.date()).days / 365.25
-                    if owned_years < filters['min_years_owned']:
+                    min_years_owned_filter = filters.get('min_years_owned')
+                    max_years_owned_filter = filters.get('max_years_owned')
+                    if min_years_owned_filter and owned_years < min_years_owned_filter:
                         continue
-                if filters.get('max_years_owned'):
-                    from datetime import date
-                    sale_date = _parse_massgis_date(attributes.get("LS_DATE"))
-                    if not sale_date:
+                    if max_years_owned_filter and owned_years > max_years_owned_filter:
                         continue
-                    owned_years = (date.today() - sale_date.date()).days / 365.25
-                    if owned_years > filters['max_years_owned']:
-                        continue
-                if radius_limit_miles is not None and reference_point is not None:
-                    target_point = (lng, lat, "wgs84")
-                    distance_miles = _distance_miles_between(reference_point, target_point)
-                    if distance_miles is None or distance_miles > radius_limit_miles:
-                        continue
+
+                if radius_limit_miles is not None:
+                    if reference_point is None:
+                        logger.info("Skipping radius filter because reference point is still missing")
+                    else:
+                        target_point = (lng, lat, "wgs84")
+                        distance_miles = _distance_miles_between(reference_point, target_point)
+                        if distance_miles is None or distance_miles > radius_limit_miles:
+                            radius_removed += 1
+                            continue
 
                 # Classify the USE_CODE to a readable category for color coding
                 use_code = attributes.get('USE_CODE', '')
@@ -5161,6 +5186,14 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
         except Exception as exc:
             logger.warning(f"Error loading parcels from town {town_id}: {exc}")
             continue
+
+    if radius_limit_miles is not None and reference_point is not None:
+        logger.info(
+            "Radius filter summary: kept %s parcels, removed %s outside %.2f miles",
+            len(parcels),
+            radius_removed,
+            radius_limit_miles,
+        )
 
     logger.info(f"Returning {len(parcels)} parcels in bbox")
     return parcels
