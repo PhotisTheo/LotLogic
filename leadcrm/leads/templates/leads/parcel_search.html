@@ -2758,7 +2758,7 @@
         clearViewportParcels();
         const townInputEl = document.getElementById('id_town_id');
         const forceReload = Boolean(townInputEl && townInputEl.dataset.resolvedTownId);
-        loadParcelsInViewport({ immediate: true, force: forceReload });
+        loadParcelsInViewport({ immediate: true, force: forceReload, ignoreSpatialLock: true });
       }, delay);
     }
 
@@ -3980,7 +3980,7 @@
       const townId = parcels[0]?.town_id;
 
       // Build criteria from current filters
-      const filters = {};
+    const filters = {};
       const categorySelect = document.querySelector('select[name="property_category"]');
       if (categorySelect?.value && categorySelect.value !== 'any') filters.property_category = categorySelect.value;
       const propertyTypeSelect = document.querySelector('select[name="property_type"]');
@@ -4164,6 +4164,9 @@
             filters.boundary_polygon_coords = document.getElementById('boundaryPolygonCoordsInput')?.value || '';
           }
         }
+        const spatialLockActive = Boolean(
+          (filters.proximity_address && filters.proximity_radius_miles) || filters.boundary_shape_type
+        );
         if (normalizedTownName) {
           filters.town_name = normalizedTownName;
         }
@@ -4276,6 +4279,12 @@
         console.log('URLSearchParams entries:');
         for (let [key, value] of params.entries()) {
           console.log(`  ${key}: ${value}`);
+        }
+
+        if (!forceReload && spatialLockActive && options.ignoreSpatialLock !== true) {
+          pendingViewportReload = null;
+          console.log('⏸️  Map interaction ignored – proximity/boundary filter locks the results');
+          return;
         }
 
         const viewportBounds = { north, south, east, west };
