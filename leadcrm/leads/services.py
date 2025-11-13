@@ -22,7 +22,7 @@ from email.utils import parsedate_to_datetime
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, Union
 from urllib import error, parse, request
 from urllib.error import URLError
 from urllib.parse import urljoin, urlparse
@@ -1999,6 +1999,7 @@ def search_massgis_parcels(
     proximity_address: Optional[str] = None,
     proximity_radius_miles: Optional[float] = None,
     limit: Optional[int] = None,
+    shape_filter: Optional[Dict[str, Any]] = None,
 ) -> Tuple[MassGISTown, List[ParcelSearchResult], int]:
     town = _get_massgis_town(town_id)
     dataset_dir = _ensure_massgis_dataset(town)
@@ -2021,8 +2022,31 @@ def search_massgis_parcels(
     radius_limit_miles = None
     reference_point: Optional[Tuple[float, float, str]] = None
     radius_center_source = None
+    polygon_filter: Optional[List[Tuple[float, float]]] = None
+
+    if shape_filter:
+        if shape_filter.get("type") == "circle":
+            try:
+                center_lat = float(shape_filter.get("center_lat"))
+                center_lng = float(shape_filter.get("center_lng"))
+                radius_limit_miles = float(shape_filter.get("radius_miles"))
+                reference_point = (center_lng, center_lat, "wgs84")
+                radius_center_source = shape_filter.get("source") or "boundary"
+            except (TypeError, ValueError):
+                radius_limit_miles = None
+                reference_point = None
+        elif shape_filter.get("type") == "polygon":
+            coords = shape_filter.get("coordinates") or []
+            polygon_points: List[Tuple[float, float]] = []
+            for coord in coords:
+                try:
+                    polygon_points.append((float(coord[0]), float(coord[1])))
+                except (TypeError, ValueError, IndexError):
+                    continue
+            if polygon_points:
+                polygon_filter = polygon_points
     center_address = _clean_string(proximity_address)
-    if center_address and proximity_radius_miles is not None:
+    if reference_point is None and center_address and proximity_radius_miles is not None:
         try:
             radius_limit_miles = float(proximity_radius_miles)
         except (TypeError, ValueError):
@@ -2133,6 +2157,16 @@ def search_massgis_parcels(
                 continue
             if distance_miles > radius_limit_miles:
                 radius_excluded += 1
+                continue
+        if polygon_filter:
+            target_point = _extract_point_coordinates(record)
+            if not target_point:
+                continue
+            wgs_point = _ensure_wgs84(target_point)
+            if not wgs_point:
+                continue
+            point_lng, point_lat = wgs_point
+            if not _point_in_polygon(point_lat, point_lng, polygon_filter):
                 continue
 
         total_matches += 1
@@ -4734,7 +4768,8 @@ def get_towns_in_bbox(north: float, south: float, east: float, west: float) -> L
 
 
 def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
-                        limit: Optional[int] = None, **filters) -> List[Dict[str, Any]]:
+                        limit: Optional[int] = None, shape_filter: Optional[Dict[str, Any]] = None,
+                        **filters) -> List[Dict[str, Any]]:
     """
     Get parcels within a bounding box, optionally filtered.
     Returns list of parcel dictionaries with geometry and attributes.
@@ -4758,6 +4793,36 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
     import shapefile
 
     viewport_bbox = (west, south, east, north)
+    circle_shape = None
+    polygon_filter: Optional[List[Tuple[float, float]]] = None
+    radius_limit_miles = None
+    reference_point: Optional[Tuple[float, float, str]] = None
+    radius_center_source = None
+
+    polygon_bounds = _polygon_bounds(polygon_filter) if polygon_filter else None
+
+    if shape_filter:
+        if shape_filter.get("type") == "circle":
+            circle_shape = shape_filter
+            try:
+                center_lat = float(circle_shape.get("center_lat"))
+                center_lng = float(circle_shape.get("center_lng"))
+                radius_limit_miles = float(circle_shape.get("radius_miles"))
+                reference_point = (center_lng, center_lat, "wgs84")
+                radius_center_source = circle_shape.get("source") or "boundary"
+            except (TypeError, ValueError):
+                radius_limit_miles = None
+                reference_point = None
+        elif shape_filter.get("type") == "polygon":
+            coords_raw = shape_filter.get("coordinates") or []
+            polygon_points: List[Tuple[float, float]] = []
+            for coord in coords_raw:
+                try:
+                    polygon_points.append((float(coord[0]), float(coord[1])))
+                except (TypeError, ValueError, IndexError):
+                    continue
+            if polygon_points:
+                polygon_filter = polygon_points
     center_address = _clean_string(filters.pop('proximity_address', None))
     geocode_town_name = None
     if center_address:
@@ -4773,6 +4838,13 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
     proximity_radius_value = filters.pop('proximity_radius_miles', None)
     radius_limit_miles = None
     reference_point: Optional[Tuple[float, float, str]] = None
+
+    if polygon_bounds:
+        west = max(west, polygon_bounds["west"])
+        east = min(east, polygon_bounds["east"])
+        south = max(south, polygon_bounds["south"])
+        north = min(north, polygon_bounds["north"])
+        viewport_bbox = (west, south, east, north)
 
     if center_address and proximity_radius_value not in (None, ''):
         try:
@@ -5123,6 +5195,9 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                             radius_removed += 1
                             continue
 
+                if polygon_filter and not _point_in_polygon(lat, lng, polygon_filter):
+                    continue
+
                 # Classify the USE_CODE to a readable category for color coding
                 use_code = attributes.get('USE_CODE', '')
                 property_category = _classify_use_code(use_code)
@@ -5413,3 +5488,39 @@ def _geometry_centroid(geometry: Dict[str, Any]) -> Optional[Dict[str, float]]:
     cx /= (6 * area)
     cy /= (6 * area)
     return {"lat": cy, "lng": cx}
+
+
+def _point_in_polygon(lat: float, lng: float, polygon: Sequence[Tuple[float, float]]) -> bool:
+    """
+    Ray casting algorithm for point-in-polygon using (lat, lng) ordering.
+    """
+    inside = False
+    if not polygon:
+        return False
+    n = len(polygon)
+    y = lat
+    x = lng
+    for i in range(n):
+        y1, x1 = polygon[i]
+        y2, x2 = polygon[(i + 1) % n]
+        if (y1 > y) != (y2 > y):
+            slope = (x2 - x1) / (y2 - y1 + 1e-9)
+            x_intersect = slope * (y - y1) + x1
+            if x < x_intersect:
+                inside = not inside
+    return inside
+
+
+def _polygon_bounds(polygon: Sequence[Tuple[float, float]]) -> Optional[Dict[str, float]]:
+    if not polygon:
+        return None
+    lats = [pt[0] for pt in polygon]
+    lngs = [pt[1] for pt in polygon]
+    if not lats or not lngs:
+        return None
+    return {
+        "south": min(lats),
+        "north": max(lats),
+        "west": min(lngs),
+        "east": max(lngs),
+    }

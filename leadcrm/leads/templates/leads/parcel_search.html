@@ -3,6 +3,7 @@
 {% block title %}MassGIS Parcel Search{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" crossorigin=""/>
 <style>
   /* Override base template container padding for full-screen layout */
   main.container {
@@ -729,6 +730,11 @@
     </div>
     <div class="search-overlay-body">
       <form method="get" id="parcelSearchForm">
+        <input type="hidden" name="boundary_shape_type" id="boundaryShapeTypeInput" value="{{ boundary_shape.type|default:'' }}">
+        <input type="hidden" name="boundary_circle_lat" id="boundaryCircleLatInput" value="{{ boundary_shape.center_lat|default:'' }}">
+        <input type="hidden" name="boundary_circle_lng" id="boundaryCircleLngInput" value="{{ boundary_shape.center_lng|default:'' }}">
+        <input type="hidden" name="boundary_circle_radius_miles" id="boundaryCircleRadiusInput" value="{{ boundary_shape.radius_miles|default:'' }}">
+        <input type="hidden" name="boundary_polygon_coords" id="boundaryPolygonCoordsInput" value="{{ boundary_polygon_json|default:''|escape }}">
         <div class="row gy-3 gx-3 align-items-start mb-3">
           <div class="col-12 col-xl-8">
             <label class="form-label" for="{{ form.town_id.id_for_label }}">Town</label>
@@ -901,6 +907,24 @@
               <div class="col-12 col-lg-3">
                 <label class="form-label" for="{{ form.proximity_radius_miles.id_for_label }}">Radius (miles)</label>
                 {{ form.proximity_radius_miles }}
+              </div>
+            </div>
+            <div class="filter-section-header mt-3">Boundary Tool</div>
+            <div class="card border-0 shadow-sm mb-3">
+              <div class="card-body">
+                <p class="text-muted small mb-2">Draw a circle or polygon directly on the map to focus parcels. This overrides the address-based radius.</p>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="drawCircleBoundaryBtn">
+                    <i class="bi bi-circle"></i> Draw Circle
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="drawPolygonBoundaryBtn">
+                    <i class="bi bi-hexagon"></i> Draw Polygon
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm ms-auto" id="clearBoundaryBtn">
+                    <i class="bi bi-eraser"></i> Clear Boundary
+                  </button>
+                </div>
+                <div class="small" id="boundaryStatusText">No boundary applied.</div>
               </div>
             </div>
           </div>
@@ -1154,6 +1178,7 @@
     {% endif %}
 
 <script type="application/json" id="parcel-town-options-data">{{ form.town_options_json|safe }}</script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" crossorigin=""></script>
 <script>
   // Global variables accessible across all script blocks
   var globalMap = null;
@@ -1183,6 +1208,262 @@
   var currentFocusedTownId = null;
   var townGeojsonRequests = new Map();
   var bostonNeighborhoodPolygonIndex = new Map();
+  var boundaryDrawerInstance = null;
+  const METERS_PER_MILE = 1609.344;
+
+  function milesToMeters(miles) {
+    return Number(miles || 0) * METERS_PER_MILE;
+  }
+
+  function metersToMiles(meters) {
+    return Number(meters || 0) / METERS_PER_MILE;
+  }
+
+  function haversineMiles(lat1, lng1, lat2, lng2) {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 3958.7613; // Miles
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2
+      + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function pointInPolygon(lat, lng, polygon) {
+    if (!Array.isArray(polygon) || polygon.length < 3) {
+      return false;
+    }
+    let inside = false;
+    const x = lng;
+    const y = lat;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const yi = polygon[i][0];
+      const xi = polygon[i][1];
+      const yj = polygon[j][0];
+      const xj = polygon[j][1];
+      const intersect = ((yi > y) !== (yj > y))
+        && (x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-9) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  function updateBoundaryStatusUI() {
+    const statusEl = document.getElementById('boundaryStatusText');
+    if (!statusEl) return;
+    if (!activeBoundaryMeta) {
+      statusEl.textContent = 'No boundary applied.';
+      statusEl.classList.remove('text-primary');
+      return;
+    }
+    if (activeBoundaryMeta.type === 'circle') {
+      const miles = (activeBoundaryMeta.radiusMiles || 0).toFixed(2);
+      statusEl.textContent = `Circle boundary: ${miles} mi radius`;
+    } else if (activeBoundaryMeta.type === 'polygon') {
+      statusEl.textContent = `Polygon boundary with ${activeBoundaryMeta.coords.length} points`;
+    } else {
+      statusEl.textContent = 'Boundary applied.';
+    }
+    statusEl.classList.add('text-primary');
+  }
+
+  function updateBoundaryFormInputs(meta) {
+    const typeInput = document.getElementById('boundaryShapeTypeInput');
+    const latInput = document.getElementById('boundaryCircleLatInput');
+    const lngInput = document.getElementById('boundaryCircleLngInput');
+    const radiusInput = document.getElementById('boundaryCircleRadiusInput');
+    const polygonInput = document.getElementById('boundaryPolygonCoordsInput');
+    if (!typeInput || !latInput || !lngInput || !radiusInput || !polygonInput) {
+      return;
+    }
+    if (!meta) {
+      typeInput.value = '';
+      latInput.value = '';
+      lngInput.value = '';
+      radiusInput.value = '';
+      polygonInput.value = '';
+      return;
+    }
+    typeInput.value = meta.type || '';
+    if (meta.type === 'circle') {
+      latInput.value = meta.center.lat;
+      lngInput.value = meta.center.lng;
+      radiusInput.value = meta.radiusMiles;
+      polygonInput.value = '';
+    } else if (meta.type === 'polygon') {
+      latInput.value = '';
+      lngInput.value = '';
+      radiusInput.value = '';
+      polygonInput.value = JSON.stringify(meta.coords || []);
+    }
+  }
+
+  function clearBoundaryShape(triggerRefresh) {
+    if (boundaryLayerGroup) {
+      boundaryLayerGroup.clearLayers();
+    }
+    activeBoundaryMeta = null;
+    updateBoundaryFormInputs(null);
+    updateBoundaryStatusUI();
+    if (triggerRefresh) {
+      refreshParcelsForFilters({ immediate: true, force: true });
+    }
+  }
+
+  function persistBoundaryMetaFromLayer(layer) {
+    if (!layer || typeof layer.getLatLng !== 'function') {
+      return;
+    }
+    if (layer instanceof L.Circle) {
+      const center = layer.getLatLng();
+      const radiusMiles = metersToMiles(layer.getRadius());
+      activeBoundaryMeta = {
+        type: 'circle',
+        center: center,
+        radiusMiles: radiusMiles,
+      };
+    } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+      const latlngs = layer.getLatLngs();
+      const flattened = [];
+      const extract = (segments) => {
+        segments.forEach(segment => {
+          if (Array.isArray(segment)) {
+            if (segment.length && typeof segment[0].lat === 'number') {
+              segment.forEach(point => flattened.push([point.lat, point.lng]));
+            } else {
+              extract(segment);
+            }
+          }
+        });
+      };
+      extract(latlngs);
+      if (flattened.length) {
+        activeBoundaryMeta = {
+          type: 'polygon',
+          coords: flattened,
+        };
+      }
+    }
+    updateBoundaryFormInputs(activeBoundaryMeta);
+    updateBoundaryStatusUI();
+  }
+
+  function beginBoundaryDraw(mode) {
+    if (!globalMap || typeof L === 'undefined' || !L.Draw) {
+      console.warn('Leaflet Draw is not available');
+      return;
+    }
+    if (!boundaryLayerGroup) {
+      boundaryLayerGroup = new L.FeatureGroup();
+      boundaryLayerGroup.addTo(globalMap);
+    }
+    if (mode === 'circle') {
+      boundaryDrawerInstance = new L.Draw.Circle(globalMap, {
+        shapeOptions: { color: '#f97316', weight: 2, fillOpacity: 0.15 },
+      });
+    } else if (mode === 'polygon') {
+      boundaryDrawerInstance = new L.Draw.Polygon(globalMap, {
+        allowIntersection: false,
+        showArea: true,
+        shapeOptions: { color: '#f97316', weight: 2, fillOpacity: 0.1 },
+      });
+    } else {
+      return;
+    }
+    boundaryDrawerInstance.enable();
+  }
+
+  function setupBoundaryDrawingTools() {
+    if (!globalMap || typeof L === 'undefined' || !L.Control || !L.Control.Draw) {
+      console.warn('Leaflet Draw unavailable, skipping boundary tools');
+      return;
+    }
+    if (!boundaryLayerGroup) {
+      boundaryLayerGroup = new L.FeatureGroup();
+      boundaryLayerGroup.addTo(globalMap);
+    }
+    boundaryDrawControl = new L.Control.Draw({
+      draw: {
+        polygon: false,
+        polyline: false,
+        rectangle: false,
+        marker: false,
+        circlemarker: false,
+        circle: false,
+      },
+      edit: {
+        featureGroup: boundaryLayerGroup,
+        edit: false,
+        remove: false,
+      },
+    });
+    globalMap.addControl(boundaryDrawControl);
+
+    globalMap.on(L.Draw.Event.CREATED, function(event) {
+      boundaryLayerGroup.clearLayers();
+      boundaryLayerGroup.addLayer(event.layer);
+      persistBoundaryMetaFromLayer(event.layer);
+      refreshParcelsForFilters({ immediate: true, force: true });
+    });
+  }
+
+  function restoreBoundaryFromInputs() {
+    const typeInput = document.getElementById('boundaryShapeTypeInput');
+    if (!typeInput || !typeInput.value) {
+      updateBoundaryStatusUI();
+      return;
+    }
+    const type = typeInput.value;
+    if (!globalMap || !boundaryLayerGroup) {
+      updateBoundaryStatusUI();
+      return;
+    }
+    if (type === 'circle') {
+      const lat = parseFloat(document.getElementById('boundaryCircleLatInput')?.value || '');
+      const lng = parseFloat(document.getElementById('boundaryCircleLngInput')?.value || '');
+      const radiusMiles = parseFloat(document.getElementById('boundaryCircleRadiusInput')?.value || '');
+      if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(radiusMiles)) {
+        const circle = L.circle([lat, lng], {
+          radius: milesToMeters(radiusMiles),
+          color: '#f97316',
+          weight: 2,
+          fillOpacity: 0.15,
+        });
+        boundaryLayerGroup.addLayer(circle);
+        activeBoundaryMeta = {
+          type: 'circle',
+          center: { lat, lng },
+          radiusMiles,
+        };
+      }
+    } else if (type === 'polygon') {
+      try {
+        const raw = document.getElementById('boundaryPolygonCoordsInput')?.value;
+        const coords = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(coords) && coords.length) {
+          const polygon = L.polygon(coords, {
+            color: '#f97316',
+            weight: 2,
+            fillOpacity: 0.1,
+          });
+          boundaryLayerGroup.addLayer(polygon);
+          activeBoundaryMeta = {
+            type: 'polygon',
+            coords: coords,
+          };
+        }
+      } catch (error) {
+        console.warn('Unable to restore boundary polygon:', error);
+      }
+    }
+    updateBoundaryStatusUI();
+  }
+  var boundaryLayerGroup = null;
+  var boundaryDrawControl = null;
+  var activeBoundaryMeta = null;
   var bostonNeighborhoodBBoxIndex = new Map();
   var bostonNeighborhoodPolygonsDirty = true;
   var townLoadingOverlay = document.getElementById('townLoadingOverlay');
@@ -2021,6 +2302,28 @@
         return Number.isFinite(num) ? num : null;
       };
 
+      let boundaryCircle = null;
+      let boundaryPolygon = null;
+      const boundaryTypeInput = document.getElementById('boundaryShapeTypeInput');
+      if (boundaryTypeInput && boundaryTypeInput.value === 'circle') {
+        const lat = parseFloat(document.getElementById('boundaryCircleLatInput')?.value || '');
+        const lng = parseFloat(document.getElementById('boundaryCircleLngInput')?.value || '');
+        const radiusMiles = parseFloat(document.getElementById('boundaryCircleRadiusInput')?.value || '');
+        if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(radiusMiles) && radiusMiles > 0) {
+          boundaryCircle = { lat, lng, radiusMiles };
+        }
+      } else if (boundaryTypeInput && boundaryTypeInput.value === 'polygon') {
+        try {
+          const raw = document.getElementById('boundaryPolygonCoordsInput')?.value;
+          const coords = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(coords) && coords.length) {
+            boundaryPolygon = coords;
+          }
+        } catch (error) {
+          console.warn('Unable to parse boundary polygon:', error);
+        }
+      }
+
       return parcels.filter(parcel => {
         const centroid = parcel.centroid || {};
         const lat = normalizeNumber(centroid.lat);
@@ -2057,6 +2360,15 @@
           if (desc !== propertyType) {
             return false;
           }
+        }
+        if (boundaryCircle) {
+          const distance = haversineMiles(lat, lng, boundaryCircle.lat, boundaryCircle.lng);
+          if (!Number.isFinite(distance) || distance > boundaryCircle.radiusMiles) {
+            return false;
+          }
+        }
+        if (boundaryPolygon && !pointInPolygon(lat, lng, boundaryPolygon)) {
+          return false;
         }
         if (minPrice !== null) {
           const totalValue = normalizeNumber(parcel.total_value);
@@ -2639,6 +2951,8 @@
       }).addTo(globalMap);
 
       console.log('Map tiles added');
+      setupBoundaryDrawingTools();
+      restoreBoundaryFromInputs();
 
       // Load town boundaries
       showTownLoadingOverlay('Retrieving town info…');
@@ -3472,6 +3786,17 @@
       if (proximityAddressInput?.value) filters.proximity_address = proximityAddressInput.value;
       const proximityRadiusInput = document.querySelector('input[name="proximity_radius_miles"]');
       if (proximityRadiusInput?.value) filters.proximity_radius_miles = proximityRadiusInput.value;
+      const boundaryTypeInput = document.getElementById('boundaryShapeTypeInput');
+      if (boundaryTypeInput && boundaryTypeInput.value) {
+        filters.boundary_shape_type = boundaryTypeInput.value;
+        if (boundaryTypeInput.value === 'circle') {
+          filters.boundary_circle_lat = document.getElementById('boundaryCircleLatInput')?.value || '';
+          filters.boundary_circle_lng = document.getElementById('boundaryCircleLngInput')?.value || '';
+          filters.boundary_circle_radius_miles = document.getElementById('boundaryCircleRadiusInput')?.value || '';
+        } else if (boundaryTypeInput.value === 'polygon') {
+          filters.boundary_polygon_coords = document.getElementById('boundaryPolygonCoordsInput')?.value || '';
+        }
+      }
       const townInput = document.querySelector('input[name="town_id"]');
       const resolvedTownId = townInput?.dataset?.resolvedTownId || townId || '';
       const normalizedTownName = townInput?.dataset?.townName
@@ -3611,6 +3936,17 @@
         if (proximityRadiusInput && proximityRadiusInput.value) {
           filters.proximity_radius_miles = proximityRadiusInput.value;
         }
+        const boundaryTypeInput = document.getElementById('boundaryShapeTypeInput');
+        if (boundaryTypeInput && boundaryTypeInput.value) {
+          filters.boundary_shape_type = boundaryTypeInput.value;
+          if (boundaryTypeInput.value === 'circle') {
+            filters.boundary_circle_lat = document.getElementById('boundaryCircleLatInput')?.value || '';
+            filters.boundary_circle_lng = document.getElementById('boundaryCircleLngInput')?.value || '';
+            filters.boundary_circle_radius_miles = document.getElementById('boundaryCircleRadiusInput')?.value || '';
+          } else if (boundaryTypeInput.value === 'polygon') {
+            filters.boundary_polygon_coords = document.getElementById('boundaryPolygonCoordsInput')?.value || '';
+          }
+        }
         if (normalizedTownName) {
           filters.town_name = normalizedTownName;
         }
@@ -3696,6 +4032,21 @@
         }
         if (filters.neighborhood) {
           params.append('neighborhood', filters.neighborhood);
+        }
+        if (filters.boundary_shape_type) {
+          params.append('boundary_shape_type', filters.boundary_shape_type);
+        }
+        if (filters.boundary_circle_lat) {
+          params.append('boundary_circle_lat', filters.boundary_circle_lat);
+        }
+        if (filters.boundary_circle_lng) {
+          params.append('boundary_circle_lng', filters.boundary_circle_lng);
+        }
+        if (filters.boundary_circle_radius_miles) {
+          params.append('boundary_circle_radius_miles', filters.boundary_circle_radius_miles);
+        }
+        if (filters.boundary_polygon_coords) {
+          params.append('boundary_polygon_coords', filters.boundary_polygon_coords);
         }
         if (filters.proximity_address) {
           params.append('proximity_address', filters.proximity_address);
@@ -4266,6 +4617,7 @@
       }
 
       hideBostonNeighborhoodSelectorUI();
+      clearBoundaryShape(false);
 
       // Update the active filter count
       updateActiveFilterCount();
@@ -4303,6 +4655,11 @@
         }
       });
 
+      const boundaryTypeInput = document.getElementById('boundaryShapeTypeInput');
+      if (boundaryTypeInput && boundaryTypeInput.value) {
+        activeCount++;
+      }
+
       // Show/hide clear button and count
       if (activeCount > 0) {
         clearBtn.style.display = 'inline-block';
@@ -4324,19 +4681,33 @@
     // Add event listeners to all filter inputs to update count
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('parcelSearchForm');
-      if (form) {
-        form.querySelectorAll('select, input[type="text"], input[type="number"]').forEach(element => {
-          element.addEventListener('change', updateActiveFilterCount);
-          element.addEventListener('input', updateActiveFilterCount);
-        });
+        if (form) {
+          form.querySelectorAll('select, input[type="text"], input[type="number"]').forEach(element => {
+            element.addEventListener('change', updateActiveFilterCount);
+            element.addEventListener('input', updateActiveFilterCount);
+          });
 
-        // Initial count update
-        updateActiveFilterCount();
-      }
+          // Initial count update
+          updateActiveFilterCount();
+        }
 
-      // Ensure filter overlay starts collapsed with correct toggle state
-      toggleSearchOverlay(false);
-    });
+        // Ensure filter overlay starts collapsed with correct toggle state
+        toggleSearchOverlay(false);
+
+        const drawCircleBtn = document.getElementById('drawCircleBoundaryBtn');
+        const drawPolygonBtn = document.getElementById('drawPolygonBoundaryBtn');
+        const clearBoundaryBtn = document.getElementById('clearBoundaryBtn');
+        if (drawCircleBtn) {
+          drawCircleBtn.addEventListener('click', () => beginBoundaryDraw('circle'));
+        }
+        if (drawPolygonBtn) {
+          drawPolygonBtn.addEventListener('click', () => beginBoundaryDraw('polygon'));
+        }
+        if (clearBoundaryBtn) {
+          clearBoundaryBtn.addEventListener('click', () => clearBoundaryShape(true));
+        }
+        updateBoundaryStatusUI();
+      });
 
     // Toggle results panel
     function toggleResultsPanel() {

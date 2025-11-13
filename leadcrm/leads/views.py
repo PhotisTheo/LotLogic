@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from io import BytesIO
 from pathlib import Path
-from typing import Iterable, List, Optional, Tuple, NamedTuple
+from typing import Dict, Iterable, List, Optional, Tuple, NamedTuple
 from urllib.parse import quote, urlencode, urljoin
 from datetime import timedelta
 
@@ -97,6 +97,60 @@ logger = logging.getLogger(__name__)
 
 SKIPTRACE_CACHE_TTL_DAYS = getattr(settings, "SKIPTRACE_CACHE_TTL_DAYS", 90)
 LIEN_SEARCH_AUTO_THRESHOLD = getattr(settings, "LIEN_SEARCH_AUTO_THRESHOLD", 1000)
+
+
+def _parse_boundary_shape(data) -> Optional[Dict[str, object]]:
+    shape_type = data.get("boundary_shape_type")
+    if not shape_type:
+        return None
+    shape_type = shape_type.strip().lower()
+    if shape_type == "circle":
+        try:
+            lat = float(data.get("boundary_circle_lat"))
+            lng = float(data.get("boundary_circle_lng"))
+            radius = float(data.get("boundary_circle_radius_miles"))
+        except (TypeError, ValueError):
+            return None
+        return {
+            "type": "circle",
+            "center_lat": lat,
+            "center_lng": lng,
+            "radius_miles": radius,
+            "source": "boundary",
+        }
+    if shape_type == "polygon":
+        raw = data.get("boundary_polygon_coords")
+        if not raw:
+            return None
+        try:
+            coords = json.loads(raw)
+        except json.JSONDecodeError:
+            return None
+        if not isinstance(coords, list) or not coords:
+            return None
+        return {
+            "type": "polygon",
+            "coordinates": coords,
+        }
+    return None
+
+
+def _serialize_shape_filter(shape_filter: Optional[Dict[str, object]]) -> Optional[Dict[str, object]]:
+    if not shape_filter:
+        return None
+    if shape_filter.get("type") == "circle":
+        return {
+            "type": "circle",
+            "center_lat": shape_filter.get("center_lat"),
+            "center_lng": shape_filter.get("center_lng"),
+            "radius_miles": shape_filter.get("radius_miles"),
+        }
+    if shape_filter.get("type") == "polygon":
+        return {
+            "type": "polygon",
+            "coordinates": shape_filter.get("coordinates"),
+        }
+    return None
 
 
 def _calculate_mortgage_balance_from_attom(attom_data, current_value):
@@ -2630,6 +2684,9 @@ def parcel_search_home(request):
     }
     context_radius_meta = default_radius_meta.copy()
 
+    boundary_shape_filter = _parse_boundary_shape(request.GET)
+    boundary_shape_serialized = _serialize_shape_filter(boundary_shape_filter)
+
     if request.GET and form.is_valid():
         cleaned = form.cleaned_data
         limit = cleaned.get("limit") or None  # No limit by default
@@ -2698,6 +2755,7 @@ def parcel_search_home(request):
                 proximity_address=proximity_address,
                 proximity_radius_miles=proximity_radius,
                 limit=limit,
+                shape_filter=boundary_shape_filter,
             )
         except MassGISDataError as exc:
             messages.error(request, str(exc))
@@ -2728,6 +2786,7 @@ def parcel_search_home(request):
                     "proximity_address": proximity_address,
                     "proximity_radius_miles": proximity_radius,
                     "limit": limit,
+                    "boundary_shape": boundary_shape_serialized,
                     "total_matches": total_matches,
                 }
                 save_form = ParcelListSaveForm(
@@ -2775,6 +2834,10 @@ def parcel_search_home(request):
     # Boston dataset preload disabled - using local file instead
     # Data will be loaded on-demand when a neighborhood is selected
 
+    boundary_polygon_json = ""
+    if boundary_shape_serialized and boundary_shape_serialized.get("type") == "polygon":
+        boundary_polygon_json = json.dumps(boundary_shape_serialized.get("coordinates") or [])
+
     context = {
         "form": form,
         "results": results,
@@ -2795,6 +2858,8 @@ def parcel_search_home(request):
         "proximity_radius_miles": (
             cleaned.get("proximity_radius_miles") if cleaned else None
         ),
+        "boundary_shape": boundary_shape_serialized,
+        "boundary_polygon_json": boundary_polygon_json,
         "radius_meta": context_radius_meta,
         "csv_download_query": csv_download_query,
         "initial_auto_lien_search_enabled": bool(results) and len(results) <= LIEN_SEARCH_AUTO_THRESHOLD,
@@ -4355,6 +4420,25 @@ def saved_parcel_list_detail(request, pk):
             or "",
             "limit": saved_list.criteria.get("limit", PARCEL_SEARCH_MAX_RESULTS),
         }
+        saved_shape = saved_list.criteria.get("boundary_shape") or {}
+        if saved_shape.get("type") == "circle":
+            params.update(
+                {
+                    "boundary_shape_type": "circle",
+                    "boundary_circle_lat": saved_shape.get("center_lat") or "",
+                    "boundary_circle_lng": saved_shape.get("center_lng") or "",
+                    "boundary_circle_radius_miles": saved_shape.get("radius_miles") or "",
+                }
+            )
+        elif saved_shape.get("type") == "polygon":
+            params.update(
+                {
+                    "boundary_shape_type": "polygon",
+                    "boundary_polygon_coords": json.dumps(
+                        saved_shape.get("coordinates") or []
+                    ),
+                }
+            )
         criteria_qs = urlencode(params)
 
     stripe_enabled = bool(
@@ -6584,6 +6668,9 @@ def parcels_in_viewport(request):
                 filters['max_years_owned'] = int(request.GET.get('max_years_owned'))
             except (ValueError, TypeError):
                 pass
+        shape_filter = _parse_boundary_shape(request.GET)
+        if shape_filter:
+            logger.info("Applying boundary shape filter: %s", shape_filter.get("type"))
         proximity_address = request.GET.get('proximity_address')
         if proximity_address and proximity_address.strip():
             filters['proximity_address'] = proximity_address.strip()
@@ -6640,7 +6727,15 @@ def parcels_in_viewport(request):
 
         # Fetch parcels
         logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
-        parcels = get_parcels_in_bbox(north, south, east, west, limit=limit, **filters)
+        parcels = get_parcels_in_bbox(
+            north,
+            south,
+            east,
+            west,
+            limit=limit,
+            shape_filter=shape_filter,
+            **filters,
+        )
         logger.info(f"Found {len(parcels)} parcels")
 
         # Automatic lien search disabled - users must manually trigger via "Find Legal Info" button
