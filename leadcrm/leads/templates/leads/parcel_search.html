@@ -919,6 +919,9 @@
                   <button type="button" class="btn btn-outline-primary btn-sm" id="drawPolygonBoundaryBtn">
                     <i class="bi bi-hexagon"></i> Draw Polygon
                   </button>
+                  <button type="button" class="btn btn-outline-success btn-sm" id="finishPolygonBoundaryBtn" style="display: none;">
+                    <i class="bi bi-check2"></i> Finish Polygon
+                  </button>
                   <button type="button" class="btn btn-outline-secondary btn-sm ms-auto" id="clearBoundaryBtn">
                     <i class="bi bi-eraser"></i> Clear Boundary
                   </button>
@@ -1208,6 +1211,7 @@
   var bostonNeighborhoodPolygonIndex = new Map();
   var boundaryLayerGroup = null;
   var activeBoundaryMeta = null;
+  var finishPolygonBtn = null;
   var drawingMode = null;
   var drawingPoints = [];
   var drawingPreviewLayer = null;
@@ -1268,7 +1272,7 @@
     }
     if (drawingMode === 'polygon') {
       statusEl.textContent = drawingPoints.length
-        ? 'Click to add more points, double-click to finish the polygon.'
+        ? 'Click to add more points, double-click or press Finish Polygon when done.'
         : 'Click on the map to add the first polygon point.';
       statusEl.classList.add('text-primary');
       return;
@@ -1333,6 +1337,10 @@
     activeBoundaryMeta = null;
     updateBoundaryFormInputs(null);
     updateBoundaryStatusUI();
+    if (finishPolygonBtn) {
+      finishPolygonBtn.style.display = 'none';
+      finishPolygonBtn.disabled = true;
+    }
     updateActiveFilterCount();
     if (triggerRefresh) {
       refreshParcelsForFilters({ immediate: true, force: true });
@@ -1385,6 +1393,10 @@
       globalMap.removeLayer(drawingPreviewLayer);
       drawingPreviewLayer = null;
     }
+    if (finishPolygonBtn) {
+      finishPolygonBtn.style.display = 'none';
+      finishPolygonBtn.disabled = true;
+    }
     updateBoundaryStatusUI();
     updateActiveFilterCount();
     refreshParcelsForFilters({ immediate: true, force: true });
@@ -1406,6 +1418,10 @@
     if (drawingPreviewLayer && globalMap) {
       globalMap.removeLayer(drawingPreviewLayer);
       drawingPreviewLayer = null;
+    }
+    if (finishPolygonBtn) {
+      finishPolygonBtn.style.display = 'none';
+      finishPolygonBtn.disabled = true;
     }
     updateBoundaryStatusUI();
     updateActiveFilterCount();
@@ -1440,6 +1456,10 @@
       if (boundaryLayerGroup) {
         boundaryLayerGroup.clearLayers();
       }
+      if (finishPolygonBtn) {
+        finishPolygonBtn.style.display = 'inline-block';
+        finishPolygonBtn.disabled = true;
+      }
       updateBoundaryStatusUI();
     }
   }
@@ -1447,9 +1467,6 @@
   function handleBoundaryMapClick(e) {
     if (!drawingMode) {
       return;
-    }
-    if (e) {
-      L.DomEvent.stop(e);
     }
     const latlng = e.latlng;
     if (!latlng) {
@@ -1491,6 +1508,10 @@
       } else {
         const previewPoints = drawingPoints.slice();
         drawingPreviewLayer.setLatLngs(previewPoints);
+      }
+      if (finishPolygonBtn) {
+        finishPolygonBtn.disabled = drawingPoints.length < 3;
+        finishPolygonBtn.style.display = 'inline-block';
       }
       updateBoundaryStatusUI();
     }
@@ -1534,9 +1555,11 @@
 
   function handleBoundaryDoubleClick(e) {
     if (drawingMode === 'polygon' && drawingPoints.length >= 3) {
-      if (e) {
-        L.DomEvent.stop(e);
+      if (e && e.originalEvent) {
+        e.originalEvent.preventDefault();
+        e.originalEvent.stopPropagation();
       }
+      L.DomEvent.stop(e);
       finalizePolygonBoundary(drawingPoints.slice());
     }
   }
@@ -1579,6 +1602,7 @@
       }
     }
     updateBoundaryStatusUI();
+    updateActiveFilterCount();
   }
   var bostonNeighborhoodBBoxIndex = new Map();
   var bostonNeighborhoodPolygonsDirty = true;
@@ -4816,6 +4840,7 @@
         const drawCircleBtn = document.getElementById('drawCircleBoundaryBtn');
         const drawPolygonBtn = document.getElementById('drawPolygonBoundaryBtn');
         const clearBoundaryBtn = document.getElementById('clearBoundaryBtn');
+        finishPolygonBtn = document.getElementById('finishPolygonBoundaryBtn');
         if (drawCircleBtn) {
           drawCircleBtn.addEventListener('click', () => beginBoundaryDraw('circle'));
         }
@@ -4824,6 +4849,13 @@
         }
         if (clearBoundaryBtn) {
           clearBoundaryBtn.addEventListener('click', () => clearBoundaryShape(true));
+        }
+        if (finishPolygonBtn) {
+          finishPolygonBtn.addEventListener('click', () => {
+            if (drawingMode === 'polygon' && drawingPoints.length >= 3) {
+              finalizePolygonBoundary(drawingPoints.slice());
+            }
+          });
         }
         updateBoundaryStatusUI();
       });
