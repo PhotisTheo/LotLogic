@@ -2661,6 +2661,13 @@ def parcel_search_home(request):
             except (TypeError, ValueError):
                 min_years_owned = None
 
+        max_years_owned = cleaned.get("max_years_owned")
+        if max_years_owned is not None:
+            try:
+                max_years_owned = int(max_years_owned)
+            except (TypeError, ValueError):
+                max_years_owned = None
+
         proximity_address = (cleaned.get("proximity_address") or "").strip()
         proximity_radius = cleaned.get("proximity_radius_miles")
         if proximity_radius is not None:
@@ -2687,6 +2694,7 @@ def parcel_search_home(request):
                 min_price=min_price,
                 max_price=max_price,
                 min_years_owned=min_years_owned,
+                max_years_owned=max_years_owned,
                 proximity_address=proximity_address,
                 proximity_radius_miles=proximity_radius,
                 limit=limit,
@@ -2716,6 +2724,7 @@ def parcel_search_home(request):
                     "min_price": min_price,
                     "max_price": max_price,
                     "min_years_owned": min_years_owned,
+                    "max_years_owned": max_years_owned,
                     "proximity_address": proximity_address,
                     "proximity_radius_miles": proximity_radius,
                     "limit": limit,
@@ -2781,6 +2790,7 @@ def parcel_search_home(request):
         "min_price": cleaned.get("min_price") if cleaned else None,
         "max_price": cleaned.get("max_price") if cleaned else None,
         "min_years_owned": cleaned.get("min_years_owned") if cleaned else None,
+        "max_years_owned": cleaned.get("max_years_owned") if cleaned else None,
         "proximity_address": cleaned.get("proximity_address") if cleaned else None,
         "proximity_radius_miles": (
             cleaned.get("proximity_radius_miles") if cleaned else None
@@ -4339,6 +4349,7 @@ def saved_parcel_list_detail(request, pk):
             "min_price": saved_list.criteria.get("min_price") or "",
             "max_price": saved_list.criteria.get("max_price") or "",
             "min_years_owned": saved_list.criteria.get("min_years_owned") or "",
+            "max_years_owned": saved_list.criteria.get("max_years_owned") or "",
             "proximity_address": saved_list.criteria.get("proximity_address") or "",
             "proximity_radius_miles": saved_list.criteria.get("proximity_radius_miles")
             or "",
@@ -6566,6 +6577,24 @@ def parcels_in_viewport(request):
         if request.GET.get('min_years_owned'):
             try:
                 filters['min_years_owned'] = int(request.GET.get('min_years_owned'))
+            except (ValueError, TypeError):
+                pass
+        if request.GET.get('max_years_owned'):
+            try:
+                filters['max_years_owned'] = int(request.GET.get('max_years_owned'))
+            except (ValueError, TypeError):
+                pass
+        proximity_address = request.GET.get('proximity_address')
+        if proximity_address and proximity_address.strip():
+            filters['proximity_address'] = proximity_address.strip()
+        if request.GET.get('proximity_radius_miles'):
+            try:
+                filters['proximity_radius_miles'] = float(request.GET.get('proximity_radius_miles'))
+            except (ValueError, TypeError):
+                pass
+        if request.GET.get('max_years_owned'):
+            try:
+                filters['max_years_owned'] = int(request.GET.get('max_years_owned'))
             except (ValueError, TypeError):
                 pass
         neighborhood = request.GET.get('neighborhood')

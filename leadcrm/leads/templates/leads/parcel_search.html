@@ -874,12 +874,19 @@
             </div>
             <div class="filter-section-header">Ownership Duration</div>
             <div class="row gy-3 gx-3 align-items-start">
-              <div class="col-12">
+              <div class="col-12 col-lg-6">
                 <label class="form-label" for="{{ form.min_years_owned.id_for_label }}">
                   <i class="bi bi-calendar-check"></i> Minimum Years Owned
                 </label>
                 {{ form.min_years_owned }}
                 <div class="form-text">Based on last recorded sale date</div>
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label" for="{{ form.max_years_owned.id_for_label }}">
+                  <i class="bi bi-calendar-minus"></i> Maximum Years Owned
+                </label>
+                {{ form.max_years_owned }}
+                <div class="form-text">Leave blank to allow any ownership length</div>
               </div>
             </div>
           </div>
@@ -1998,6 +2005,7 @@
       const maxPrice = parseNumberFilter(filters.max_price);
       const equityMin = parseNumberFilter(filters.equity_min);
       const minYearsOwned = parseNumberFilter(filters.min_years_owned);
+      const maxYearsOwned = parseNumberFilter(filters.max_years_owned);
       const absenteeFilter = filters.absentee ? String(filters.absentee).toLowerCase() : '';
       const addressQuery = filters.address_contains ? String(filters.address_contains).toLowerCase() : '';
       const propertyCategory = filters.property_category && filters.property_category !== 'any'
@@ -2084,6 +2092,16 @@
           }
           const ownedYears = (Date.now() - saleDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
           if (ownedYears < minYearsOwned) {
+            return false;
+          }
+        }
+        if (maxYearsOwned !== null && maxYearsOwned >= 0) {
+          const saleDate = parseMassGisDate(parcel.last_sale_date);
+          if (!saleDate) {
+            return false;
+          }
+          const ownedYears = (Date.now() - saleDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+          if (ownedYears > maxYearsOwned) {
             return false;
           }
         }
@@ -3448,6 +3466,12 @@
       if (absenteeSelect?.value && absenteeSelect.value !== 'any') filters.absentee = absenteeSelect.value;
       const minYearsOwnedInput = document.querySelector('input[name="min_years_owned"]');
       if (minYearsOwnedInput?.value) filters.min_years_owned = minYearsOwnedInput.value;
+      const maxYearsOwnedInput = document.querySelector('input[name="max_years_owned"]');
+      if (maxYearsOwnedInput?.value) filters.max_years_owned = maxYearsOwnedInput.value;
+      const proximityAddressInput = document.querySelector('input[name="proximity_address"]');
+      if (proximityAddressInput?.value) filters.proximity_address = proximityAddressInput.value;
+      const proximityRadiusInput = document.querySelector('input[name="proximity_radius_miles"]');
+      if (proximityRadiusInput?.value) filters.proximity_radius_miles = proximityRadiusInput.value;
       const townInput = document.querySelector('input[name="town_id"]');
       const resolvedTownId = townInput?.dataset?.resolvedTownId || townId || '';
       const normalizedTownName = townInput?.dataset?.townName
@@ -3575,6 +3599,18 @@
         if (minYearsOwnedInput && minYearsOwnedInput.value) {
           filters.min_years_owned = minYearsOwnedInput.value;
         }
+        const maxYearsOwnedInput = document.querySelector('input[name="max_years_owned"]');
+        if (maxYearsOwnedInput && maxYearsOwnedInput.value) {
+          filters.max_years_owned = maxYearsOwnedInput.value;
+        }
+        const proximityAddressInput = document.querySelector('input[name="proximity_address"]');
+        if (proximityAddressInput && proximityAddressInput.value) {
+          filters.proximity_address = proximityAddressInput.value.trim();
+        }
+        const proximityRadiusInput = document.querySelector('input[name="proximity_radius_miles"]');
+        if (proximityRadiusInput && proximityRadiusInput.value) {
+          filters.proximity_radius_miles = proximityRadiusInput.value;
+        }
         if (normalizedTownName) {
           filters.town_name = normalizedTownName;
         }
@@ -3649,6 +3685,9 @@
         if (filters.min_years_owned) {
           params.append('min_years_owned', filters.min_years_owned);
         }
+        if (filters.max_years_owned) {
+          params.append('max_years_owned', filters.max_years_owned);
+        }
         if (filters.town_name) {
           params.append('town_name', filters.town_name);
         }
@@ -3657,6 +3696,12 @@
         }
         if (filters.neighborhood) {
           params.append('neighborhood', filters.neighborhood);
+        }
+        if (filters.proximity_address) {
+          params.append('proximity_address', filters.proximity_address);
+        }
+        if (filters.proximity_radius_miles) {
+          params.append('proximity_radius_miles', filters.proximity_radius_miles);
         }
 
         // Debug: Log what URLSearchParams actually created

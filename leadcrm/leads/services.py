@@ -1995,6 +1995,7 @@ def search_massgis_parcels(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     min_years_owned: Optional[int] = None,
+    max_years_owned: Optional[int] = None,
     proximity_address: Optional[str] = None,
     proximity_radius_miles: Optional[float] = None,
     limit: Optional[int] = None,
@@ -2015,6 +2016,7 @@ def search_massgis_parcels(
     min_price_value = float(min_price) if min_price is not None else None
     max_price_value = float(max_price) if max_price is not None else None
     min_years_owned_value = float(min_years_owned) if min_years_owned is not None else None
+    max_years_owned_value = float(max_years_owned) if max_years_owned is not None else None
 
     radius_limit_miles = None
     reference_point: Optional[Tuple[float, float, str]] = None
@@ -2106,12 +2108,14 @@ def search_massgis_parcels(
             if assessed_value is None or assessed_value > max_price_value:
                 continue
 
-        if min_years_owned_value is not None:
+        if min_years_owned_value is not None or max_years_owned_value is not None:
             sale_date = _parse_massgis_date(record.get("LS_DATE"))
             if not sale_date:
                 continue
             owned_years = (today - sale_date.date()).days / 365.25
-            if owned_years < min_years_owned_value:
+            if min_years_owned_value is not None and owned_years < min_years_owned_value:
+                continue
+            if max_years_owned_value is not None and owned_years > max_years_owned_value:
                 continue
 
         if radius_limit_miles is not None and reference_point is not None:
@@ -4737,6 +4741,9 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
     - equity_min: Minimum equity percentage
     - absentee: "absentee" for absentee owners only, "owner"/"owner-occupied" for owner-occupied
     - min_years_owned: Minimum years the property has been owned
+    - max_years_owned: Maximum years the property has been owned
+    - proximity_address: Center address for radius filter
+    - proximity_radius_miles: Radius (in miles) around the center address
     - town_id: Only include parcels from this town id
     - town_name: Filter by specific town name
 
@@ -4745,6 +4752,24 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
     import shapefile
 
     viewport_bbox = (west, south, east, north)
+    center_address = _clean_string(filters.pop('proximity_address', None))
+    proximity_radius_value = filters.pop('proximity_radius_miles', None)
+    radius_limit_miles = None
+    reference_point: Optional[Tuple[float, float, str]] = None
+
+    if center_address and proximity_radius_value not in (None, ''):
+        try:
+            radius_limit_miles = float(proximity_radius_value)
+        except (TypeError, ValueError):
+            radius_limit_miles = None
+        if radius_limit_miles is not None and radius_limit_miles < 0:
+            radius_limit_miles = None
+
+        if radius_limit_miles is not None:
+            coords = geocode_address(center_address)
+            if coords:
+                reference_point = (float(coords[0]), float(coords[1]), "wgs84")
+
     neighborhood_filter = _clean_string(filters.pop('neighborhood', None))
     boston_neighborhood = (
         _get_boston_neighborhood(neighborhood_filter) if neighborhood_filter else None
@@ -4875,6 +4900,11 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             # Load assessment records with address data
             assess_records = _load_assess_records(str(dataset_dir))
 
+            if radius_limit_miles is not None and reference_point is None and center_address:
+                derived_point = _find_reference_point_from_records(assess_records, center_address)
+                if derived_point:
+                    reference_point = derived_point
+
             # Load USE_CODE lookup table for descriptions
             usecode_lookup = _load_usecode_lookup(str(dataset_dir))
 
@@ -4955,6 +4985,12 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                 if not (south <= lat <= north and west <= lng <= east):
                     continue
 
+                if radius_limit_miles is not None and reference_point is not None:
+                    target_point = (lng, lat, "wgs84")
+                    distance_miles = _distance_miles_between(reference_point, target_point)
+                    if distance_miles is None or distance_miles > radius_limit_miles:
+                        continue
+
                 if enforce_neighborhood and not _neighborhood_contains_point(boston_neighborhood, lng, lat):
                     continue
 
@@ -5023,6 +5059,14 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                         continue
                     owned_years = (date.today() - sale_date.date()).days / 365.25
                     if owned_years < filters['min_years_owned']:
+                        continue
+                if filters.get('max_years_owned'):
+                    from datetime import date
+                    sale_date = _parse_massgis_date(attributes.get("LS_DATE"))
+                    if not sale_date:
+                        continue
+                    owned_years = (date.today() - sale_date.date()).days / 365.25
+                    if owned_years > filters['max_years_owned']:
                         continue
 
                 # Classify the USE_CODE to a readable category for color coding

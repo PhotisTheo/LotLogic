@@ -70,6 +70,12 @@ class ParcelSearchForm(forms.Form):
         required=False,
         help_text="Filter for properties the current owner has held for at least this many years.",
     )
+    max_years_owned = forms.IntegerField(
+        label="Max. Years Owned",
+        min_value=0,
+        required=False,
+        help_text="Filter for properties the current owner has held for no more than this many years.",
+    )
     proximity_address = forms.CharField(
         label="Center Address",
         required=False,
