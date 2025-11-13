@@ -1978,18 +1978,8 @@
     }
 
     function shouldUseTownGeojson(filters, townId) {
-      const normalizedTownId = String(townId || '').trim();
-      if (!normalizedTownId) {
-        console.log('shouldUseTownGeojson: false (missing resolved town id)');
-        return false;
-      }
-      if (townGeojsonUnavailable.has(normalizedTownId)) {
-        console.log(`shouldUseTownGeojson: false (no static GeoJSON available for town ${normalizedTownId})`);
-        return false;
-      }
-
-      console.log(`shouldUseTownGeojson: true (static GeoJSON enabled for town ${normalizedTownId})`);
-      return true;
+      console.log('shouldUseTownGeojson: false (static GeoJSON disabled – using MassGIS datasets)');
+      return false;
     }
 
     function filterParcelsClientSide(parcels, viewportBounds, filters) {
