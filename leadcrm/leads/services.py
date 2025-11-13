@@ -4793,23 +4793,19 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
     import shapefile
 
     viewport_bbox = (west, south, east, north)
-    circle_shape = None
     polygon_filter: Optional[List[Tuple[float, float]]] = None
     radius_limit_miles = None
     reference_point: Optional[Tuple[float, float, str]] = None
     radius_center_source = None
 
-    polygon_bounds = _polygon_bounds(polygon_filter) if polygon_filter else None
-
     if shape_filter:
         if shape_filter.get("type") == "circle":
-            circle_shape = shape_filter
             try:
-                center_lat = float(circle_shape.get("center_lat"))
-                center_lng = float(circle_shape.get("center_lng"))
-                radius_limit_miles = float(circle_shape.get("radius_miles"))
+                center_lat = float(shape_filter.get("center_lat"))
+                center_lng = float(shape_filter.get("center_lng"))
+                radius_limit_miles = float(shape_filter.get("radius_miles"))
                 reference_point = (center_lng, center_lat, "wgs84")
-                radius_center_source = circle_shape.get("source") or "boundary"
+                radius_center_source = shape_filter.get("source") or "boundary"
             except (TypeError, ValueError):
                 radius_limit_miles = None
                 reference_point = None
@@ -4823,6 +4819,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                     continue
             if polygon_points:
                 polygon_filter = polygon_points
+    polygon_bounds = _polygon_bounds(polygon_filter) if polygon_filter else None
     center_address = _clean_string(filters.pop('proximity_address', None))
     geocode_town_name = None
     if center_address:
@@ -4836,8 +4833,6 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
         elif filters.get('town_name'):
             geocode_town_name = str(filters['town_name']).split(" (", 1)[0].strip()
     proximity_radius_value = filters.pop('proximity_radius_miles', None)
-    radius_limit_miles = None
-    reference_point: Optional[Tuple[float, float, str]] = None
 
     if polygon_bounds:
         west = max(west, polygon_bounds["west"])
@@ -4846,7 +4841,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
         north = min(north, polygon_bounds["north"])
         viewport_bbox = (west, south, east, north)
 
-    if center_address and proximity_radius_value not in (None, ''):
+    if reference_point is None and center_address and proximity_radius_value not in (None, ''):
         try:
             radius_limit_miles = float(proximity_radius_value)
         except (TypeError, ValueError):
