@@ -2858,7 +2858,7 @@ def parcel_search_home(request):
         "proximity_radius_miles": (
             cleaned.get("proximity_radius_miles") if cleaned else None
         ),
-        "boundary_shape": boundary_shape_serialized,
+        "boundary_shape": boundary_shape_serialized or {},
         "boundary_polygon_json": boundary_polygon_json,
         "radius_meta": context_radius_meta,
         "csv_download_query": csv_download_query,

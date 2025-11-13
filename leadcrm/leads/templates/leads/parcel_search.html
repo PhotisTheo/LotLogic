@@ -3,7 +3,6 @@
 {% block title %}MassGIS Parcel Search{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" crossorigin=""/>
 <style>
   /* Override base template container padding for full-screen layout */
   main.container {
@@ -1178,7 +1177,6 @@
     {% endif %}
 
 <script type="application/json" id="parcel-town-options-data">{{ form.town_options_json|safe }}</script>
-<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js" crossorigin=""></script>
 <script>
   // Global variables accessible across all script blocks
   var globalMap = null;
@@ -1208,7 +1206,11 @@
   var currentFocusedTownId = null;
   var townGeojsonRequests = new Map();
   var bostonNeighborhoodPolygonIndex = new Map();
-  var boundaryDrawerInstance = null;
+  var boundaryLayerGroup = null;
+  var activeBoundaryMeta = null;
+  var drawingMode = null;
+  var drawingPoints = [];
+  var drawingPreviewLayer = null;
   const METERS_PER_MILE = 1609.344;
 
   function milesToMeters(miles) {
@@ -1254,6 +1256,23 @@
   function updateBoundaryStatusUI() {
     const statusEl = document.getElementById('boundaryStatusText');
     if (!statusEl) return;
+    if (drawingMode === 'circle-center') {
+      statusEl.textContent = 'Click on the map to set the circle center.';
+      statusEl.classList.add('text-primary');
+      return;
+    }
+    if (drawingMode === 'circle-radius') {
+      statusEl.textContent = 'Click again to set the circle radius.';
+      statusEl.classList.add('text-primary');
+      return;
+    }
+    if (drawingMode === 'polygon') {
+      statusEl.textContent = drawingPoints.length
+        ? 'Click to add more points, double-click to finish the polygon.'
+        : 'Click on the map to add the first polygon point.';
+      statusEl.classList.add('text-primary');
+      return;
+    }
     if (!activeBoundaryMeta) {
       statusEl.textContent = 'No boundary applied.';
       statusEl.classList.remove('text-primary');
@@ -1305,155 +1324,255 @@
     if (boundaryLayerGroup) {
       boundaryLayerGroup.clearLayers();
     }
+    if (drawingPreviewLayer && globalMap) {
+      globalMap.removeLayer(drawingPreviewLayer);
+      drawingPreviewLayer = null;
+    }
+    drawingMode = null;
+    drawingPoints = [];
     activeBoundaryMeta = null;
     updateBoundaryFormInputs(null);
     updateBoundaryStatusUI();
+    updateActiveFilterCount();
     if (triggerRefresh) {
       refreshParcelsForFilters({ immediate: true, force: true });
     }
   }
 
-  function persistBoundaryMetaFromLayer(layer) {
-    if (!layer || typeof layer.getLatLng !== 'function') {
+  function renderActiveBoundaryOnMap() {
+    if (!globalMap) {
       return;
     }
-    if (layer instanceof L.Circle) {
-      const center = layer.getLatLng();
-      const radiusMiles = metersToMiles(layer.getRadius());
-      activeBoundaryMeta = {
-        type: 'circle',
-        center: center,
-        radiusMiles: radiusMiles,
-      };
-    } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
-      const latlngs = layer.getLatLngs();
-      const flattened = [];
-      const extract = (segments) => {
-        segments.forEach(segment => {
-          if (Array.isArray(segment)) {
-            if (segment.length && typeof segment[0].lat === 'number') {
-              segment.forEach(point => flattened.push([point.lat, point.lng]));
-            } else {
-              extract(segment);
-            }
-          }
-        });
-      };
-      extract(latlngs);
-      if (flattened.length) {
-        activeBoundaryMeta = {
-          type: 'polygon',
-          coords: flattened,
-        };
-      }
+    if (!boundaryLayerGroup) {
+      boundaryLayerGroup = L.featureGroup().addTo(globalMap);
     }
+    boundaryLayerGroup.clearLayers();
+    if (!activeBoundaryMeta) {
+      return;
+    }
+    if (activeBoundaryMeta.type === 'circle' && activeBoundaryMeta.center) {
+      const circle = L.circle(
+        [activeBoundaryMeta.center.lat, activeBoundaryMeta.center.lng],
+        {
+          radius: milesToMeters(activeBoundaryMeta.radiusMiles || 0),
+          color: '#f97316',
+          weight: 2,
+          fillOpacity: 0.15,
+        }
+      );
+      boundaryLayerGroup.addLayer(circle);
+    } else if (activeBoundaryMeta.type === 'polygon' && activeBoundaryMeta.coords) {
+      const polygon = L.polygon(activeBoundaryMeta.coords, {
+        color: '#f97316',
+        weight: 2,
+        fillOpacity: 0.1,
+      });
+      boundaryLayerGroup.addLayer(polygon);
+    }
+  }
+
+  function finalizeCircleBoundary(center, radiusMiles) {
+    activeBoundaryMeta = {
+      type: 'circle',
+      center: { lat: center.lat, lng: center.lng },
+      radiusMiles: radiusMiles,
+    };
     updateBoundaryFormInputs(activeBoundaryMeta);
+    renderActiveBoundaryOnMap();
+    drawingMode = null;
+    drawingPoints = [];
+    if (drawingPreviewLayer && globalMap) {
+      globalMap.removeLayer(drawingPreviewLayer);
+      drawingPreviewLayer = null;
+    }
     updateBoundaryStatusUI();
+    updateActiveFilterCount();
+    refreshParcelsForFilters({ immediate: true, force: true });
+  }
+
+  function finalizePolygonBoundary(points) {
+    if (!points || points.length < 3) {
+      return;
+    }
+    const coords = points.map(pt => [pt.lat, pt.lng]);
+    activeBoundaryMeta = {
+      type: 'polygon',
+      coords,
+    };
+    updateBoundaryFormInputs(activeBoundaryMeta);
+    renderActiveBoundaryOnMap();
+    drawingMode = null;
+    drawingPoints = [];
+    if (drawingPreviewLayer && globalMap) {
+      globalMap.removeLayer(drawingPreviewLayer);
+      drawingPreviewLayer = null;
+    }
+    updateBoundaryStatusUI();
+    updateActiveFilterCount();
+    refreshParcelsForFilters({ immediate: true, force: true });
   }
 
   function beginBoundaryDraw(mode) {
-    if (!globalMap || typeof L === 'undefined' || !L.Draw) {
-      console.warn('Leaflet Draw is not available');
+    if (!globalMap) {
+      console.warn('Map is not ready yet.');
       return;
     }
+    clearBoundaryShape(false);
     if (!boundaryLayerGroup) {
-      boundaryLayerGroup = new L.FeatureGroup();
-      boundaryLayerGroup.addTo(globalMap);
+      boundaryLayerGroup = L.featureGroup().addTo(globalMap);
     }
+
     if (mode === 'circle') {
-      boundaryDrawerInstance = new L.Draw.Circle(globalMap, {
-        shapeOptions: { color: '#f97316', weight: 2, fillOpacity: 0.15 },
-      });
+      drawingMode = 'circle-center';
+      drawingPoints = [];
+      if (drawingPreviewLayer) {
+        globalMap.removeLayer(drawingPreviewLayer);
+        drawingPreviewLayer = null;
+      }
+      updateBoundaryStatusUI();
     } else if (mode === 'polygon') {
-      boundaryDrawerInstance = new L.Draw.Polygon(globalMap, {
-        allowIntersection: false,
-        showArea: true,
-        shapeOptions: { color: '#f97316', weight: 2, fillOpacity: 0.1 },
-      });
-    } else {
-      return;
+      drawingMode = 'polygon';
+      drawingPoints = [];
+      if (drawingPreviewLayer) {
+        globalMap.removeLayer(drawingPreviewLayer);
+        drawingPreviewLayer = null;
+      }
+      if (boundaryLayerGroup) {
+        boundaryLayerGroup.clearLayers();
+      }
+      updateBoundaryStatusUI();
     }
-    boundaryDrawerInstance.enable();
   }
 
-  function setupBoundaryDrawingTools() {
-    if (!globalMap || typeof L === 'undefined' || !L.Control || !L.Control.Draw) {
-      console.warn('Leaflet Draw unavailable, skipping boundary tools');
+  function handleBoundaryMapClick(e) {
+    if (!drawingMode) {
       return;
     }
-    if (!boundaryLayerGroup) {
-      boundaryLayerGroup = new L.FeatureGroup();
-      boundaryLayerGroup.addTo(globalMap);
+    if (e) {
+      L.DomEvent.stop(e);
     }
-    boundaryDrawControl = new L.Control.Draw({
-      draw: {
-        polygon: false,
-        polyline: false,
-        rectangle: false,
-        marker: false,
-        circlemarker: false,
-        circle: false,
-      },
-      edit: {
-        featureGroup: boundaryLayerGroup,
-        edit: false,
-        remove: false,
-      },
-    });
-    globalMap.addControl(boundaryDrawControl);
+    const latlng = e.latlng;
+    if (!latlng) {
+      return;
+    }
 
-    globalMap.on(L.Draw.Event.CREATED, function(event) {
-      boundaryLayerGroup.clearLayers();
-      boundaryLayerGroup.addLayer(event.layer);
-      persistBoundaryMetaFromLayer(event.layer);
-      refreshParcelsForFilters({ immediate: true, force: true });
-    });
+    if (drawingMode === 'circle-center') {
+      drawingPoints = [latlng];
+      drawingMode = 'circle-radius';
+      if (boundaryLayerGroup) {
+        boundaryLayerGroup.clearLayers();
+      }
+      drawingPreviewLayer = L.circle(latlng, {
+        radius: 10,
+        color: '#f97316',
+        weight: 1.5,
+        dashArray: '4 4',
+        fillOpacity: 0.05,
+      }).addTo(boundaryLayerGroup);
+      updateBoundaryStatusUI();
+      return;
+    }
+
+    if (drawingMode === 'circle-radius' && drawingPoints.length === 1) {
+      const center = drawingPoints[0];
+      const radiusMiles = Math.max(haversineMiles(center.lat, center.lng, latlng.lat, latlng.lng), 0.01);
+      finalizeCircleBoundary(center, radiusMiles);
+      return;
+    }
+
+    if (drawingMode === 'polygon') {
+      drawingPoints.push(latlng);
+      if (!drawingPreviewLayer) {
+        drawingPreviewLayer = L.polyline([latlng], {
+          color: '#f97316',
+          weight: 1.5,
+          dashArray: '4 4',
+        }).addTo(boundaryLayerGroup);
+      } else {
+        const previewPoints = drawingPoints.slice();
+        drawingPreviewLayer.setLatLngs(previewPoints);
+      }
+      updateBoundaryStatusUI();
+    }
+  }
+
+  function handleBoundaryMouseMove(e) {
+    if (!drawingMode || !drawingPoints.length) {
+      return;
+    }
+    const latlng = e.latlng;
+    if (!latlng || !globalMap) {
+      return;
+    }
+    if (drawingMode === 'circle-radius' && drawingPoints[0]) {
+      const center = drawingPoints[0];
+      const radiusMiles = Math.max(haversineMiles(center.lat, center.lng, latlng.lat, latlng.lng), 0.01);
+      if (!drawingPreviewLayer) {
+        drawingPreviewLayer = L.circle(center, {
+          radius: milesToMeters(radiusMiles),
+          color: '#f97316',
+          weight: 1.5,
+          dashArray: '4 4',
+          fillOpacity: 0.05,
+        }).addTo(boundaryLayerGroup);
+      } else {
+        drawingPreviewLayer.setRadius(milesToMeters(radiusMiles));
+      }
+    } else if (drawingMode === 'polygon') {
+      const previewPoints = drawingPoints.concat([latlng]);
+      if (!drawingPreviewLayer) {
+        drawingPreviewLayer = L.polyline(previewPoints, {
+          color: '#f97316',
+          weight: 1.5,
+          dashArray: '4 4',
+        }).addTo(boundaryLayerGroup);
+      } else {
+        drawingPreviewLayer.setLatLngs(previewPoints);
+      }
+    }
+  }
+
+  function handleBoundaryDoubleClick(e) {
+    if (drawingMode === 'polygon' && drawingPoints.length >= 3) {
+      if (e) {
+        L.DomEvent.stop(e);
+      }
+      finalizePolygonBoundary(drawingPoints.slice());
+    }
   }
 
   function restoreBoundaryFromInputs() {
     const typeInput = document.getElementById('boundaryShapeTypeInput');
-    if (!typeInput || !typeInput.value) {
+    if (!typeInput || !typeInput.value || !globalMap) {
       updateBoundaryStatusUI();
       return;
+    }
+    if (!boundaryLayerGroup) {
+      boundaryLayerGroup = L.featureGroup().addTo(globalMap);
     }
     const type = typeInput.value;
-    if (!globalMap || !boundaryLayerGroup) {
-      updateBoundaryStatusUI();
-      return;
-    }
     if (type === 'circle') {
       const lat = parseFloat(document.getElementById('boundaryCircleLatInput')?.value || '');
       const lng = parseFloat(document.getElementById('boundaryCircleLngInput')?.value || '');
       const radiusMiles = parseFloat(document.getElementById('boundaryCircleRadiusInput')?.value || '');
       if (Number.isFinite(lat) && Number.isFinite(lng) && Number.isFinite(radiusMiles)) {
-        const circle = L.circle([lat, lng], {
-          radius: milesToMeters(radiusMiles),
-          color: '#f97316',
-          weight: 2,
-          fillOpacity: 0.15,
-        });
-        boundaryLayerGroup.addLayer(circle);
         activeBoundaryMeta = {
           type: 'circle',
           center: { lat, lng },
           radiusMiles,
         };
+        renderActiveBoundaryOnMap();
       }
     } else if (type === 'polygon') {
       try {
         const raw = document.getElementById('boundaryPolygonCoordsInput')?.value;
         const coords = raw ? JSON.parse(raw) : [];
         if (Array.isArray(coords) && coords.length) {
-          const polygon = L.polygon(coords, {
-            color: '#f97316',
-            weight: 2,
-            fillOpacity: 0.1,
-          });
-          boundaryLayerGroup.addLayer(polygon);
           activeBoundaryMeta = {
             type: 'polygon',
-            coords: coords,
+            coords,
           };
+          renderActiveBoundaryOnMap();
         }
       } catch (error) {
         console.warn('Unable to restore boundary polygon:', error);
@@ -1461,9 +1580,6 @@
     }
     updateBoundaryStatusUI();
   }
-  var boundaryLayerGroup = null;
-  var boundaryDrawControl = null;
-  var activeBoundaryMeta = null;
   var bostonNeighborhoodBBoxIndex = new Map();
   var bostonNeighborhoodPolygonsDirty = true;
   var townLoadingOverlay = document.getElementById('townLoadingOverlay');
@@ -2951,7 +3067,10 @@
       }).addTo(globalMap);
 
       console.log('Map tiles added');
-      setupBoundaryDrawingTools();
+      boundaryLayerGroup = L.featureGroup().addTo(globalMap);
+      globalMap.on('click', handleBoundaryMapClick);
+      globalMap.on('mousemove', handleBoundaryMouseMove);
+      globalMap.on('dblclick', handleBoundaryDoubleClick);
       restoreBoundaryFromInputs();
 
       // Load town boundaries
