@@ -2040,6 +2040,9 @@ def search_massgis_parcels(
                 reference_point = _find_reference_point_from_records(records, center_address)
                 if reference_point is not None:
                     radius_center_source = "parcel"
+                    logger.info("Radius filter: using parcel-derived reference point for '%s'", center_address)
+                else:
+                    logger.warning("Radius filter: unable to derive parcel reference point for '%s'", center_address)
             if reference_point is None:
                 radius_limit_miles = None
         else:
@@ -4783,9 +4786,13 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             geocode_query = center_address
             if geocode_town_name and geocode_town_name.lower() not in geocode_query.lower():
                 geocode_query = f"{center_address}, {geocode_town_name}, Massachusetts"
+            logger.info("Radius filter: geocoding '%s'", geocode_query)
             coords = geocode_address(geocode_query)
             if coords:
                 reference_point = (float(coords[0]), float(coords[1]), "wgs84")
+                logger.info("Radius filter: geocode hit at lon=%s lat=%s", coords[0], coords[1])
+            else:
+                logger.warning("Radius filter: geocode miss for '%s'", geocode_query)
 
     neighborhood_filter = _clean_string(filters.pop('neighborhood', None))
     boston_neighborhood = (
@@ -5084,6 +5091,11 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                         continue
                     owned_years = (date.today() - sale_date.date()).days / 365.25
                     if owned_years > filters['max_years_owned']:
+                        continue
+                if radius_limit_miles is not None and reference_point is not None:
+                    target_point = (lng, lat, "wgs84")
+                    distance_miles = _distance_miles_between(reference_point, target_point)
+                    if distance_miles is None or distance_miles > radius_limit_miles:
                         continue
 
                 # Classify the USE_CODE to a readable category for color coding
