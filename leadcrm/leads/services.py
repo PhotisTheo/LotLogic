@@ -2028,7 +2028,10 @@ def search_massgis_parcels(
         except (TypeError, ValueError):
             radius_limit_miles = None
         if radius_limit_miles is not None and radius_limit_miles >= 0:
-            coords = geocode_address(center_address)
+            geocode_query = center_address
+            if town and town.name and town.name.lower() not in geocode_query.lower():
+                geocode_query = f"{center_address}, {town.name}, Massachusetts"
+            coords = geocode_address(geocode_query)
             if coords:
                 lon, lat = coords
                 reference_point = (float(lon), float(lat), "wgs84")
@@ -4753,6 +4756,17 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
 
     viewport_bbox = (west, south, east, north)
     center_address = _clean_string(filters.pop('proximity_address', None))
+    geocode_town_name = None
+    if center_address:
+        town_id_hint = filters.get('town_id')
+        if town_id_hint is not None:
+            try:
+                hint_town = _get_massgis_town(int(town_id_hint))
+                geocode_town_name = hint_town.name
+            except Exception:
+                geocode_town_name = None
+        elif filters.get('town_name'):
+            geocode_town_name = str(filters['town_name']).split(" (", 1)[0].strip()
     proximity_radius_value = filters.pop('proximity_radius_miles', None)
     radius_limit_miles = None
     reference_point: Optional[Tuple[float, float, str]] = None
@@ -4766,7 +4780,10 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             radius_limit_miles = None
 
         if radius_limit_miles is not None:
-            coords = geocode_address(center_address)
+            geocode_query = center_address
+            if geocode_town_name and geocode_town_name.lower() not in geocode_query.lower():
+                geocode_query = f"{center_address}, {geocode_town_name}, Massachusetts"
+            coords = geocode_address(geocode_query)
             if coords:
                 reference_point = (float(coords[0]), float(coords[1]), "wgs84")
 
