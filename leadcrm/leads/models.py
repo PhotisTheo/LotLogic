@@ -235,10 +235,10 @@ class MassGISParcel(models.Model):
     style = models.CharField(max_length=100, null=True, blank=True)
     zoning = models.CharField(max_length=50, null=True, blank=True)
 
-    # Financial/Assessment
-    total_value = models.IntegerField(db_index=True, null=True, blank=True)
-    land_value = models.IntegerField(null=True, blank=True)
-    building_value = models.IntegerField(null=True, blank=True)
+    # Financial/Assessment (BigInteger for values > 2B)
+    total_value = models.BigIntegerField(db_index=True, null=True, blank=True)
+    land_value = models.BigIntegerField(null=True, blank=True)
+    building_value = models.BigIntegerField(null=True, blank=True)
 
     # Physical Attributes
     lot_size = models.FloatField(null=True, blank=True)
@@ -251,7 +251,7 @@ class MassGISParcel(models.Model):
 
     # Sale Information
     last_sale_date = models.DateField(db_index=True, null=True, blank=True)
-    last_sale_price = models.IntegerField(null=True, blank=True)
+    last_sale_price = models.BigIntegerField(null=True, blank=True)
 
     # Computed Fields
     equity_percent = models.FloatField(db_index=True, null=True, blank=True)
