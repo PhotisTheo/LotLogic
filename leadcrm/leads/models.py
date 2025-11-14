@@ -207,6 +207,82 @@ class ParcelMarketValue(models.Model):
         return f"{self.town_id}/{self.loc_id} – {self.market_value or 'n/a'}"
 
 
+class MassGISParcel(models.Model):
+    """
+    Precomputed parcel data for all Massachusetts properties.
+    Refreshed weekly to enable instant statewide search without file I/O.
+    """
+    town_id = models.IntegerField(db_index=True)
+    loc_id = models.CharField(max_length=200)
+
+    # Address & Location
+    site_address = models.CharField(max_length=500, db_index=True, null=True, blank=True)
+    site_city = models.CharField(max_length=100, null=True, blank=True)
+    site_zip = models.CharField(max_length=20, db_index=True, null=True, blank=True)
+
+    # Owner Information
+    owner_name = models.CharField(max_length=500, db_index=True, null=True, blank=True)
+    owner_address = models.TextField(null=True, blank=True)
+    owner_city = models.CharField(max_length=100, null=True, blank=True)
+    owner_state = models.CharField(max_length=2, null=True, blank=True)
+    owner_zip = models.CharField(max_length=20, null=True, blank=True)
+    absentee = models.BooleanField(default=False, db_index=True)
+
+    # Property Classification
+    use_code = models.CharField(max_length=20, null=True, blank=True)
+    property_type = models.CharField(max_length=200, db_index=True, null=True, blank=True)
+    property_category = models.CharField(max_length=50, db_index=True, null=True, blank=True)
+    style = models.CharField(max_length=100, null=True, blank=True)
+    zoning = models.CharField(max_length=50, null=True, blank=True)
+
+    # Financial/Assessment
+    total_value = models.IntegerField(db_index=True, null=True, blank=True)
+    land_value = models.IntegerField(null=True, blank=True)
+    building_value = models.IntegerField(null=True, blank=True)
+
+    # Physical Attributes
+    lot_size = models.FloatField(null=True, blank=True)
+    lot_units = models.CharField(max_length=20, null=True, blank=True)
+    living_area = models.IntegerField(null=True, blank=True)
+    units = models.IntegerField(null=True, blank=True)
+    bedrooms = models.IntegerField(null=True, blank=True)
+    bathrooms = models.FloatField(null=True, blank=True)
+    year_built = models.IntegerField(db_index=True, null=True, blank=True)
+
+    # Sale Information
+    last_sale_date = models.DateField(db_index=True, null=True, blank=True)
+    last_sale_price = models.IntegerField(null=True, blank=True)
+
+    # Computed Fields
+    equity_percent = models.FloatField(db_index=True, null=True, blank=True)
+    years_owned = models.FloatField(db_index=True, null=True, blank=True)
+
+    # Geometry (for map overlays)
+    centroid_lon = models.FloatField(db_index=True, null=True, blank=True)
+    centroid_lat = models.FloatField(db_index=True, null=True, blank=True)
+    geometry = models.JSONField(null=True, blank=True, help_text="GeoJSON polygon for parcel boundary")
+
+    # Metadata
+    fiscal_year = models.CharField(max_length=10, null=True, blank=True)
+    data_source = models.CharField(max_length=50, default="massgis", null=True, blank=True)
+    last_updated = models.DateTimeField(auto_now=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("town_id", "loc_id")
+        indexes = [
+            models.Index(fields=["town_id", "loc_id"]),
+            models.Index(fields=["property_category", "total_value"]),
+            models.Index(fields=["absentee", "total_value"]),
+            models.Index(fields=["centroid_lon", "centroid_lat"]),
+            models.Index(fields=["last_sale_date"]),
+        ]
+        ordering = ["town_id", "loc_id"]
+
+    def __str__(self):
+        return f"{self.town_id}/{self.loc_id} - {self.site_address or 'No Address'}"
+
+
 class MassGISParcelCache(models.Model):
     """
     Cross-user cache for MassGIS parcel data.

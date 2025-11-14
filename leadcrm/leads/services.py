@@ -2220,6 +2220,89 @@ def search_massgis_parcels(
     return town, results, total_matches, metadata
 
 
+def has_precomputed_parcels(town_id: int) -> bool:
+    """Check if a town has precomputed parcel data available."""
+    from .models import MassGISParcel
+    return MassGISParcel.objects.filter(town_id=town_id).exists()
+
+
+def search_precomputed_parcels(
+    town_id: Optional[int] = None,
+    *,
+    property_category: str = "any",
+    address_contains: str = "",
+    owner_contains: str = "",
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    absentee: str = "any",
+    min_years_owned: Optional[int] = None,
+    max_years_owned: Optional[int] = None,
+    limit: Optional[int] = 1000,
+) -> List[Dict]:
+    """
+    Search precomputed MassGISParcel database for instant results.
+    Much faster than file-based search - uses SQL indexes.
+
+    Returns list of parcel dicts with all attributes.
+    """
+    from .models import MassGISParcel
+    from django.db.models import Q
+
+    query = MassGISParcel.objects.all()
+
+    # Town filter
+    if town_id:
+        query = query.filter(town_id=town_id)
+
+    # Property category
+    if property_category and property_category.lower() != "any":
+        query = query.filter(property_category__iexact=property_category)
+
+    # Address search (case-insensitive contains)
+    if address_contains:
+        query = query.filter(site_address__icontains=address_contains.strip())
+
+    # Owner search
+    if owner_contains:
+        query = query.filter(owner_name__icontains=owner_contains.strip())
+
+    # Price range
+    if min_price is not None:
+        query = query.filter(total_value__gte=int(min_price))
+    if max_price is not None:
+        query = query.filter(total_value__lte=int(max_price))
+
+    # Absentee filter
+    if absentee and absentee.lower() == "yes":
+        query = query.filter(absentee=True)
+    elif absentee and absentee.lower() == "no":
+        query = query.filter(absentee=False)
+
+    # Years owned
+    if min_years_owned is not None:
+        query = query.filter(years_owned__gte=float(min_years_owned))
+    if max_years_owned is not None:
+        query = query.filter(years_owned__lte=float(max_years_owned))
+
+    # Apply limit
+    if limit:
+        query = query[:limit]
+
+    # Execute query and convert to dicts
+    parcels = query.values(
+        'town_id', 'loc_id', 'site_address', 'site_city', 'site_zip',
+        'owner_name', 'owner_address', 'absentee',
+        'property_category', 'property_type', 'use_code', 'style',
+        'total_value', 'land_value', 'building_value',
+        'lot_size', 'living_area', 'units', 'year_built',
+        'last_sale_date', 'last_sale_price',
+        'equity_percent', 'years_owned',
+        'centroid_lon', 'centroid_lat',
+    )
+
+    return list(parcels)
+
+
 def _get_cached_parcel_data(town_id: int, loc_id: str) -> Optional[Dict]:
     """
     Retrieve parcel data from cache if available and not expired.

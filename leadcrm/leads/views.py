@@ -74,10 +74,12 @@ from .services import (
     get_massgis_parcel_detail,
     get_massgis_parcel_shape,
     get_massgis_property_type_choices,
+    has_precomputed_parcels,
     load_massgis_parcels_by_ids,
     massgis_stateplane_to_wgs84,
     preload_massgis_dataset,
     search_massgis_parcels,
+    search_precomputed_parcels,
     skiptrace_property,
 )
 from .attom_service import (
