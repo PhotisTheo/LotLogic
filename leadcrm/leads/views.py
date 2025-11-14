@@ -6822,24 +6822,46 @@ def parcels_in_viewport(request):
                 "message": "Please select a Boston neighborhood to load parcels. Boston has 98,845 parcels which is too many to load without filtering."
             })
 
-        # Fetch parcels - use precomputed database for instant results
+        # Fetch parcels
         logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
 
-        # Try precomputed database first (50-100x faster)
+        # Check if precomputed data is available (requires migration)
         try:
-            parcels = get_precomputed_parcels_in_bbox(
-                north,
-                south,
-                east,
-                west,
-                limit=limit,
-                shape_filter=shape_filter,
-                **filters,
-            )
-            logger.info(f"Found {len(parcels)} parcels from precomputed database")
-        except Exception as exc:
-            # Fallback to file-based search if precomputed fails
-            logger.warning(f"Precomputed search failed, falling back to file-based: {exc}")
+            from .models import MassGISParcel
+            # Check if table exists by testing a simple query
+            MassGISParcel.objects.exists()
+            use_precomputed = True
+        except Exception:
+            use_precomputed = False
+
+        if use_precomputed:
+            # Try precomputed database first (50-100x faster)
+            try:
+                parcels = get_precomputed_parcels_in_bbox(
+                    north,
+                    south,
+                    east,
+                    west,
+                    limit=limit,
+                    shape_filter=shape_filter,
+                    **filters,
+                )
+                logger.info(f"Found {len(parcels)} parcels from precomputed database")
+            except Exception as exc:
+                # Fallback to file-based search if precomputed fails
+                logger.warning(f"Precomputed search failed, falling back to file-based: {exc}")
+                parcels = get_parcels_in_bbox(
+                    north,
+                    south,
+                    east,
+                    west,
+                    limit=limit,
+                    shape_filter=shape_filter,
+                    **filters,
+                )
+                logger.info(f"Found {len(parcels)} parcels from file-based search")
+        else:
+            # Use file-based search (migration not yet run)
             parcels = get_parcels_in_bbox(
                 north,
                 south,
