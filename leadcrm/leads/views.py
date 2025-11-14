@@ -14,7 +14,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple, NamedTuple
 from urllib.parse import quote, urlencode, urljoin
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 try:
     from PIL import Image
@@ -2626,6 +2626,13 @@ def _format_currency(value: Optional[object]) -> Optional[str]:
     return None
 
 
+def _format_timestamp(value: Optional[datetime]) -> Optional[str]:
+    if not value:
+        return None
+    localized = timezone.localtime(value)
+    return localized.strftime("%b %d, %Y %I:%M %p")
+
+
 def _extract_bed_bath_from_attrs(
     attrs: dict,
 ) -> tuple[Optional[object], Optional[object]]:
@@ -2979,6 +2986,33 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
     beds_display = _format_bed_bath(beds)
     baths_display = _format_bed_bath(baths)
 
+    market_value_display = _format_currency(parcel.market_value)
+    market_value_psf_display = (
+        f"${parcel.market_value_per_sqft:,.0f}"
+        if parcel.market_value_per_sqft
+        else None
+    )
+    comparable_psf_display = (
+        f"${parcel.market_value_comparable_avg_psf:,.0f}"
+        if parcel.market_value_comparable_avg_psf
+        else None
+    )
+    market_value_updated_display = _format_timestamp(parcel.market_value_updated_at)
+    market_value_confidence_display = (
+        f"{parcel.market_value_confidence * 100:.0f}%"
+        if parcel.market_value_confidence is not None
+        else None
+    )
+    market_value_method_display = (
+        parcel.market_value_methodology_label
+        or parcel.market_value_methodology
+    )
+    market_value_comp_sample_display = (
+        f"{parcel.market_value_comparable_count} comps"
+        if parcel.market_value_comparable_count
+        else None
+    )
+
     sections = [
         {
             "title": "Property Overview",
@@ -3005,6 +3039,13 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         {
             "title": "Valuation",
             "items": [
+                ("Est. Market Value", market_value_display),
+                ("Market Value $/sf", market_value_psf_display),
+                ("Market Value Updated", market_value_updated_display),
+                ("Market Value Confidence", market_value_confidence_display),
+                ("Valuation Method", market_value_method_display),
+                ("Comparable Sample", market_value_comp_sample_display),
+                ("Comparable Avg $/sf", comparable_psf_display),
                 ("Total Value", _format_currency(parcel.total_value)),
                 ("Land Value", _format_currency(attrs.get("LAND_VAL"))),
                 ("Building Value", _format_currency(attrs.get("BLDG_VAL"))),
@@ -3773,6 +3814,9 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
 
     lien_refresh_endpoint = reverse("parcel_refresh_liens", args=[town_id, loc_id])
 
+    market_value_payload = parcel.market_value_payload or {}
+    market_value_comps = list((market_value_payload.get("comps") or [])[:5])
+
     context = {
         "parcel": parcel,
         "sections": sections,
@@ -3817,6 +3861,8 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         "lien_auto_search_enabled": enable_lien_search_param,
         "lien_auto_search_threshold": LIEN_SEARCH_AUTO_THRESHOLD,
         "lien_refresh_endpoint": lien_refresh_endpoint,
+        "market_value_comps": market_value_comps,
+        "market_value_payload": market_value_payload,
         **nav_context,  # Add navigation context for list browsing
     }
 

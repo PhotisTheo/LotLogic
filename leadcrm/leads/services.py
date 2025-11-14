@@ -1579,7 +1579,7 @@ class BostonNeighborhood:
     neighborhood_id: Optional[str] = None
 
 
-from .models import AttomData
+from .models import AttomData, ParcelMarketValue
 
 
 @dataclass
@@ -1609,6 +1609,15 @@ class ParcelSearchResult:
     estimated_monthly_payment: Optional[float] = None
     attom_data: Optional[AttomData] = None
     units_detail: Optional[List[Dict[str, object]]] = None
+    market_value: Optional[float] = None
+    market_value_per_sqft: Optional[float] = None
+    market_value_updated_at: Optional[datetime] = None
+    market_value_confidence: Optional[float] = None
+    market_value_methodology: Optional[str] = None
+    market_value_methodology_label: Optional[str] = None
+    market_value_payload: Optional[Dict[str, object]] = None
+    market_value_comparable_count: Optional[int] = None
+    market_value_comparable_avg_psf: Optional[float] = None
 
 
 class MassGISDataError(Exception):
@@ -2253,6 +2262,58 @@ def _cache_parcel_data(town_id: int, loc_id: str, parcel_data: Dict) -> None:
     )
 
 
+def _get_parcel_market_value_entry(town_id: int, loc_id: str) -> Optional[ParcelMarketValue]:
+    normalized = _normalize_loc_id(loc_id)
+    if not normalized:
+        return None
+    try:
+        return ParcelMarketValue.objects.get(town_id=town_id, loc_id=normalized)
+    except ParcelMarketValue.DoesNotExist:  # pragma: no cover - normal miss path
+        return None
+
+
+def _build_market_value_context(
+    town_id: int,
+    loc_id: str,
+    record: Optional[Dict[str, object]] = None,
+) -> Dict[str, Optional[object]]:
+    market_value = None
+    market_value_per_sqft = None
+    market_value_confidence = None
+    market_value_payload = None
+    market_value_methodology = None
+    market_value_methodology_label = None
+    market_value_updated_at = None
+    market_value_comparable_count = None
+    market_value_comparable_avg_psf = None
+
+    entry = _get_parcel_market_value_entry(town_id, loc_id)
+    if entry:
+        market_value = _decimal_to_float(entry.market_value)
+        market_value_per_sqft = _decimal_to_float(entry.market_value_per_sqft)
+        market_value_confidence = entry.valuation_confidence
+        market_value_payload = entry.payload or None
+        market_value_methodology = entry.methodology
+        market_value_methodology_label = entry.get_methodology_display()
+        market_value_updated_at = entry.valued_at
+        market_value_comparable_count = entry.comparable_count
+        market_value_comparable_avg_psf = _decimal_to_float(entry.comparable_avg_psf)
+        if market_value is not None and record is not None:
+            record["MARKET_VALUE"] = market_value
+
+    return {
+        "market_value": market_value,
+        "market_value_per_sqft": market_value_per_sqft,
+        "market_value_confidence": market_value_confidence,
+        "market_value_payload": market_value_payload,
+        "market_value_methodology": market_value_methodology,
+        "market_value_methodology_label": market_value_methodology_label,
+        "market_value_updated_at": market_value_updated_at,
+        "market_value_comparable_count": market_value_comparable_count,
+        "market_value_comparable_avg_psf": market_value_comparable_avg_psf,
+    }
+
+
 def _parcel_data_to_dict(parcel: ParcelSearchResult, record: Dict) -> Dict:
     """Convert ParcelSearchResult to cacheable dictionary."""
     return {
@@ -2285,6 +2346,15 @@ def _parcel_data_to_dict(parcel: ParcelSearchResult, record: Dict) -> Dict:
         'estimated_monthly_payment': parcel.estimated_monthly_payment,
         'attributes': record,
         'units_detail': parcel.units_detail,
+        'market_value': parcel.market_value,
+        'market_value_per_sqft': parcel.market_value_per_sqft,
+        'market_value_updated_at': parcel.market_value_updated_at.isoformat() if parcel.market_value_updated_at else None,
+        'market_value_confidence': parcel.market_value_confidence,
+        'market_value_methodology': parcel.market_value_methodology,
+        'market_value_methodology_label': parcel.market_value_methodology_label,
+        'market_value_payload': parcel.market_value_payload,
+        'market_value_comparable_count': parcel.market_value_comparable_count,
+        'market_value_comparable_avg_psf': parcel.market_value_comparable_avg_psf,
     }
 
 
@@ -2341,6 +2411,15 @@ def _dict_to_parcel_data(data: Dict) -> ParcelSearchResult:
         estimated_mortgage_rate_percent=data.get('estimated_mortgage_rate_percent'),
         estimated_monthly_payment=data.get('estimated_monthly_payment'),
         units_detail=data.get('units_detail'),
+        market_value=data.get('market_value'),
+        market_value_per_sqft=data.get('market_value_per_sqft'),
+        market_value_updated_at=_parse_iso_datetime(data.get('market_value_updated_at')),
+        market_value_confidence=data.get('market_value_confidence'),
+        market_value_methodology=data.get('market_value_methodology'),
+        market_value_methodology_label=data.get('market_value_methodology_label'),
+        market_value_payload=data.get('market_value_payload'),
+        market_value_comparable_count=data.get('market_value_comparable_count'),
+        market_value_comparable_avg_psf=data.get('market_value_comparable_avg_psf'),
     )
 
 
@@ -2391,6 +2470,8 @@ def get_massgis_parcel_detail(town_id: int, loc_id: str) -> ParcelSearchResult:
         )
         units_detail = _summarize_unit_records(unit_records)
 
+        market_value_context = _build_market_value_context(town_id, target, record)
+
         parcel_result = ParcelSearchResult(
             town=town,
             loc_id=_clean_string(record.get("LOC_ID")) or target,
@@ -2416,6 +2497,7 @@ def get_massgis_parcel_detail(town_id: int, loc_id: str) -> ParcelSearchResult:
             estimated_mortgage_rate_percent=annual_rate,
             estimated_monthly_payment=monthly_payment,
             units_detail=units_detail,
+            **market_value_context,
         )
 
         # Cache the parcel data for future requests
@@ -2478,6 +2560,8 @@ def get_massgis_parcel_detail(town_id: int, loc_id: str) -> ParcelSearchResult:
                 use_code_key.lstrip("0"), use_code_raw
             )
 
+            market_value_context = _build_market_value_context(town_id, target, fallback_record)
+
             parcel_result = ParcelSearchResult(
                 town=town,
                 loc_id=_clean_string(fallback_record.get("LOC_ID")) or target,
@@ -2503,6 +2587,7 @@ def get_massgis_parcel_detail(town_id: int, loc_id: str) -> ParcelSearchResult:
                 estimated_mortgage_rate_percent=annual_rate,
                 estimated_monthly_payment=monthly_payment,
                 units_detail=None,  # Not available from shapefile alone
+                **market_value_context,
             )
 
             # Cache the fallback parcel data
@@ -2594,6 +2679,8 @@ def load_massgis_parcels_by_ids(town_id: int, loc_ids: Iterable[str], *, saved_l
                 use_code_key.lstrip("0"), use_code_raw
             )
 
+            market_value_context = _build_market_value_context(town_id, key, record)
+
             parcel_result = ParcelSearchResult(
                 town=town,
                 loc_id=_clean_string(record.get("LOC_ID")) or normalized_targets[key],
@@ -2619,6 +2706,7 @@ def load_massgis_parcels_by_ids(town_id: int, loc_ids: Iterable[str], *, saved_l
                 estimated_mortgage_rate_percent=annual_rate,
                 estimated_monthly_payment=monthly_payment,
                 units_detail=_summarize_unit_records(unit_records_map.get(key)),
+                **market_value_context,
             )
 
             matches.append(parcel_result)
@@ -4020,6 +4108,15 @@ def _to_decimal_number(value: Optional[object]) -> Optional[Decimal]:
         return None
 
 
+def _decimal_to_float(value: Optional[Decimal]) -> Optional[float]:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def _to_int(value: Optional[object]) -> Optional[int]:
     number = _to_number(value)
     if number is None:
@@ -4037,7 +4134,9 @@ def calculate_equity_metrics(
     Optional[float],
     Optional[float],
 ]:
-    total_value = _to_number(record.get("TOTAL_VAL"))
+    total_value = _to_number(record.get("MARKET_VALUE"))
+    if total_value is None or total_value <= 0:
+        total_value = _to_number(record.get("TOTAL_VAL"))
     sale_price = _to_number(record.get("LS_PRICE"))
     sale_date = _parse_massgis_date(record.get("LS_DATE"))
 

@@ -133,6 +133,80 @@ class SkipTraceRecord(models.Model):
         return f"SkipTrace {self.town_id or 'N/A'} - {self.loc_id}"
 
 
+class ParcelMarketValue(models.Model):
+    """Hybrid hedonic/comparable market value snapshot for a parcel."""
+
+    METHODOLOGY_HYBRID_V1 = "hybrid_v1"
+    METHODOLOGY_CHOICES = [
+        (METHODOLOGY_HYBRID_V1, "Hybrid Hedonic + Comps v1"),
+    ]
+
+    town_id = models.IntegerField(db_index=True)
+    loc_id = models.CharField(max_length=200)
+    market_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Final blended market value (USD).",
+    )
+    market_value_per_sqft = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Blended price per interior square foot.",
+    )
+    comparable_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Weighted comparable sale estimate used in blend.",
+    )
+    comparable_count = models.IntegerField(default=0)
+    comparable_avg_psf = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+    hedonic_value = models.DecimalField(
+        max_digits=16,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Regression output before blending.",
+    )
+    hedonic_r2 = models.FloatField(null=True, blank=True)
+    valuation_confidence = models.FloatField(
+        null=True,
+        blank=True,
+        help_text="0-1 score derived from data coverage.",
+    )
+    methodology = models.CharField(
+        max_length=50,
+        choices=METHODOLOGY_CHOICES,
+        default=METHODOLOGY_HYBRID_V1,
+    )
+    model_version = models.CharField(max_length=50, default="hybrid-v1.0")
+    valued_at = models.DateTimeField()
+    payload = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("town_id", "loc_id")
+        indexes = [
+            models.Index(fields=["town_id", "loc_id"]),
+            models.Index(fields=["valued_at"]),
+        ]
+        ordering = ["-valued_at", "town_id", "loc_id"]
+
+    def __str__(self) -> str:
+        return f"{self.town_id}/{self.loc_id} – {self.market_value or 'n/a'}"
+
+
 class MassGISParcelCache(models.Model):
     """
     Cross-user cache for MassGIS parcel data.

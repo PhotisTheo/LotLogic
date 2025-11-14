@@ -167,6 +167,23 @@ The mortgage/assessor scraping pipeline runs via Celery workers backed by Redis.
    ```
 5. Deploy/Restart both services; verify the worker logs show `ready` and that it picks up scraping tasks.
 
+## Hybrid Market Value Precomputation
+
+We precompute parcel-level market values every week during the 2 AM maintenance window to avoid UI latency. The job blends a hedonic ridge regression with recent comparable sales filtered by use code, style, and lot/building size. The results drive parcel equity calculations and the valuation panel on the detail page.
+
+### Running the job manually
+
+```bash
+cd leadcrm
+python manage.py compute_market_values --lookback-days 365 --target-comps 5
+```
+
+- Use `--town-id <id>` (repeatable) to scope to specific municipalities while testing.
+- `--limit <n>` caps parcels per town for local dry-runs.
+- Include `--dry-run` to exercise the engine without touching the `ParcelMarketValue` table.
+
+Production should execute this command weekly via Celery Beat, cron, or Railway scheduled jobs (e.g., `0 2 * * 1 python manage.py compute_market_values`). The command bulk-upserts into `leads_parcelmarketvalue`, so rerunning it is idempotent.
+
 ## Contributing
 
 1. Create a new branch for your feature
