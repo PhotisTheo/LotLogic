@@ -114,9 +114,13 @@ class Command(BaseCommand):
             if limit:
                 deduped_records = deduped_records[:limit]
 
+            # Load shapefile geometries for centroids
+            geometries = self._load_shapefile_geometries(dataset_dir)
+
             parcel_objects = self._build_parcel_objects(
                 town_id=town.town_id,
                 records=deduped_records,
+                geometries=geometries,
             )
 
             if not parcel_objects:
@@ -152,12 +156,94 @@ class Command(BaseCommand):
                 best[normalized] = record
         return list(best.values())
 
+    def _load_shapefile_geometries(self, dataset_dir) -> Dict[str, Dict]:
+        """Load parcel geometries from shapefile and calculate centroids."""
+        from pathlib import Path
+
+        geometries = {}
+
+        try:
+            import shapefile
+        except ImportError:
+            self.stderr.write(self.style.WARNING("  ⚠ pyshp not installed, skipping geometry extraction"))
+            return geometries
+
+        # Find the TaxPar shapefile (contains geometries)
+        # Look in dataset_dir and subdirectories
+        shp_files = list(Path(dataset_dir).rglob("*TaxPar*.shp"))
+        if not shp_files:
+            shp_files = list(Path(dataset_dir).rglob("*.shp"))
+
+        if not shp_files:
+            self.stderr.write(self.style.WARNING(f"  ⚠ No shapefile found in {dataset_dir}"))
+            return geometries
+
+        # Use the TaxPar shapefile specifically
+        taxpar_files = [f for f in shp_files if 'TaxPar' in f.name]
+        shp_file = taxpar_files[0] if taxpar_files else shp_files[0]
+
+        try:
+            sf = shapefile.Reader(str(shp_file))
+
+            # Get field names
+            field_names = [field[0] for field in sf.fields[1:]]
+
+            # Find LOC_ID field index
+            loc_id_idx = None
+            for idx, name in enumerate(field_names):
+                if name in ('LOC_ID', 'PAR_ID', 'PROP_ID'):
+                    loc_id_idx = idx
+                    break
+
+            if loc_id_idx is None:
+                self.stderr.write(self.style.WARNING("  ⚠ No LOC_ID field in shapefile"))
+                return geometries
+
+            # Extract centroids
+            for shape_record in sf.shapeRecords():
+                loc_id_raw = shape_record.record[loc_id_idx]
+                loc_id = _normalize_loc_id(loc_id_raw)
+
+                if not loc_id or not shape_record.shape.points:
+                    continue
+
+                # Calculate centroid from points
+                points = shape_record.shape.points
+                if points:
+                    avg_x = sum(p[0] for p in points) / len(points)
+                    avg_y = sum(p[1] for p in points) / len(points)
+
+                    # Convert from State Plane to WGS84 (lat/lon)
+                    try:
+                        from ...services import massgis_stateplane_to_wgs84
+                        lon, lat = massgis_stateplane_to_wgs84(avg_x, avg_y)
+
+                        geometries[loc_id] = {
+                            'centroid_lon': lon,
+                            'centroid_lat': lat,
+                        }
+                    except Exception:
+                        # Fallback: assume already in WGS84
+                        geometries[loc_id] = {
+                            'centroid_lon': avg_x,
+                            'centroid_lat': avg_y,
+                        }
+
+        except Exception as exc:
+            self.stderr.write(self.style.WARNING(f"  ⚠ Error loading geometries: {exc}"))
+
+        return geometries
+
     def _build_parcel_objects(
         self,
         town_id: int,
         records: List[Dict[str, object]],
+        geometries: Dict[str, Dict] = None,
     ) -> List[MassGISParcel]:
         """Convert raw assessment records to MassGISParcel objects."""
+        if geometries is None:
+            geometries = {}
+
         parcels = []
 
         for record in records:
@@ -165,6 +251,9 @@ class Command(BaseCommand):
             loc_id = _normalize_loc_id(loc_raw)
             if not loc_id:
                 continue
+
+            # Get geometry data if available
+            geom = geometries.get(loc_id, {})
 
             # Extract all fields
             parcel = MassGISParcel(
@@ -213,6 +302,10 @@ class Command(BaseCommand):
                 equity_percent=self._calc_equity(record),
                 years_owned=self._calc_years_owned(record),
 
+                # Geometry (centroid coordinates)
+                centroid_lon=geom.get('centroid_lon'),
+                centroid_lat=geom.get('centroid_lat'),
+
                 # Metadata
                 fiscal_year=self._safe_str(record.get("FY") or record.get("FISCAL_YEAR")),
                 data_source="massgis",
@@ -249,8 +342,8 @@ class Command(BaseCommand):
                         "style", "zoning", "total_value", "land_value", "building_value",
                         "lot_size", "lot_units", "living_area", "units", "bedrooms",
                         "bathrooms", "year_built", "last_sale_date", "last_sale_price",
-                        "equity_percent", "years_owned", "fiscal_year", "data_source",
-                        "last_updated",
+                        "equity_percent", "years_owned", "centroid_lon", "centroid_lat",
+                        "fiscal_year", "data_source", "last_updated",
                     ],
                 )
             saved_count += len(batch)
