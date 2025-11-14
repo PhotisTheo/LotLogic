@@ -208,6 +208,20 @@ CELERY_TIMEZONE = 'America/New_York'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes max for scraping tasks
 
+# Celery Beat Schedule for periodic tasks
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    # Refresh all Massachusetts parcels weekly (Sunday at 2 AM)
+    'refresh-parcels-weekly': {
+        'task': 'leads.refresh_all_parcels',
+        'schedule': crontab(hour=2, minute=0, day_of_week=0),  # Sunday at 2 AM
+        'options': {
+            'expires': 3600 * 24,  # Expire after 24 hours if not run
+        }
+    },
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
