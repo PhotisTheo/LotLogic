@@ -3012,6 +3012,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         if parcel.market_value_comparable_count
         else None
     )
+    market_value_comp_value_display = _format_currency(parcel.market_value_comparable_value)
 
     sections = [
         {
@@ -3045,6 +3046,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 ("Market Value Confidence", market_value_confidence_display),
                 ("Valuation Method", market_value_method_display),
                 ("Comparable Sample", market_value_comp_sample_display),
+                ("Average Comp Value", market_value_comp_value_display),
                 ("Comparable Avg $/sf", comparable_psf_display),
                 ("Total Value", _format_currency(parcel.total_value)),
                 ("Land Value", _format_currency(attrs.get("LAND_VAL"))),
@@ -3833,10 +3835,35 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         except (TypeError, ValueError):
             return None
 
-    market_value_comps = [
+    filtered_market_comps = [
         comp for comp in raw_market_comps
         if (_comp_price(comp) or 0) > 100
     ][:5]
+
+    market_value_comps = []
+    for comp in filtered_market_comps:
+        town_id = comp.get("town_id") or parcel.town.town_id
+        loc_id = comp.get("loc_id")
+        url = None
+        if town_id and loc_id:
+            try:
+                url = reverse("parcel_detail", args=[int(town_id), loc_id])
+            except Exception:  # noqa: BLE001
+                url = None
+
+        market_value_comps.append(
+            {
+                "sale_price": comp.get("sale_price"),
+                "sale_date": comp.get("sale_date"),
+                "style": comp.get("style"),
+                "psf": comp.get("psf"),
+                "address": comp.get("address"),
+                "living_area": comp.get("living_area"),
+                "lot_size": comp.get("lot_size"),
+                "url": url,
+                "loc_id": loc_id,
+            }
+        )
 
     context = {
         "parcel": parcel,

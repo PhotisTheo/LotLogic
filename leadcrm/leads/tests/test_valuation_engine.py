@@ -117,7 +117,7 @@ class ParcelValuationEngineTests(SimpleTestCase):
             },
         ]
 
-        clean = self.engine.build_clean_records(records)
+        clean = self.engine.build_clean_records(records, town_id=1)
         valuations, model, stats = self.engine.compute(clean)
 
         self.assertIsNotNone(model)

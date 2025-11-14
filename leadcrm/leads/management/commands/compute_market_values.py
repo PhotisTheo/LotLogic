@@ -107,7 +107,7 @@ class Command(BaseCommand):
             if limit:
                 deduped_records = deduped_records[:limit]
 
-            clean_records = engine.build_clean_records(deduped_records)
+            clean_records = engine.build_clean_records(deduped_records, town_id=town.town_id)
             if not clean_records:
                 self.stderr.write(self.style.WARNING("  ⚠ No usable parcel records after cleaning."))
                 continue

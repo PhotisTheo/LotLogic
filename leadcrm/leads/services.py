@@ -1618,6 +1618,7 @@ class ParcelSearchResult:
     market_value_payload: Optional[Dict[str, object]] = None
     market_value_comparable_count: Optional[int] = None
     market_value_comparable_avg_psf: Optional[float] = None
+    market_value_comparable_value: Optional[float] = None
 
 
 class MassGISDataError(Exception):
@@ -2286,6 +2287,7 @@ def _build_market_value_context(
     market_value_updated_at = None
     market_value_comparable_count = None
     market_value_comparable_avg_psf = None
+    market_value_comparable_value = None
 
     entry = _get_parcel_market_value_entry(town_id, loc_id)
     if entry:
@@ -2298,6 +2300,7 @@ def _build_market_value_context(
         market_value_updated_at = entry.valued_at
         market_value_comparable_count = entry.comparable_count
         market_value_comparable_avg_psf = _decimal_to_float(entry.comparable_avg_psf)
+        market_value_comparable_value = _decimal_to_float(entry.comparable_value)
         if market_value is not None and record is not None:
             record["MARKET_VALUE"] = market_value
 
@@ -2311,6 +2314,7 @@ def _build_market_value_context(
         "market_value_updated_at": market_value_updated_at,
         "market_value_comparable_count": market_value_comparable_count,
         "market_value_comparable_avg_psf": market_value_comparable_avg_psf,
+        "market_value_comparable_value": market_value_comparable_value,
     }
 
 
@@ -2355,6 +2359,7 @@ def _parcel_data_to_dict(parcel: ParcelSearchResult, record: Dict) -> Dict:
         'market_value_payload': parcel.market_value_payload,
         'market_value_comparable_count': parcel.market_value_comparable_count,
         'market_value_comparable_avg_psf': parcel.market_value_comparable_avg_psf,
+        'market_value_comparable_value': parcel.market_value_comparable_value,
     }
 
 
@@ -2420,6 +2425,7 @@ def _dict_to_parcel_data(data: Dict) -> ParcelSearchResult:
         market_value_payload=data.get('market_value_payload'),
         market_value_comparable_count=data.get('market_value_comparable_count'),
         market_value_comparable_avg_psf=data.get('market_value_comparable_avg_psf'),
+        market_value_comparable_value=data.get('market_value_comparable_value'),
     )
 
 

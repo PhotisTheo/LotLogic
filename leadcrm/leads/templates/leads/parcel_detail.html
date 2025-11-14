@@ -297,9 +297,28 @@
               <ul class="list-unstyled mb-0">
                 {% for comp in market_value_comps %}
                   <li class="mb-1">
-                    <span class="fw-semibold">${{ comp.sale_price|floatformat:0 }}</span> · {{ comp.sale_date }}
-                    {% if comp.style %} · {{ comp.style }}{% endif %}
-                    {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
+                    <div>
+                      <span class="fw-semibold">${{ comp.sale_price|floatformat:0 }}</span>
+                      {% if comp.sale_date %} · {{ comp.sale_date }}{% endif %}
+                      {% if comp.style %} · {{ comp.style }}{% endif %}
+                      {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
+                    </div>
+                    <div>
+                      {% if comp.url %}
+                        <a href="{{ comp.url }}" class="text-decoration-none">{{ comp.address|default:comp.loc_id }}</a>
+                      {% elif comp.address %}
+                        {{ comp.address }}
+                      {% elif comp.loc_id %}
+                        {{ comp.loc_id }}
+                      {% endif %}
+                    </div>
+                    <div class="text-muted">
+                      {% if comp.living_area %}Living: {{ comp.living_area|floatformat:0 }} sqft{% endif %}
+                      {% if comp.lot_size %}
+                        {% if comp.living_area %} · {% endif %}
+                        Lot: {{ comp.lot_size|floatformat:0 }} sqft
+                      {% endif %}
+                    </div>
                   </li>
                 {% endfor %}
               </ul>

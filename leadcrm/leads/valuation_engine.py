@@ -58,6 +58,8 @@ class CleanedParcelRecord:
     year_built: Optional[int]
     sale_price: Optional[float]
     sale_date: Optional[datetime]
+    site_address: Optional[str]
+    town_id: Optional[int]
 
     def sale_price_per_sqft(self) -> Optional[float]:
         if self.sale_price and self.living_area and self.living_area > 0:
@@ -76,6 +78,8 @@ class ComparableSummary:
     psf: Optional[float]
     weight: float
     distance: float
+    site_address: Optional[str]
+    town_id: Optional[int]
 
     def as_payload(self) -> Dict[str, object]:
         return {
@@ -88,6 +92,8 @@ class ComparableSummary:
             "psf": round(self.psf, 2) if self.psf is not None else None,
             "weight": round(self.weight, 4),
             "distance": round(self.distance, 4),
+            "address": self.site_address,
+            "town_id": self.town_id,
         }
 
 
@@ -150,7 +156,10 @@ class ParcelValuationEngine:
         self.regularization = max(0.05, regularization)
 
     def build_clean_records(
-        self, raw_records: Iterable[Dict[str, object]]
+        self,
+        raw_records: Iterable[Dict[str, object]],
+        *,
+        town_id: Optional[int] = None,
     ) -> List[CleanedParcelRecord]:
         cleaned: List[CleanedParcelRecord] = []
         for record in raw_records:
@@ -182,6 +191,8 @@ class ParcelValuationEngine:
             sale_price = _parse_float_value(record.get("LS_PRICE") or record.get("SALE_PRICE"))
             sale_date = _parse_massgis_date(record.get("LS_DATE") or record.get("SALE_DATE"))
 
+            site_address = _clean_string(record.get("SITE_ADDR")) or _clean_string(record.get("LOC_ADDR"))
+
             cleaned.append(
                 CleanedParcelRecord(
                     loc_id=loc_id,
@@ -196,6 +207,8 @@ class ParcelValuationEngine:
                     year_built=year_built,
                     sale_price=sale_price,
                     sale_date=sale_date,
+                    site_address=site_address,
+                    town_id=town_id,
                 )
             )
 
@@ -341,9 +354,9 @@ class ParcelValuationEngine:
     def _build_features(
         self, record: CleanedParcelRecord, stats: ValuationStats
     ) -> Optional[List[float]]:
-        total_val = record.total_value or stats.median_total_value or 1.0
-        living_area = record.living_area or stats.median_living_area or 1.0
-        lot_size = record.lot_size or stats.median_lot_size or 1.0
+        total_val = max(record.total_value or stats.median_total_value or 1.0, 1.0)
+        living_area = max(record.living_area or stats.median_living_area or 1.0, 1.0)
+        lot_size = max(record.lot_size or stats.median_lot_size or 1.0, 1.0)
         year = record.year_built or stats.median_year_built
         style_price = stats.style_price(record.style) or stats.global_psf or 100.0
         category_price = stats.category_price(record.property_category) or stats.global_psf or 100.0
@@ -376,9 +389,25 @@ class ParcelValuationEngine:
         target: CleanedParcelRecord,
         candidates: Sequence[CleanedParcelRecord],
     ) -> List[ComparableSummary]:
-        relevant = [
-            record for record in candidates if record.loc_id != target.loc_id and record.property_category == target.property_category
-        ] or list(candidates)
+        def _same_zoning(candidate: CleanedParcelRecord, subject: CleanedParcelRecord) -> bool:
+            if not candidate.zoning or not subject.zoning:
+                return False
+            return candidate.zoning.upper() == subject.zoning.upper()
+
+        zoning_matches = [
+            record
+            for record in candidates
+            if record.loc_id != target.loc_id and _same_zoning(record, target)
+        ]
+
+        if zoning_matches:
+            relevant = zoning_matches
+        else:
+            relevant = [
+                record
+                for record in candidates
+                if record.loc_id != target.loc_id and record.property_category == target.property_category
+            ] or list(candidates)
 
         def distance(record: CleanedParcelRecord) -> float:
             area_diff = _relative_gap(record.living_area, target.living_area, 0.5)
@@ -408,6 +437,8 @@ class ParcelValuationEngine:
                     psf=psf,
                     weight=weight,
                     distance=dist,
+                    site_address=record.site_address,
+                    town_id=record.town_id,
                 )
             )
 
