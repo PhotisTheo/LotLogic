@@ -211,7 +211,7 @@ class ParcelValuationEngine:
             comps = self._select_comparables(record, recent_sales)
             comp_value, comp_avg_psf = self._compute_comparable_value(record, comps)
             hedonic_value = self._predict_value(record, stats, hedonic_model)
-            final_value, confidence = self._blend_values(
+            blended_value, confidence = self._blend_values(
                 record,
                 comp_value,
                 len(comps),
@@ -219,16 +219,18 @@ class ParcelValuationEngine:
                 hedonic_model.r2 if hedonic_model else None,
             )
 
+            market_estimate = comp_value if comp_value is not None else hedonic_value or blended_value
+
             market_psf = None
-            if final_value and record.living_area and record.living_area > 0:
-                market_psf = final_value / record.living_area
+            if market_estimate and record.living_area and record.living_area > 0:
+                market_psf = market_estimate / record.living_area
             elif comp_avg_psf:
                 market_psf = comp_avg_psf
 
             valuations.append(
                 ParcelValuationResult(
                     loc_id=record.loc_id,
-                    market_value=final_value,
+                    market_value=market_estimate,
                     market_value_per_sqft=market_psf,
                     comparable_value=comp_value,
                     comparable_count=len(comps),
@@ -254,7 +256,7 @@ class ParcelValuationEngine:
         for record in records:
             if not record.sale_price or not record.sale_date:
                 continue
-            if record.sale_price < MIN_SALE_PRICE or record.sale_price > MAX_SALE_PRICE:
+            if record.sale_price <= MIN_SALE_PRICE or record.sale_price > MAX_SALE_PRICE:
                 continue
             if record.sale_date < cutoff:
                 continue
@@ -419,10 +421,8 @@ class ParcelValuationEngine:
         if not comps:
             return None, None
 
-        weighted_prices: List[float] = []
-        weighted_psf: List[float] = []
-        psf_weights: List[float] = []
-        weights: List[float] = []
+        scaled_prices: List[float] = []
+        psf_values: List[float] = []
 
         for comp in comps:
             if comp.sale_price <= 0:
@@ -431,19 +431,15 @@ class ParcelValuationEngine:
             if target.living_area and comp.living_area and comp.living_area > 0:
                 ratio = max(0.5, min(1.5, target.living_area / comp.living_area))
                 scaled_price *= ratio
-            weighted_prices.append(scaled_price * comp.weight)
-            weights.append(comp.weight)
+            scaled_prices.append(scaled_price)
             if comp.psf:
-                weighted_psf.append(comp.psf * comp.weight)
-                psf_weights.append(comp.weight)
+                psf_values.append(comp.psf)
 
-        if not weights or sum(weights) == 0:
+        if not scaled_prices:
             return None, None
 
-        comp_value = sum(weighted_prices) / sum(weights)
-        comp_avg_psf = None
-        if weighted_psf and psf_weights:
-            comp_avg_psf = sum(weighted_psf) / sum(psf_weights)
+        comp_value = sum(scaled_prices) / len(scaled_prices)
+        comp_avg_psf = sum(psf_values) / len(psf_values) if psf_values else None
 
         return comp_value, comp_avg_psf
 

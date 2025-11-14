@@ -3701,21 +3701,30 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
     # Now filter out empty items and empty sections (after ATTOM data has been added)
     for section in sections:
         if section["title"] == "Valuation":
-            # Always keep Total Value at the top, even if it's $0
             total_value_item = next(
                 (item for item in section["items"] if item[0] == "Total Value"),
                 None
             )
+            market_value_item = next(
+                (item for item in section["items"] if item[0] == "Est. Market Value"),
+                None
+            )
+
             other_items = [
                 item for item in section["items"]
-                if item[0] != "Total Value" and _is_displayable(item[1])
+                if item[0] not in {"Total Value", "Est. Market Value"} and _is_displayable(item[1])
             ]
+
+            ordered_items: list[tuple[str, object]] = []
+            if market_value_item and _is_displayable(market_value_item[1]):
+                ordered_items.append(market_value_item)
+
             if total_value_item:
-                # Format Total Value even if it's 0
                 formatted_value = total_value_item[1] or "$0"
-                section["items"] = [("Total Value", formatted_value)] + other_items
-            else:
-                section["items"] = other_items
+                ordered_items.append(("Total Value", formatted_value))
+
+            ordered_items.extend(other_items)
+            section["items"] = ordered_items
         else:
             section["items"] = [
                 item for item in section["items"] if _is_displayable(item[1])
@@ -3815,7 +3824,19 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
     lien_refresh_endpoint = reverse("parcel_refresh_liens", args=[town_id, loc_id])
 
     market_value_payload = parcel.market_value_payload or {}
-    market_value_comps = list((market_value_payload.get("comps") or [])[:5])
+    raw_market_comps = market_value_payload.get("comps") or []
+
+    def _comp_price(entry: dict) -> Optional[float]:
+        value = entry.get("sale_price")
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    market_value_comps = [
+        comp for comp in raw_market_comps
+        if (_comp_price(comp) or 0) > 100
+    ][:5]
 
     context = {
         "parcel": parcel,

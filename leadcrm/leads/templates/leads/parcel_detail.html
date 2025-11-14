@@ -291,21 +291,18 @@
               {% endfor %}
             </tbody>
           </table>
-          {% if parcel.market_value %}
+          {% if market_value_comps %}
             <div class="px-3 py-2 border-top small text-muted">
-              Hybrid market value refreshes weekly around 2 AM ET.
-              {% if market_value_comps %}
-                <div class="mt-2 text-uppercase fw-semibold small">Recent comps</div>
-                <ul class="list-unstyled mb-0">
-                  {% for comp in market_value_comps %}
-                    <li class="mb-1">
-                      <span class="fw-semibold">${{ comp.sale_price|floatformat:0 }}</span> · {{ comp.sale_date }}
-                      {% if comp.style %} · {{ comp.style }}{% endif %}
-                      {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
+              <div class="text-uppercase fw-semibold small">Recent comps</div>
+              <ul class="list-unstyled mb-0">
+                {% for comp in market_value_comps %}
+                  <li class="mb-1">
+                    <span class="fw-semibold">${{ comp.sale_price|floatformat:0 }}</span> · {{ comp.sale_date }}
+                    {% if comp.style %} · {{ comp.style }}{% endif %}
+                    {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
             </div>
           {% endif %}
         </div>
