@@ -16,5 +16,17 @@
         "restartPolicyMaxRetries": 10
       }
     }
-  }
+  },
+  "jobs": [
+    {
+      "name": "weekly-massgis-refresh",
+      "schedule": "0 6 * * 5",
+      "command": "cd leadcrm && .venv/bin/python manage.py refresh_massgis --all --stale-days 30"
+    },
+    {
+      "name": "weekly-market-values",
+      "schedule": "0 7 * * 5",
+      "command": "cd leadcrm && .venv/bin/python manage.py compute_market_values --lookback-days 365 --target-comps 5"
+    }
+  ]
 }

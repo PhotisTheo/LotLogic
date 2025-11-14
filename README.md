@@ -184,6 +184,20 @@ python manage.py compute_market_values --lookback-days 365 --target-comps 5
 
 Production should execute this command weekly via Celery Beat, cron, or Railway scheduled jobs (e.g., `0 2 * * 1 python manage.py compute_market_values`). The command bulk-upserts into `leads_parcelmarketvalue`, so rerunning it is idempotent.
 
+## MassGIS Dataset Refresh
+
+MassGIS parcel ZIPs drift over time as towns publish new fiscal-year snapshots. To keep the local cache fresh we schedule `python manage.py refresh_massgis --all --stale-days 30` every Friday at 1 AM ET (Railway cron `0 6 * * 5`). The command walks the catalog, re-downloads any dataset older than 30 days or reporting a newer Last-Modified header, and stores it under `gisdata/`. Because the valuation job runs one hour later, it always works with up-to-date parcel data.
+
+You can also refresh on demand:
+
+```bash
+cd leadcrm
+source ../.venv/bin/activate
+python manage.py refresh_massgis --town 1 --stale-days 7
+```
+
+Use `--force` when you want to re-download regardless of staleness.
+
 ## Contributing
 
 1. Create a new branch for your feature
