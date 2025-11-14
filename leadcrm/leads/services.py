@@ -2303,6 +2303,85 @@ def search_precomputed_parcels(
     return list(parcels)
 
 
+def get_precomputed_parcels_in_bbox(
+    north: float,
+    south: float,
+    east: float,
+    west: float,
+    *,
+    limit: Optional[int] = None,
+    property_category: str = "any",
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    absentee: str = "any",
+    **kwargs
+) -> List[Dict]:
+    """
+    Get precomputed parcels within a bounding box using database indexes.
+    Ultra-fast alternative to get_parcels_in_bbox - no file I/O.
+
+    Returns parcels with centroid coordinates for map display.
+    """
+    from .models import MassGISParcel
+
+    query = MassGISParcel.objects.all()
+
+    # Bounding box filter using centroid coordinates
+    query = query.filter(
+        centroid_lat__gte=south,
+        centroid_lat__lte=north,
+        centroid_lon__gte=west,
+        centroid_lon__lte=east,
+    ).exclude(centroid_lat__isnull=True).exclude(centroid_lon__isnull=True)
+
+    # Property category
+    if property_category and property_category.lower() != "any":
+        query = query.filter(property_category__iexact=property_category)
+
+    # Price range
+    if min_price is not None:
+        query = query.filter(total_value__gte=int(min_price))
+    if max_price is not None:
+        query = query.filter(total_value__lte=int(max_price))
+
+    # Absentee filter
+    if absentee and absentee.lower() == "yes":
+        query = query.filter(absentee=True)
+    elif absentee and absentee.lower() == "no":
+        query = query.filter(absentee=False)
+
+    # Apply limit
+    if limit:
+        query = query[:limit]
+
+    # Execute query and convert to format expected by map
+    parcels = query.values(
+        'town_id', 'loc_id', 'site_address', 'owner_name',
+        'property_category', 'total_value', 'absentee',
+        'centroid_lon', 'centroid_lat',
+    )
+
+    # Convert to list and add geometry for map display
+    results = []
+    for p in parcels:
+        # Create GeoJSON point from centroid for map display
+        results.append({
+            'town_id': p['town_id'],
+            'loc_id': p['loc_id'],
+            'site_address': p['site_address'] or '',
+            'owner_name': p['owner_name'] or '',
+            'property_category': p['property_category'] or '',
+            'total_value': p['total_value'],
+            'absentee': p['absentee'],
+            'centroid': {
+                'lon': p['centroid_lon'],
+                'lat': p['centroid_lat'],
+            } if p['centroid_lon'] and p['centroid_lat'] else None,
+        })
+
+    return results
+
+
 def _get_cached_parcel_data(town_id: int, loc_id: str) -> Optional[Dict]:
     """
     Retrieve parcel data from cache if available and not expired.

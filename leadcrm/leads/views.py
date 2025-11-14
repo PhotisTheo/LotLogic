@@ -74,6 +74,7 @@ from .services import (
     get_massgis_parcel_detail,
     get_massgis_parcel_shape,
     get_massgis_property_type_choices,
+    get_precomputed_parcels_in_bbox,
     has_precomputed_parcels,
     load_massgis_parcels_by_ids,
     massgis_stateplane_to_wgs84,
