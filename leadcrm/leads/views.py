@@ -6826,13 +6826,16 @@ def parcels_in_viewport(request):
         logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
 
         # Check if precomputed data is available (requires migration)
-        try:
-            from .models import MassGISParcel
-            # Check if table exists by testing a simple query
-            MassGISParcel.objects.exists()
-            use_precomputed = True
-        except Exception:
-            use_precomputed = False
+        # Temporarily disabled until migrations run on production
+        use_precomputed = False
+
+        # try:
+        #     from .models import MassGISParcel
+        #     # Check if table exists by testing a simple query
+        #     MassGISParcel.objects.exists()
+        #     use_precomputed = True
+        # except Exception:
+        #     use_precomputed = False
 
         if use_precomputed:
             # Try precomputed database first (50-100x faster)
