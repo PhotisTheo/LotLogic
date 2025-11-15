@@ -5307,11 +5307,17 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             dataset_dir = _ensure_massgis_dataset(town)
             tax_par_path = _find_taxpar_shapefile(Path(dataset_dir))
 
+            logger.info(f"📍 Loading parcels for town {town_id} ({town.name}) from {tax_par_path}")
+
             sf = shapefile.Reader(str(tax_par_path))
             field_names = [field[0] for field in sf.fields[1:]]
 
+            num_shapes = len(sf.shapes())
+            logger.info(f"Found {num_shapes} parcel shapes in {town.name} shapefile")
+
             # Load assessment records with address data
             assess_records = _load_assess_records(str(dataset_dir))
+            logger.info(f"Loaded {len(assess_records) if assess_records else 0} assessment records for {town.name}")
 
             if radius_limit_miles is not None and reference_point is None and center_address:
                 derived_point = _find_reference_point_from_records(assess_records, center_address)
@@ -5405,6 +5411,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                         continue
 
                 if enforce_neighborhood and not _neighborhood_contains_point(boston_neighborhood, lng, lat):
+                    # Parcel is outside the selected neighborhood
                     continue
 
                 # Skip parcels only if we truly have no reasonable address fallback
