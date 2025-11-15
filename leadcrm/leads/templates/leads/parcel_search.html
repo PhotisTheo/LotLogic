@@ -4579,10 +4579,10 @@
                 geometry = simplified;
               }
 
-              // At lower zoom levels (< 14), use marker clustering for better performance
-              // At higher zoom levels, show full polygon outlines
+              // Use marker clustering for better performance across all zoom levels
+              // Only show full polygons when zoomed in very close (17+)
               let polygon;
-              if (currentZoom < 14 && markerClusterGroup) {
+              if (currentZoom < 17 && markerClusterGroup) {
                 // Use centroid marker for clustering
                 const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
                 const marker = L.circleMarker(centroid, {
