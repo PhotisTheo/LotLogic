@@ -3374,7 +3374,17 @@ def _download_file(url: str, path: Path, *, timeout: int = 30) -> None:
 
 
 def _find_taxpar_shapefile(dataset_dir: Path) -> Path:
+    # Try standard TaxPar naming first
     candidates = sorted(dataset_dir.glob("*TaxPar*.shp"))
+
+    # For Boston, also accept Parcels_*.shp naming
+    if not candidates and dataset_dir.name.upper() == "BOSTON_TAXPAR":
+        candidates = sorted(dataset_dir.glob("Parcels*.shp"))
+
+    # Fallback: any .shp file
+    if not candidates:
+        candidates = sorted(dataset_dir.glob("*.shp"))
+
     if not candidates:
         raise MassGISDataError(
             f"No tax parcel shapefile found in {dataset_dir}. "
