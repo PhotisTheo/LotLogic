@@ -4579,92 +4579,63 @@
                 geometry = simplified;
               }
 
-              // Use marker clustering for better performance across all zoom levels
-              // Only show full polygons when zoomed in very close (17+)
-              let polygon;
-              if (currentZoom < 17 && markerClusterGroup) {
-                // Use centroid marker for clustering
-                const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
-                const marker = L.circleMarker(centroid, {
-                  radius: 6,
-                  fillColor: zoneColor,
-                  fillOpacity: 0.7,
-                  color: '#fff',
-                  weight: 2,
-                  opacity: 1
-                });
+              // Render parcel with both circle marker (for clicking) and polygon outline (for boundaries)
+              // This gives Google Maps-style parcel boundaries while keeping circles for performance
 
-                // Add click handlers to marker
-                let clickTimeout = null;
-                marker.on('click', function(e) {
-                  L.DomEvent.stopPropagation(e);
-                  if (clickTimeout) {
-                    clearTimeout(clickTimeout);
-                    clickTimeout = null;
-                    return;
-                  }
-                  clickTimeout = setTimeout(() => {
-                    clickTimeout = null;
-                    showParcelOverview(parcel, buildParcelDetailUrl(parcel));
-                  }, 250);
-                });
+              // First, render the polygon outline in the background
+              const polygonOutline = L.polygon(geometry, {
+                fillColor: zoneColor,
+                fillOpacity: 0.05,  // Very light fill
+                color: zoneColor,
+                weight: 1,
+                opacity: 0.3  // Subtle outline
+              });
+              polygonOutline.addTo(globalMap);
 
-                marker.on('dblclick', function(e) {
-                  L.DomEvent.stopPropagation(e);
-                  if (clickTimeout) {
-                    clearTimeout(clickTimeout);
-                    clickTimeout = null;
-                  }
-                  window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
-                });
+              // Then add a circle marker on top for clicking and visual feedback
+              const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+              const marker = L.circleMarker(centroid, {
+                radius: 6,
+                fillColor: zoneColor,
+                fillOpacity: 0.7,
+                color: '#fff',
+                weight: 2,
+                opacity: 1
+              });
 
+              // Add click handlers to marker
+              let clickTimeout = null;
+              marker.on('click', function(e) {
+                L.DomEvent.stopPropagation(e);
+                if (clickTimeout) {
+                  clearTimeout(clickTimeout);
+                  clickTimeout = null;
+                  return;
+                }
+                clickTimeout = setTimeout(() => {
+                  clickTimeout = null;
+                  showParcelOverview(parcel, buildParcelDetailUrl(parcel));
+                }, 250);
+              });
+
+              marker.on('dblclick', function(e) {
+                L.DomEvent.stopPropagation(e);
+                if (clickTimeout) {
+                  clearTimeout(clickTimeout);
+                  clickTimeout = null;
+                }
+                window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
+              });
+
+              // Add both to cluster group for automatic clustering behavior
+              if (markerClusterGroup) {
                 markerClusterGroup.addLayer(marker);
-                polygon = marker;
               } else {
-                // Render full parcel polygon at higher zoom
-                polygon = L.polygon(geometry, {
-                  fillColor: zoneColor,
-                  fillOpacity: 0.3,
-                  color: zoneColor,
-                  weight: 1,
-                  opacity: 0.6
-                });
-
-                // Add click handler to show overview modal
-                // Use a timeout to distinguish single-click from double-click
-                let clickTimeout = null;
-                polygon.on('click', function(e) {
-                  L.DomEvent.stopPropagation(e);
-
-                  // Clear any pending click
-                  if (clickTimeout) {
-                    clearTimeout(clickTimeout);
-                    clickTimeout = null;
-                    return; // This is part of a double-click, ignore it
-                  }
-
-                  // Wait to see if this is a double-click
-                  clickTimeout = setTimeout(() => {
-                    clickTimeout = null;
-                    showParcelOverview(parcel, buildParcelDetailUrl(parcel));
-                  }, 250);
-                });
-
-                // Add double-click handler for quick access
-                polygon.on('dblclick', function(e) {
-                  L.DomEvent.stopPropagation(e);
-
-                  // Clear the pending single-click
-                  if (clickTimeout) {
-                    clearTimeout(clickTimeout);
-                    clickTimeout = null;
-                  }
-
-                  window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
-                });
-
-                polygon.addTo(globalMap);
+                marker.addTo(globalMap);
               }
+
+              // Store both layers so we can remove them later
+              const polygon = L.layerGroup([polygonOutline, marker]);
               viewportParcels.set(key, polygon);
               renderedParcels++;
 
