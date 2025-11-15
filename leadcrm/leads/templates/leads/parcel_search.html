@@ -4631,7 +4631,13 @@
               polygonOutline.addTo(globalMap);
 
               // Then add a circle marker on top for clicking and visual feedback
-              const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+              let centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+
+              // Convert centroid from {lat, lng} object to [lat, lng] array if needed
+              if (centroid && typeof centroid === 'object' && !Array.isArray(centroid)) {
+                centroid = [centroid.lat, centroid.lng];
+              }
+
               const marker = L.circleMarker(centroid, {
                 radius: 6,
                 fillColor: zoneColor,
@@ -4682,7 +4688,12 @@
               // Add red exclamation marker if parcel has liens or legal actions
               if (parcel.has_lien || parcel.has_legal_action) {
                 // Calculate centroid if not provided
-                const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+                let alertCentroid = parcel.centroid || calculateCentroid(parcel.geometry);
+
+                // Convert centroid from {lat, lng} object to [lat, lng] array if needed
+                if (alertCentroid && typeof alertCentroid === 'object' && !Array.isArray(alertCentroid)) {
+                  alertCentroid = [alertCentroid.lat, alertCentroid.lng];
+                }
 
                 // Create a custom icon with red exclamation mark
                 const alertIcon = L.divIcon({
@@ -4692,7 +4703,7 @@
                   iconAnchor: [12, 12]
                 });
 
-                const alertMarker = L.marker(centroid, { icon: alertIcon });
+                const alertMarker = L.marker(alertCentroid, { icon: alertIcon });
 
                 // Add click handler to alert marker
                 alertMarker.on('click', function(e) {
