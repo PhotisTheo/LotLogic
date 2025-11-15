@@ -5152,9 +5152,18 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
             )
 
     neighborhood_filter = _clean_string(filters.pop('neighborhood', None))
+    if neighborhood_filter:
+        logger.info(f"🔍 Neighborhood filter received: '{neighborhood_filter}'")
     boston_neighborhood = (
         _get_boston_neighborhood(neighborhood_filter) if neighborhood_filter else None
     )
+    if neighborhood_filter and not boston_neighborhood:
+        logger.warning(f"❌ Boston neighborhood '{neighborhood_filter}' not found in index!")
+        # Log available neighborhoods for debugging
+        all_neighborhoods = _load_boston_neighborhood_index()
+        logger.warning(f"Available neighborhoods: {list(all_neighborhoods.keys())}")
+    elif boston_neighborhood:
+        logger.info(f"✅ Boston neighborhood matched: {boston_neighborhood.name} (slug: {boston_neighborhood.slug})")
 
     if boston_neighborhood:
         bn_west, bn_south, bn_east, bn_north = boston_neighborhood.bbox
