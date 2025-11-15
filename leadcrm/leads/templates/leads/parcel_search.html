@@ -4585,10 +4585,10 @@
               // First, render the polygon outline in the background
               const polygonOutline = L.polygon(geometry, {
                 fillColor: zoneColor,
-                fillOpacity: 0.05,  // Very light fill
+                fillOpacity: 0.15,  // Light fill to show zone color
                 color: zoneColor,
-                weight: 1,
-                opacity: 0.3  // Subtle outline
+                weight: 1.5,
+                opacity: 0.5  // More visible outline
               });
               polygonOutline.addTo(globalMap);
 
@@ -4597,8 +4597,8 @@
               const marker = L.circleMarker(centroid, {
                 radius: 6,
                 fillColor: zoneColor,
-                fillOpacity: 0.7,
-                color: '#fff',
+                fillOpacity: 0.8,
+                color: zoneColor,  // Match zone color instead of white border
                 weight: 2,
                 opacity: 1
               });
