@@ -1197,6 +1197,7 @@
   var parcelLayers = [];
   var legendControl = null;
   var viewportParcels = new Map();
+  var markerClusterGroup = null;
   var loadTimeout = null;
   var isLoadingParcels = false;
   var isResizingMap = false;
@@ -1228,6 +1229,142 @@
   var drawingPoints = [];
   var drawingPreviewLayer = null;
   const METERS_PER_MILE = 1609.344;
+
+  // IndexedDB Caching System for Parcel Data
+  let parcelCacheDB = null;
+  const CACHE_DB_NAME = 'ParcelMapCache';
+  const CACHE_STORE_NAME = 'viewportCache';
+  const CACHE_VERSION = 1;
+  const CACHE_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes
+
+  // Initialize IndexedDB for caching
+  function initParcelCache() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        console.warn('IndexedDB not supported, caching disabled');
+        resolve(null);
+        return;
+      }
+
+      const request = indexedDB.open(CACHE_DB_NAME, CACHE_VERSION);
+
+      request.onerror = () => {
+        console.warn('Failed to open cache DB:', request.error);
+        resolve(null);
+      };
+
+      request.onsuccess = () => {
+        parcelCacheDB = request.result;
+        console.log('✅ Parcel cache initialized');
+        resolve(parcelCacheDB);
+      };
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+          const store = db.createObjectStore(CACHE_STORE_NAME, { keyPath: 'cacheKey' });
+          store.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+      };
+    });
+  }
+
+  // Generate cache key from API URL
+  function getCacheKey(url) {
+    // Strip protocol and domain, keep only path and params
+    return url.replace(/^https?:\/\/[^\/]+/, '');
+  }
+
+  // Get cached parcel data
+  function getCachedParcels(url) {
+    return new Promise((resolve) => {
+      if (!parcelCacheDB) {
+        resolve(null);
+        return;
+      }
+
+      try {
+        const transaction = parcelCacheDB.transaction([CACHE_STORE_NAME], 'readonly');
+        const store = transaction.objectStore(CACHE_STORE_NAME);
+        const cacheKey = getCacheKey(url);
+        const request = store.get(cacheKey);
+
+        request.onsuccess = () => {
+          const cached = request.result;
+          if (!cached) {
+            resolve(null);
+            return;
+          }
+
+          // Check if cache is expired
+          const age = Date.now() - cached.timestamp;
+          if (age > CACHE_EXPIRY_MS) {
+            console.log('🗑️  Cache expired, will fetch fresh data');
+            resolve(null);
+            return;
+          }
+
+          console.log(`💾 Cache hit (${Math.round(age / 1000)}s old)`);
+          resolve(cached.data);
+        };
+
+        request.onerror = () => {
+          console.warn('Cache read error:', request.error);
+          resolve(null);
+        };
+      } catch (err) {
+        console.warn('Cache read exception:', err);
+        resolve(null);
+      }
+    });
+  }
+
+  // Store parcel data in cache
+  function cacheParcels(url, data) {
+    if (!parcelCacheDB) return;
+
+    try {
+      const transaction = parcelCacheDB.transaction([CACHE_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(CACHE_STORE_NAME);
+      const cacheKey = getCacheKey(url);
+
+      const cacheEntry = {
+        cacheKey: cacheKey,
+        timestamp: Date.now(),
+        data: data
+      };
+
+      store.put(cacheEntry);
+      console.log('💾 Cached parcel data for:', cacheKey);
+    } catch (err) {
+      console.warn('Cache write error:', err);
+    }
+  }
+
+  // Clear old cache entries (keep cache size manageable)
+  function cleanOldCacheEntries() {
+    if (!parcelCacheDB) return;
+
+    try {
+      const transaction = parcelCacheDB.transaction([CACHE_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(CACHE_STORE_NAME);
+      const index = store.index('timestamp');
+      const cutoffTime = Date.now() - CACHE_EXPIRY_MS;
+
+      const request = index.openCursor();
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+          if (cursor.value.timestamp < cutoffTime) {
+            cursor.delete();
+          }
+          cursor.continue();
+        }
+      };
+    } catch (err) {
+      console.warn('Cache cleanup error:', err);
+    }
+  }
 
   function milesToMeters(miles) {
     return Number(miles || 0) * METERS_PER_MILE;
@@ -2729,6 +2866,12 @@
         });
       }
       viewportParcels.clear();
+
+      // Clear marker cluster group
+      if (markerClusterGroup) {
+        markerClusterGroup.clearLayers();
+      }
+
       hasLoadedFullCurrentTown = false;
 
       if (globalMap && legendControl) {
@@ -3163,6 +3306,28 @@
       }).addTo(globalMap);
 
       console.log('Map tiles added');
+
+      // Initialize parcel cache for faster repeat loads
+      initParcelCache().then(() => {
+        // Clean up expired cache entries periodically
+        cleanOldCacheEntries();
+      });
+
+      // Initialize marker cluster group for better performance with many parcels
+      if (typeof L.markerClusterGroup !== 'undefined') {
+        markerClusterGroup = L.markerClusterGroup({
+          maxClusterRadius: 50,
+          spiderfyOnMaxZoom: true,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: true,
+          disableClusteringAtZoom: 15  // Show individual parcels at zoom 15+
+        });
+        globalMap.addLayer(markerClusterGroup);
+        console.log('✅ Marker clustering enabled');
+      } else {
+        console.warn('Leaflet.markercluster not loaded, clustering disabled');
+      }
+
       boundaryLayerGroup = L.featureGroup().addTo(globalMap);
       attachBoundaryOverlayEvents();
       setBoundaryOverlayActive(false);
@@ -4395,49 +4560,111 @@
               }
               uniqueZones.set(category, uniqueZones.get(category) + 1);
 
-              // Render parcel as polygon outline
-              const polygon = L.polygon(parcel.geometry, {
-                fillColor: zoneColor,
-                fillOpacity: 0.3,
-                color: zoneColor,
-                weight: 1,
-                opacity: 0.6
-              });
+              // Simplify geometry based on zoom level for better performance
+              const currentZoom = globalMap.getZoom();
+              let geometry = parcel.geometry;
 
-              // Add click handler to show overview modal
-              // Use a timeout to distinguish single-click from double-click
-              let clickTimeout = null;
-              polygon.on('click', function(e) {
-                L.DomEvent.stopPropagation(e);
-
-                // Clear any pending click
-                if (clickTimeout) {
-                  clearTimeout(clickTimeout);
-                  clickTimeout = null;
-                  return; // This is part of a double-click, ignore it
+              // Simplify at lower zoom levels to reduce DOM complexity
+              if (currentZoom < 15 && geometry.length > 20) {
+                // Use Douglas-Peucker-style simplification: keep every Nth point
+                const skipFactor = currentZoom < 13 ? 4 : 2;
+                const simplified = [];
+                for (let i = 0; i < geometry.length; i += skipFactor) {
+                  simplified.push(geometry[i]);
                 }
-
-                // Wait to see if this is a double-click
-                clickTimeout = setTimeout(() => {
-                  clickTimeout = null;
-                  showParcelOverview(parcel, buildParcelDetailUrl(parcel));
-                }, 250);
-              });
-
-              // Add double-click handler for quick access
-              polygon.on('dblclick', function(e) {
-                L.DomEvent.stopPropagation(e);
-
-                // Clear the pending single-click
-                if (clickTimeout) {
-                  clearTimeout(clickTimeout);
-                  clickTimeout = null;
+                // Always include last point to close polygon properly
+                if (simplified[simplified.length - 1] !== geometry[geometry.length - 1]) {
+                  simplified.push(geometry[geometry.length - 1]);
                 }
+                geometry = simplified;
+              }
 
-                window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
-              });
+              // At lower zoom levels (< 14), use marker clustering for better performance
+              // At higher zoom levels, show full polygon outlines
+              let polygon;
+              if (currentZoom < 14 && markerClusterGroup) {
+                // Use centroid marker for clustering
+                const centroid = parcel.centroid || calculateCentroid(parcel.geometry);
+                const marker = L.circleMarker(centroid, {
+                  radius: 6,
+                  fillColor: zoneColor,
+                  fillOpacity: 0.7,
+                  color: '#fff',
+                  weight: 2,
+                  opacity: 1
+                });
 
-              polygon.addTo(globalMap);
+                // Add click handlers to marker
+                let clickTimeout = null;
+                marker.on('click', function(e) {
+                  L.DomEvent.stopPropagation(e);
+                  if (clickTimeout) {
+                    clearTimeout(clickTimeout);
+                    clickTimeout = null;
+                    return;
+                  }
+                  clickTimeout = setTimeout(() => {
+                    clickTimeout = null;
+                    showParcelOverview(parcel, buildParcelDetailUrl(parcel));
+                  }, 250);
+                });
+
+                marker.on('dblclick', function(e) {
+                  L.DomEvent.stopPropagation(e);
+                  if (clickTimeout) {
+                    clearTimeout(clickTimeout);
+                    clickTimeout = null;
+                  }
+                  window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
+                });
+
+                markerClusterGroup.addLayer(marker);
+                polygon = marker;
+              } else {
+                // Render full parcel polygon at higher zoom
+                polygon = L.polygon(geometry, {
+                  fillColor: zoneColor,
+                  fillOpacity: 0.3,
+                  color: zoneColor,
+                  weight: 1,
+                  opacity: 0.6
+                });
+
+                // Add click handler to show overview modal
+                // Use a timeout to distinguish single-click from double-click
+                let clickTimeout = null;
+                polygon.on('click', function(e) {
+                  L.DomEvent.stopPropagation(e);
+
+                  // Clear any pending click
+                  if (clickTimeout) {
+                    clearTimeout(clickTimeout);
+                    clickTimeout = null;
+                    return; // This is part of a double-click, ignore it
+                  }
+
+                  // Wait to see if this is a double-click
+                  clickTimeout = setTimeout(() => {
+                    clickTimeout = null;
+                    showParcelOverview(parcel, buildParcelDetailUrl(parcel));
+                  }, 250);
+                });
+
+                // Add double-click handler for quick access
+                polygon.on('dblclick', function(e) {
+                  L.DomEvent.stopPropagation(e);
+
+                  // Clear the pending single-click
+                  if (clickTimeout) {
+                    clearTimeout(clickTimeout);
+                    clickTimeout = null;
+                  }
+
+                  window.open(buildParcelDetailUrl(parcel), '_blank', 'noopener');
+                });
+
+                polygon.addTo(globalMap);
+              }
               viewportParcels.set(key, polygon);
               renderedParcels++;
 
@@ -4645,7 +4872,15 @@
           }
         };
 
-        const loadLegacyApi = () => {
+        const loadLegacyApi = async () => {
+          // Try cache first
+          const cached = await getCachedParcels(apiUrl);
+          if (cached) {
+            handleParcelResponse(cached, 'cache');
+            return cached;
+          }
+
+          // Cache miss - fetch from API
           return fetch(apiUrl)
             .then(response => {
               if (!response.ok) {
@@ -4663,6 +4898,8 @@
               }
             })
             .then(data => {
+              // Cache the response for future use
+              cacheParcels(apiUrl, data);
               handleParcelResponse(data, 'api');
               return data;
             });
