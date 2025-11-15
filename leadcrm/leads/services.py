@@ -3309,7 +3309,18 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
             # Validate zip integrity before extraction
             if archive.testzip() is not None:
                 raise zipfile.BadZipFile("Zip file integrity check failed")
+            logger.info(f"Extracting {slug} to {base_dir}")
             archive.extractall(base_dir)
+
+            # Log what was extracted
+            if base_dir.exists():
+                extracted_files = list(base_dir.rglob("*"))
+                logger.info(f"Extracted {len(extracted_files)} files/dirs for {slug}")
+                # Log first few files for debugging
+                sample_files = [str(f.relative_to(base_dir)) for f in extracted_files[:10]]
+                logger.info(f"Sample extracted files: {sample_files}")
+            else:
+                logger.error(f"Base directory {base_dir} doesn't exist after extraction!")
     except zipfile.BadZipFile as exc:
         # Clean up corrupted files
         logger.error("Failed to extract %s - removing corrupted files", zip_path)
@@ -3323,6 +3334,7 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
         ) from exc
 
     dataset_dir = _resolve_dataset_directory(base_dir)
+    logger.info(f"Resolved dataset directory for {slug}: {dataset_dir}")
     _record_dataset_download(slug, shapefile_url, last_modified)
     return dataset_dir
 
