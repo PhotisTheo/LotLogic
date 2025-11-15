@@ -4666,9 +4666,11 @@
                 marker.addTo(globalMap);
               }
 
-              // Store both layers so we can remove them later
-              const polygon = L.layerGroup([polygonOutline, marker]);
-              viewportParcels.set(key, polygon);
+              // Store BOTH layers separately in viewportParcels so they're properly removed
+              // Store the polygon outline (this is what was missing!)
+              viewportParcels.set(key + '_polygon', polygonOutline);
+              // Store the marker reference (even though it's in cluster group, we track it)
+              viewportParcels.set(key + '_marker', marker);
               renderedParcels++;
 
               // Add red exclamation marker if parcel has liens or legal actions
