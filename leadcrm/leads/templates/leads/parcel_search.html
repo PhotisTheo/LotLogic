@@ -3320,10 +3320,42 @@
           spiderfyOnMaxZoom: true,
           showCoverageOnHover: false,
           zoomToBoundsOnClick: true,
-          disableClusteringAtZoom: 15  // Show individual parcels at zoom 15+
+          disableClusteringAtZoom: 15,  // Show individual parcels at zoom 15+
+          iconCreateFunction: function(cluster) {
+            // Get all markers in this cluster
+            const markers = cluster.getAllChildMarkers();
+            const count = markers.length;
+
+            // Count parcels by zone color to find dominant zone
+            const colorCounts = {};
+            markers.forEach(marker => {
+              const color = marker.options.fillColor;
+              colorCounts[color] = (colorCounts[color] || 0) + 1;
+            });
+
+            // Find the dominant color (most common zone in cluster)
+            let dominantColor = '#808080'; // default gray
+            let maxCount = 0;
+            for (const [color, colorCount] of Object.entries(colorCounts)) {
+              if (colorCount > maxCount) {
+                maxCount = colorCount;
+                dominantColor = color;
+              }
+            }
+
+            // Create cluster icon with dominant zone color
+            const size = count < 10 ? 'small' : count < 100 ? 'medium' : 'large';
+            const sizeClass = 'marker-cluster-' + size;
+
+            return L.divIcon({
+              html: '<div style="background-color: ' + dominantColor + ';"><span>' + count + '</span></div>',
+              className: 'marker-cluster ' + sizeClass,
+              iconSize: L.point(40, 40)
+            });
+          }
         });
         globalMap.addLayer(markerClusterGroup);
-        console.log('✅ Marker clustering enabled');
+        console.log('✅ Marker clustering enabled with zone-based colors');
       } else {
         console.warn('Leaflet.markercluster not loaded, clustering disabled');
       }
