@@ -3316,11 +3316,17 @@
       // Initialize marker cluster group for better performance with many parcels
       if (typeof L.markerClusterGroup !== 'undefined') {
         markerClusterGroup = L.markerClusterGroup({
-          maxClusterRadius: 50,
+          maxClusterRadius: function(zoom) {
+            // Increase cluster radius at lower zoom levels to prevent blob effect
+            // At zoom 10-13: cluster very aggressively (80px radius)
+            // At zoom 14-16: moderate clustering (60px radius)
+            // At zoom 17+: light clustering (40px radius)
+            return zoom <= 13 ? 80 : zoom <= 16 ? 60 : 40;
+          },
           spiderfyOnMaxZoom: true,
           showCoverageOnHover: false,
           zoomToBoundsOnClick: true,
-          disableClusteringAtZoom: 15,  // Show individual parcels at zoom 15+
+          disableClusteringAtZoom: 18,  // Show individual parcels only at zoom 18+ (very close)
           iconCreateFunction: function(cluster) {
             // Get all markers in this cluster
             const markers = cluster.getAllChildMarkers();
