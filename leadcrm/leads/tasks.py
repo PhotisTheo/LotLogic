@@ -46,7 +46,7 @@ def refresh_town_parcels(town_id: int):
 
 
 @shared_task(name='leads.refresh_scraped_documents')
-def refresh_scraped_documents(batch_size: int = 5000):
+def refresh_scraped_documents(batch_size: int = 25000):
     """
     Refresh scraped documents (mortgages, liens, foreclosures) for ALL parcels.
     Runs weekly to keep property documents up-to-date statewide.
