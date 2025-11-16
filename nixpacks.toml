@@ -2,13 +2,14 @@
 # Installs system dependencies needed for the Lead CRM data pipeline
 
 [phases.setup]
-# Install Python + OCR deps via nixpkgs
+# Install Python + OCR + PDF processing deps via nixpkgs
 nixPkgs = [
   "python311",
   "python311Packages.pip",
   "python311Packages.setuptools",
   "python311Packages.wheel",
   "tesseract",
+  "poppler_utils",
   "libtiff",
   "libjpeg",
   "zlib"
@@ -16,9 +17,8 @@ nixPkgs = [
 
 [phases.install]
 commands = [
-  "cd leadcrm && python3 -m venv .venv",
-  "cd leadcrm && .venv/bin/pip install --upgrade pip",
-  "cd leadcrm && .venv/bin/pip install -r requirements.txt"
+  "pip install --upgrade pip",
+  "pip install -r requirements.txt"
 ]
 
 [phases.build]
@@ -29,4 +29,4 @@ commands = []
 
 
 [start]
-cmd = "cd leadcrm && .venv/bin/python manage.py migrate && .venv/bin/python manage.py collectstatic --noinput && .venv/bin/gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -"
+cmd = "cd leadcrm && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -"
