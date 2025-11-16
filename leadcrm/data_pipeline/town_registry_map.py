@@ -23,7 +23,17 @@ Registry Districts:
 
 from typing import Dict, Optional
 
-# Town ID to Registry ID mapping
+# Simple town ID to Registry ID mapping (for MassGIS integer IDs)
+# These are the short integer IDs used in the MassGIS catalog
+SIMPLE_TOWN_TO_REGISTRY: Dict[int, str] = {
+    # Essex North District
+    184: "essex_north",  # Newburyport (alternative ID)
+    206: "essex_north",  # Newburyport
+    335: "essex_north",  # West Newbury
+    # Add more as needed
+}
+
+# Full town ID to Registry ID mapping (legacy format)
 # Format: {town_id: registry_id}
 TOWN_TO_REGISTRY: Dict[str, str] = {
     # Suffolk County
@@ -380,23 +390,45 @@ TOWN_TO_REGISTRY: Dict[str, str] = {
 }
 
 
-def get_registry_for_town(town_id: str) -> Optional[str]:
+def get_registry_for_town(town_id) -> Optional[str]:
     """
     Get the registry district ID for a given Massachusetts town ID.
 
     Args:
-        town_id: MassGIS town ID (e.g., "2507000" for Boston)
+        town_id: MassGIS town ID - can be:
+                 - Integer: 206 for Newburyport (MassGIS catalog format)
+                 - String: "206"
+                 - Full string format: "2507000" for Boston (legacy)
 
     Returns:
-        Registry ID string (e.g., "suffolk") or None if not found
+        Registry ID string (e.g., "essex_north") or None if not found
 
     Example:
+        >>> get_registry_for_town(206)
+        'essex_north'
+        >>> get_registry_for_town("206")
+        'essex_north'
         >>> get_registry_for_town("2507000")
         'suffolk'
-        >>> get_registry_for_town("2523000")
-        'plymouth'
     """
-    return TOWN_TO_REGISTRY.get(town_id)
+    # Try simple integer mapping first (MassGIS catalog IDs)
+    if isinstance(town_id, int):
+        if town_id in SIMPLE_TOWN_TO_REGISTRY:
+            return SIMPLE_TOWN_TO_REGISTRY[town_id]
+        # Convert to string for legacy lookup
+        town_id = str(town_id)
+
+    # Try string integer mapping
+    if isinstance(town_id, str) and town_id.isdigit():
+        town_id_int = int(town_id)
+        if town_id_int in SIMPLE_TOWN_TO_REGISTRY:
+            return SIMPLE_TOWN_TO_REGISTRY[town_id_int]
+
+    # Try legacy full format (e.g., "2507000")
+    if town_id in TOWN_TO_REGISTRY:
+        return TOWN_TO_REGISTRY[town_id]
+
+    return None
 
 
 def get_all_registries() -> list[str]:
