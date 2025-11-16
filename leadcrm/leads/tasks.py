@@ -46,32 +46,66 @@ def refresh_town_parcels(town_id: int):
 
 
 @shared_task(name='leads.refresh_scraped_documents')
-def refresh_scraped_documents():
+def refresh_scraped_documents(batch_size: int = 5000):
     """
-    Refresh scraped documents (mortgages, liens, foreclosures) for parcels with stale data.
-    Runs weekly to keep property documents up-to-date.
+    Refresh scraped documents (mortgages, liens, foreclosures) for ALL parcels.
+    Runs weekly to keep property documents up-to-date statewide.
 
-    Follows same pattern as refresh_all_parcels but for ATTOM replacement pipeline.
+    Processes parcels in batches, prioritizing:
+    1. Parcels with no ATTOM data yet
+    2. Parcels with stale data (>90 days old)
+    3. All other parcels
+
+    Args:
+        batch_size: Number of parcels to process per weekly run (default: 5000)
     """
-    from .models import AttomData
+    from .models import MassGISParcel, AttomData
 
-    logger.info("Starting weekly scraped document refresh...")
+    logger.info(f"Starting weekly scraped document refresh (batch_size={batch_size})...")
 
     try:
-        # Find parcels with data older than 90 days
+        # Get all parcel IDs from MassGIS
+        all_parcels = set(
+            MassGISParcel.objects.values_list('town_id', 'loc_id')
+        )
+        logger.info(f"Total parcels in database: {len(all_parcels)}")
+
+        # Get parcels that already have ATTOM data
+        scraped_parcels = set(
+            AttomData.objects.values_list('town_id', 'loc_id')
+        )
+        logger.info(f"Parcels with existing data: {len(scraped_parcels)}")
+
+        # Priority 1: Parcels with no data yet
+        unscraped_parcels = list(all_parcels - scraped_parcels)
+        logger.info(f"Parcels without data: {len(unscraped_parcels)}")
+
+        # Priority 2: Parcels with stale data (>90 days)
         stale_threshold = timezone.now() - timedelta(days=90)
-        stale_parcels = AttomData.objects.filter(
-            last_updated__lt=stale_threshold
-        ).values_list('town_id', 'loc_id')[:1000]  # Limit to 1000 parcels per week
+        stale_parcels = list(
+            AttomData.objects.filter(
+                last_updated__lt=stale_threshold
+            ).values_list('town_id', 'loc_id')
+        )
+        logger.info(f"Parcels with stale data (>90 days): {len(stale_parcels)}")
 
-        logger.info(f"Found {len(stale_parcels)} parcels with stale data (>90 days old)")
+        # Combine priorities: unscraped first, then stale
+        parcels_to_scrape = unscraped_parcels[:batch_size]
 
-        # Queue scraping tasks for each parcel
+        if len(parcels_to_scrape) < batch_size:
+            remaining = batch_size - len(parcels_to_scrape)
+            parcels_to_scrape.extend(stale_parcels[:remaining])
+
+        logger.info(f"Scraping {len(parcels_to_scrape)} parcels this week")
+
+        # Queue scraping tasks
         from data_pipeline.jobs.task_queue import run_registry_task
         from data_pipeline.town_registry_map import get_registry_for_town
 
-        refreshed_count = 0
-        for town_id, loc_id in stale_parcels:
+        queued_count = 0
+        skipped_count = 0
+
+        for town_id, loc_id in parcels_to_scrape:
             registry_id = get_registry_for_town(town_id)
             if registry_id:
                 # Queue async task
@@ -80,10 +114,27 @@ def refresh_scraped_documents():
                     loc_id=f"{town_id}-{loc_id}",
                     force_refresh=True
                 )
-                refreshed_count += 1
+                queued_count += 1
+            else:
+                skipped_count += 1
 
-        logger.info(f"Queued {refreshed_count} document refresh tasks")
-        return f"Success: queued {refreshed_count} refreshes"
+        logger.info(f"Queued {queued_count} scraping tasks")
+        if skipped_count > 0:
+            logger.warning(f"Skipped {skipped_count} parcels (no registry mapping)")
+
+        # Calculate completion progress
+        total_to_scrape = len(all_parcels)
+        total_scraped_after = len(scraped_parcels) + queued_count
+        progress_pct = (total_scraped_after / total_to_scrape) * 100 if total_to_scrape > 0 else 0
+
+        logger.info(f"Progress: {total_scraped_after}/{total_to_scrape} parcels ({progress_pct:.1f}%)")
+
+        # Estimate weeks to completion
+        if queued_count > 0:
+            weeks_remaining = (total_to_scrape - total_scraped_after) / queued_count
+            logger.info(f"Estimated weeks to full coverage: {int(weeks_remaining)}")
+
+        return f"Success: queued {queued_count} scrapes, {progress_pct:.1f}% complete"
 
     except Exception as exc:
         logger.error(f"Document refresh failed: {exc}", exc_info=True)
