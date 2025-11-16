@@ -17,8 +17,9 @@ nixPkgs = [
 
 [phases.install]
 commands = [
-  "pip install --upgrade pip",
-  "pip install -r requirements.txt"
+  "python -m venv /opt/venv",
+  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install -r requirements.txt"
 ]
 
 [phases.build]
@@ -29,4 +30,4 @@ commands = []
 
 
 [start]
-cmd = "cd leadcrm && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -"
+cmd = "cd leadcrm && /opt/venv/bin/python manage.py migrate && /opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/gunicorn leadcrm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --worker-tmp-dir /dev/shm --log-level info --access-logfile - --error-logfile -"
