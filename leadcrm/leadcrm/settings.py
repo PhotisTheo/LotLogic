@@ -220,6 +220,14 @@ CELERY_BEAT_SCHEDULE = {
             'expires': 3600 * 24,  # Expire after 24 hours if not run
         }
     },
+    # Refresh scraped documents weekly (Sunday at 3 AM) - ATTOM replacement
+    'refresh-documents-weekly': {
+        'task': 'leads.refresh_scraped_documents',
+        'schedule': crontab(hour=3, minute=0, day_of_week=0),  # Sunday at 3 AM
+        'options': {
+            'expires': 3600 * 24,  # Expire after 24 hours if not run
+        }
+    },
 }
 
 
