@@ -3898,6 +3898,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
         "mailer": mailer_context,
         "mailer_download_endpoint": mailer_download_base,
         "attom_data": attom_data, # Add attom_data to the context
+        "scraped_documents": attom_data.get_scraped_documents() if attom_data else [],
         "units_detail": units_detail,
         "unit_default_key": default_unit_key or (units_detail[0].get("row_key") if units_detail else ""),
         "unit_attom_endpoint_template": reverse(

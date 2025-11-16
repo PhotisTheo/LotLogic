@@ -502,6 +502,31 @@ class AttomData(models.Model):
     def __str__(self):
         return f"ATTOM Data for {self.town_id}-{self.loc_id}"
 
+    def get_scraped_documents(self):
+        """
+        Extract scraped document info from raw_response with download URLs.
+
+        Returns list of dicts with keys: type, date, document_path, download_url
+        """
+        from data_pipeline.storage.files import generate_download_url
+
+        documents = []
+        scrape_sources = self.raw_response.get('scrape_sources', [])
+
+        for source in scrape_sources:
+            doc_path = source.get('document_path')
+            if doc_path:
+                documents.append({
+                    'type': source.get('instrument_type', 'Document'),
+                    'date': source.get('document_date', ''),
+                    'book': source.get('book', ''),
+                    'page': source.get('page', ''),
+                    'document_path': doc_path,
+                    'download_url': generate_download_url(doc_path),
+                })
+
+        return documents
+
     @property
     def is_cache_fresh(self, max_age_days=60):
         """Check if the cached data is fresh (less than max_age_days old)."""
