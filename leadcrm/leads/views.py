@@ -3392,17 +3392,13 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
             except Exception as e:
                 logger.warning(f"Error checking corporate entity cache: {e}")
 
-    # Retrieve or fetch AttomData for the parcel using cross-user cache
-    from .attom_service import get_or_fetch_attom_data
+    # Check for existing AttomData (keep old data, but don't fetch new from ATTOM API)
     from datetime import timedelta
 
-    # Check for existing ATTOM data (from any user, with or without saved_list)
-    max_age_days = getattr(settings, "ATTOM_CACHE_MAX_AGE_DAYS", 60)
-    cache_cutoff = timezone.now() - timedelta(days=max_age_days)
+    # Check for any existing AttomData (no age limit - keep all existing data)
     attom_data = AttomData.objects.filter(
         town_id=town_id,
         loc_id=loc_id,
-        last_updated__gte=cache_cutoff
     ).order_by('-last_updated').first()
 
     # Check if we need to trigger scraping:
@@ -3422,9 +3418,8 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
     else:
         logger.info(f"AttomData with scrape_sources exists for {loc_id}, skipping scraping")
 
-    # If no fresh cache exists OR no scraped docs, trigger background scraping
+    # Trigger background scraping from Registry of Deeds if needed
     if needs_scraping:
-        # Trigger background scraping from Registry of Deeds
         try:
             from data_pipeline.town_registry_map import get_registry_for_town
             from data_pipeline.jobs.task_queue import run_registry_task
@@ -3452,39 +3447,10 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                         max_cache_age_days=90,
                     )
                     logger.info(f"Triggered background registry scraping for {loc_id} in {registry_id}")
+            else:
+                logger.warning(f"No registry mapping found for town {town_id}")
         except Exception as e:
             logger.warning(f"Could not trigger background registry scraping: {e}")
-
-        # Only fetch from ATTOM API if we don't already have AttomData
-        if not attom_data:
-            # Fall back to ATTOM API for immediate display
-            attom_dict = get_or_fetch_attom_data(town_id, loc_id, max_age_days)
-
-            # Check if we got valid data from the endpoint
-            raw_responses = attom_dict.get("raw_response", {})
-            has_data = bool(
-                raw_responses.get("expandedprofile", {}).get("property")
-            )
-
-            if has_data:
-                # Save to database without a saved_list (for on-demand viewing)
-                try:
-                    attom_data, created = ensure_attom_cache_record(
-                        town_id=town_id,
-                        loc_id=loc_id,
-                        payload=attom_dict,
-                        saved_list=None,  # No saved list for on-demand fetches
-                    )
-                    if created:
-                        print(f"Created new ATTOM data record for parcel {loc_id}")
-                    else:
-                        print(f"Updated existing ATTOM data record for parcel {loc_id}")
-                except Exception as e:
-                    print(f"Error saving ATTOM data: {e}")
-                    attom_data = None
-        else:
-            # We have AttomData but no scraped docs - background scraping triggered above
-            logger.info(f"Using existing AttomData for {loc_id}, background scraping queued for documents")
 
     # Calculate mortgage and equity using ATTOM data if available
     mortgage_balance = equity_value = equity_percent = roi_percent = monthly_payment = None
