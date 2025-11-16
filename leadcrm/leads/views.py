@@ -3414,6 +3414,14 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
 
     needs_scraping = not attom_data or not has_scraped_docs
 
+    # Log scraping decision
+    if not attom_data:
+        logger.info(f"No AttomData found for {loc_id}, will trigger scraping")
+    elif not has_scraped_docs:
+        logger.info(f"AttomData exists for {loc_id} but no scrape_sources, will trigger scraping")
+    else:
+        logger.info(f"AttomData with scrape_sources exists for {loc_id}, skipping scraping")
+
     # If no fresh cache exists OR no scraped docs, trigger background scraping
     if needs_scraping:
         # Trigger background scraping from Registry of Deeds
