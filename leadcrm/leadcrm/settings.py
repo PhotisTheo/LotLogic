@@ -220,18 +220,9 @@ CELERY_BEAT_SCHEDULE = {
             'expires': 3600 * 24,  # Expire after 24 hours if not run
         }
     },
-    # Refresh scraped documents DAILY at 3 AM for quarterly statewide coverage
-    # Target: 25,000 parcels/day = 2.1M parcels every 87 days (quarterly refresh)
-    'refresh-documents-daily': {
-        'task': 'leads.refresh_scraped_documents',
-        'schedule': crontab(hour=3, minute=0),  # Every day at 3 AM
-        'options': {
-            'expires': 3600 * 20,  # Expire after 20 hours if not run
-        },
-        'kwargs': {
-            'batch_size': 25000,  # Process 25k parcels per day
-        }
-    },
+    # NOTE: Bulk scraping disabled in favor of on-demand scraping
+    # Documents are now scraped when users view parcel detail pages
+    # This is more efficient and ensures always-fresh data
 }
 
 
