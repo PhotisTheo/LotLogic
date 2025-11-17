@@ -35,19 +35,27 @@
       "adapter": "masslandrecords",
       "base_url": "https://www.masslandrecords.com/EssexNorth",
       "throttle_rps": 0.4,
-      "notes": "Uses ALIS WW400 form; owner search fields W9SNM/W9GNM.",
+      "notes": "North Shore registry covering Lawrence/Haverhill area.",
       "instrument_types": ["MORTGAGE", "LIS PENDENS"],
-      "results_table_selector": "table",
+      "results_table_id": "ctl00_cphMain_gvDocuments",
       "document_link_selector": "a",
       "search_modes": {
         "owner": {
-          "form_path": "ALIS/WW400R.HTM?WSIQTP=LR01D&WSKYCD=N",
+          "form_path": "DocumentSearch.aspx",
           "fields": {
-            "owner": "W9SNM"
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
           },
-          "static_fields": {
-            "W9GNM": ""
-          }
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
         }
       }
     },
@@ -57,19 +65,27 @@
       "adapter": "masslandrecords",
       "base_url": "https://www.masslandrecords.com/EssexSouth",
       "throttle_rps": 0.4,
-      "notes": "Uses ALIS WW400 form; owner search fields W9SNM/W9GNM.",
+      "notes": "North Shore registry covering Salem/Lynn area.",
       "instrument_types": ["MORTGAGE", "LIS PENDENS"],
-      "results_table_selector": "table",
+      "results_table_id": "ctl00_cphMain_gvDocuments",
       "document_link_selector": "a",
       "search_modes": {
         "owner": {
-          "form_path": "ALIS/WW400R.HTM?WSIQTP=LR01D&WSKYCD=N",
+          "form_path": "DocumentSearch.aspx",
           "fields": {
-            "owner": "W9SNM"
+            "owner_last": "SearchFormEx1$ACSTextBox_LastName1",
+            "owner_first": "SearchFormEx1$ACSTextBox_FirstName1",
+            "owner_middle": "SearchFormEx1$ACSTextBox_Middle1"
           },
-          "static_fields": {
-            "W9GNM": ""
-          }
+          "submit_field": "SearchFormEx1$btnSearch"
+        },
+        "address": {
+          "form_path": "DocumentSearch.aspx",
+          "fields": {
+            "street_number": "SearchFormEx1$ACSTextBox_StreetNumber",
+            "street_name": "SearchFormEx1$ACSTextBox_StreetName"
+          },
+          "submit_field": "SearchFormEx1$btnSearch"
         }
       }
     },
