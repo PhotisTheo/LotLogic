@@ -25,6 +25,9 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
+# Explicitly import data_pipeline tasks (not a Django app)
+app.autodiscover_tasks(['data_pipeline.jobs'])
+
 
 @app.task(bind=True, ignore_result=True)
 def debug_task(self):
