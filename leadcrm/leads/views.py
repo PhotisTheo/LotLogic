@@ -3440,13 +3440,16 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
 
                 if registry_config:
                     # Trigger async scraping in background (won't block page load)
+                    # Pass owner name for registry search
+                    owner_name = parcel.owner_name if hasattr(parcel, 'owner_name') else None
                     run_registry_task.delay(
                         config=registry_config,
+                        owner=owner_name,
                         loc_id=loc_id,
                         force_refresh=False,
                         max_cache_age_days=90,
                     )
-                    logger.info(f"Triggered background registry scraping for {loc_id} in {registry_id}")
+                    logger.info(f"Triggered background registry scraping for {loc_id} (owner: {owner_name}) in {registry_id}")
             else:
                 logger.warning(f"No registry mapping found for town {town_id}")
         except Exception as e:
