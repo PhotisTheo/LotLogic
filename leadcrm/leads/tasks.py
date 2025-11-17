@@ -139,3 +139,60 @@ def refresh_scraped_documents(batch_size: int = 25000):
     except Exception as exc:
         logger.error(f"Document refresh failed: {exc}", exc_info=True)
         raise
+
+
+@shared_task(name='leads.scrape_saved_list_parcels')
+def scrape_saved_list_parcels(saved_list_id: int):
+    """
+    Scrape documents for all parcels in a saved list.
+    Triggered automatically when a user saves a list.
+
+    Args:
+        saved_list_id: ID of the SavedParcelList to scrape
+    """
+    from .models import SavedParcelList
+    from data_pipeline.jobs.task_queue import run_registry_task
+    from data_pipeline.town_registry_map import get_registry_for_town
+
+    logger.info(f"Starting scrape for saved list {saved_list_id}...")
+
+    try:
+        saved_list = SavedParcelList.objects.get(id=saved_list_id)
+        loc_ids = saved_list.loc_ids  # List of {town_id, loc_id} dicts
+
+        logger.info(f"Scraping {len(loc_ids)} parcels from list '{saved_list.name}'")
+
+        queued_count = 0
+        skipped_count = 0
+
+        for parcel_info in loc_ids:
+            town_id = parcel_info.get('town_id')
+            loc_id = parcel_info.get('loc_id')
+
+            if not town_id or not loc_id:
+                skipped_count += 1
+                continue
+
+            registry_id = get_registry_for_town(town_id)
+            if registry_id:
+                # Queue async scraping task
+                run_registry_task.delay(
+                    config={'registry_id': registry_id},
+                    loc_id=f"{town_id}-{loc_id}",
+                    force_refresh=False,  # Use cache if available (within 90 days)
+                    max_cache_age_days=90,
+                )
+                queued_count += 1
+            else:
+                logger.warning(f"No registry mapping for town {town_id}, skipping {loc_id}")
+                skipped_count += 1
+
+        logger.info(f"Saved list '{saved_list.name}': queued {queued_count} scraping tasks, skipped {skipped_count}")
+        return f"Success: queued {queued_count} scrapes for list '{saved_list.name}'"
+
+    except SavedParcelList.DoesNotExist:
+        logger.error(f"SavedParcelList {saved_list_id} not found")
+        raise
+    except Exception as exc:
+        logger.error(f"Failed to scrape saved list {saved_list_id}: {exc}", exc_info=True)
+        raise

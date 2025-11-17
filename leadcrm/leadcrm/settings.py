@@ -225,6 +225,9 @@ CELERY_BEAT_SCHEDULE = {
     # This is more efficient and ensures always-fresh data
 }
 
+# Saved List Configuration
+MAX_PARCELS_PER_SAVED_LIST = 500  # Maximum parcels allowed in a saved list (auto-scraping limit)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
