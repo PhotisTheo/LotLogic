@@ -132,13 +132,22 @@ class MassLandRecordsSource(BaseRegistrySource):
         for field_name, field_value in (mode.get("instrument_filters") or {}).items():
             payload[field_name] = field_value
 
+        method = (mode.get("method") or "POST").upper()
         self._throttle()
-        resp = self.session.post(
-            form_url,
-            data=payload,
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            timeout=60,
-        )
+
+        if method == "GET":
+            resp = self.session.get(
+                form_url,
+                params=payload,
+                timeout=60,
+            )
+        else:
+            resp = self.session.post(
+                form_url,
+                data=payload,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=60,
+            )
         resp.raise_for_status()
         return resp.text
 

@@ -5246,10 +5246,18 @@
           }
         });
 
+        // Preserve selected town (keep resolved id/name so we stay town-wide after clearing filters)
         const townField = form.querySelector('input[name="town_id"]');
-        if (townField) {
-          delete townField.dataset.resolvedTownId;
-          delete townField.dataset.townName;
+        if (townField && townField.dataset) {
+          const preservedTownId = townField.dataset.resolvedTownId;
+          const preservedTownName = townField.dataset.townName;
+          // Ensure the dataset values remain intact
+          if (preservedTownId) {
+            townField.dataset.resolvedTownId = preservedTownId;
+          }
+          if (preservedTownName) {
+            townField.dataset.townName = preservedTownName;
+          }
         }
       }
 
