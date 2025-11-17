@@ -289,41 +289,43 @@
                   {% endfor %}
                 {% endif %}
               {% endfor %}
+              {% if market_value_comps %}
+                <tr class="border-top">
+                  <td colspan="2" class="py-2">
+                    <div class="text-uppercase fw-semibold small text-muted">Recent Comps</div>
+                  </td>
+                </tr>
+                {% for comp in market_value_comps %}
+                  <tr>
+                    <th class="text-muted" style="width: 45%;">
+                      {% if comp.address %}
+                        {{ comp.address }}
+                      {% elif comp.url %}
+                        <a href="{{ comp.url }}" class="text-decoration-none text-dark">Property</a>
+                      {% else %}
+                        Comparable Sale
+                      {% endif %}
+                    </th>
+                    <td class="fw-semibold">
+                      <div>${{ comp.sale_price|floatformat:0 }}</div>
+                      <div class="small fw-normal text-muted">
+                        {% if comp.sale_date %}{{ comp.sale_date }}{% endif %}
+                        {% if comp.style %} · {{ comp.style }}{% endif %}
+                        {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
+                      </div>
+                      <div class="small fw-normal text-muted">
+                        {% if comp.living_area %}{{ comp.living_area|floatformat:0 }} sqft{% endif %}
+                        {% if comp.lot_size %}
+                          {% if comp.living_area %} · {% endif %}
+                          {{ comp.lot_size|floatformat:0 }} sqft lot
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
             </tbody>
           </table>
-          {% if market_value_comps %}
-            <div class="px-3 py-2 border-top small text-muted">
-              <div class="text-uppercase fw-semibold small">Recent comps</div>
-              <ul class="list-unstyled mb-0">
-                {% for comp in market_value_comps %}
-                  <li class="mb-1">
-                    <div>
-                      <span class="fw-semibold">${{ comp.sale_price|floatformat:0 }}</span>
-                      {% if comp.sale_date %} · {{ comp.sale_date }}{% endif %}
-                      {% if comp.style %} · {{ comp.style }}{% endif %}
-                      {% if comp.psf %} · ${{ comp.psf|floatformat:0 }}/sf{% endif %}
-                    </div>
-                    <div>
-                      {% if comp.url %}
-                        <a href="{{ comp.url }}" class="text-decoration-none">{{ comp.address|default:comp.loc_id }}</a>
-                      {% elif comp.address %}
-                        {{ comp.address }}
-                      {% elif comp.loc_id %}
-                        {{ comp.loc_id }}
-                      {% endif %}
-                    </div>
-                    <div class="text-muted">
-                      {% if comp.living_area %}Living: {{ comp.living_area|floatformat:0 }} sqft{% endif %}
-                      {% if comp.lot_size %}
-                        {% if comp.living_area %} · {% endif %}
-                        Lot: {{ comp.lot_size|floatformat:0 }} sqft
-                      {% endif %}
-                    </div>
-                  </li>
-                {% endfor %}
-              </ul>
-            </div>
-          {% endif %}
         </div>
       </div>
     </div>
