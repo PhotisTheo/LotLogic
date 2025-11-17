@@ -26,11 +26,40 @@ from typing import Dict, Optional
 # Simple town ID to Registry ID mapping (for MassGIS integer IDs)
 # These are the short integer IDs used in the MassGIS catalog
 SIMPLE_TOWN_TO_REGISTRY: Dict[int, str] = {
-    # Essex North District
-    184: "essex_north",  # Newburyport (alternative ID)
-    206: "essex_north",  # Newburyport
-    335: "essex_north",  # West Newbury
-    # Add more as needed
+    # Essex North District (14 towns)
+    7: "essex_north",     # Amesbury
+    9: "essex_north",     # Andover
+    38: "essex_north",    # Boxford
+    105: "essex_north",   # Georgetown
+    116: "essex_north",   # Groveland
+    128: "essex_north",   # Haverhill
+    149: "essex_north",   # Lawrence
+    180: "essex_north",   # Merrimac
+    181: "essex_north",   # Methuen
+    206: "essex_north",   # Newburyport
+    210: "essex_north",   # North Andover
+    254: "essex_north",   # Rowley
+    259: "essex_north",   # Salisbury
+    324: "essex_north",   # West Newbury
+
+    # Essex South District (17 towns)
+    30: "essex_south",    # Beverly
+    71: "essex_south",    # Danvers
+    92: "essex_south",    # Essex
+    107: "essex_south",   # Gloucester
+    119: "essex_south",   # Hamilton
+    163: "essex_south",   # Lynn
+    166: "essex_south",   # Manchester
+    168: "essex_south",   # Marblehead
+    184: "essex_south",   # Middleton
+    196: "essex_south",   # Nahant
+    229: "essex_south",   # Peabody
+    252: "essex_south",   # Rockport
+    258: "essex_south",   # Salem
+    262: "essex_south",   # Saugus
+    291: "essex_south",   # Swampscott
+    298: "essex_south",   # Topsfield
+    320: "essex_south",   # Wenham
 }
 
 # Full town ID to Registry ID mapping (legacy format)
