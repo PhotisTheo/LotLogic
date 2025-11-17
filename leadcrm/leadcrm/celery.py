@@ -26,7 +26,8 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 # Explicitly import data_pipeline tasks (not a Django app)
-app.autodiscover_tasks(['data_pipeline.jobs'])
+# Import the task_queue module to register the tasks
+import data_pipeline.jobs.task_queue  # noqa: E402, F401
 
 
 @app.task(bind=True, ignore_result=True)
