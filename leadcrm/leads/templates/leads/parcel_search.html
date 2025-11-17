@@ -1222,6 +1222,8 @@
   var townGeojsonRequests = new Map();
   var bostonNeighborhoodPolygonIndex = new Map();
   var boundaryLayerGroup = null;
+  var allLoadedParcelsData = [];  // Cache of all loaded parcel data for client-side filtering
+  var currentActiveFilters = {};  // Track currently applied filters
   var activeBoundaryMeta = null;
   var finishPolygonBtn = null;
   var boundaryDrawOverlay = null;
@@ -2619,6 +2621,97 @@
       return false;
     }
 
+    // Check if any filters are active (excluding town/neighborhood which are location selectors)
+    function hasActiveFilters(filters) {
+      return Boolean(
+        filters.address_contains ||
+        (filters.property_category && filters.property_category !== 'any') ||
+        (filters.property_type && filters.property_type !== 'any') ||
+        filters.min_price ||
+        filters.max_price ||
+        filters.equity_min ||
+        (filters.absentee && filters.absentee !== 'any') ||
+        filters.min_years_owned ||
+        filters.max_years_owned ||
+        filters.proximity_address ||
+        filters.boundary_shape_type
+      );
+    }
+
+    // Get current filter values from form
+    function getCurrentFilters() {
+      const filters = {};
+
+      const addressContainsInput = document.querySelector('input[name="address_contains"]');
+      if (addressContainsInput && addressContainsInput.value) {
+        filters.address_contains = addressContainsInput.value.trim();
+      }
+
+      const categorySelect = document.querySelector('select[name="property_category"]');
+      if (categorySelect && categorySelect.value && categorySelect.value !== 'any') {
+        filters.property_category = categorySelect.value;
+      }
+
+      const propertyTypeSelect = document.querySelector('select[name="property_type"]');
+      if (propertyTypeSelect && !propertyTypeSelect.disabled && propertyTypeSelect.value && propertyTypeSelect.value !== 'any') {
+        filters.property_type = propertyTypeSelect.value;
+      }
+
+      const minPriceInput = document.querySelector('input[name="min_price"]');
+      if (minPriceInput && minPriceInput.value) {
+        filters.min_price = minPriceInput.value;
+      }
+
+      const maxPriceInput = document.querySelector('input[name="max_price"]');
+      if (maxPriceInput && maxPriceInput.value) {
+        filters.max_price = maxPriceInput.value;
+      }
+
+      const equityMinInput = document.querySelector('input[name="equity_min"]');
+      if (equityMinInput && equityMinInput.value) {
+        filters.equity_min = equityMinInput.value;
+      }
+
+      const absenteeSelect = document.querySelector('select[name="absentee"]');
+      if (absenteeSelect && absenteeSelect.value && absenteeSelect.value !== 'any') {
+        filters.absentee = absenteeSelect.value;
+      }
+
+      const minYearsOwnedInput = document.querySelector('input[name="min_years_owned"]');
+      if (minYearsOwnedInput && minYearsOwnedInput.value) {
+        filters.min_years_owned = minYearsOwnedInput.value;
+      }
+
+      const maxYearsOwnedInput = document.querySelector('input[name="max_years_owned"]');
+      if (maxYearsOwnedInput && maxYearsOwnedInput.value) {
+        filters.max_years_owned = maxYearsOwnedInput.value;
+      }
+
+      const proximityAddressInput = document.querySelector('input[name="proximity_address"]');
+      if (proximityAddressInput && proximityAddressInput.value) {
+        filters.proximity_address = proximityAddressInput.value.trim();
+      }
+
+      const proximityRadiusInput = document.querySelector('input[name="proximity_radius_miles"]');
+      if (proximityRadiusInput && proximityRadiusInput.value) {
+        filters.proximity_radius_miles = proximityRadiusInput.value;
+      }
+
+      const boundaryTypeInput = document.getElementById('boundaryShapeTypeInput');
+      if (boundaryTypeInput && boundaryTypeInput.value) {
+        filters.boundary_shape_type = boundaryTypeInput.value;
+        if (boundaryTypeInput.value === 'circle') {
+          filters.boundary_circle_lat = document.getElementById('boundaryCircleLatInput')?.value || '';
+          filters.boundary_circle_lng = document.getElementById('boundaryCircleLngInput')?.value || '';
+          filters.boundary_circle_radius_miles = document.getElementById('boundaryCircleRadiusInput')?.value || '';
+        } else if (boundaryTypeInput.value === 'polygon') {
+          filters.boundary_polygon_coords = document.getElementById('boundaryPolygonCoordsInput')?.value || '';
+        }
+      }
+
+      return filters;
+    }
+
     function filterParcelsClientSide(parcels, viewportBounds, filters) {
       if (!Array.isArray(parcels) || parcels.length === 0) {
         return [];
@@ -2842,7 +2935,7 @@
         });
     }
 
-    function clearViewportParcels() {
+    function clearViewportParcels(options = {}) {
       const parcelLayerCount = parcelLayers.length;
       const viewportParcelCount = viewportParcels.size;
       console.log(`🧹 Clearing ${parcelLayerCount} parcel layers and ${viewportParcelCount} viewport parcels`);
@@ -2874,6 +2967,12 @@
 
       hasLoadedFullCurrentTown = false;
 
+      // Clear cached parcel data if requested
+      if (options.clearCache !== false) {
+        allLoadedParcelsData = [];
+        currentActiveFilters = {};
+      }
+
       if (globalMap && legendControl) {
         try {
           globalMap.removeControl(legendControl);
@@ -2898,7 +2997,8 @@
 
       filterRefreshTimeout = setTimeout(() => {
         filterRefreshTimeout = null;
-        clearViewportParcels();
+        // Clear cache when filters change to force fresh load
+        clearViewportParcels({ clearCache: true });
         const townInputEl = document.getElementById('id_town_id');
         const forceReload = Boolean(townInputEl && townInputEl.dataset.resolvedTownId);
         loadParcelsInViewport({ immediate: true, force: forceReload, ignoreSpatialLock: true });
@@ -4302,6 +4402,48 @@
 
         pendingViewportReload = null;
 
+        // Check if we can use client-side filtering from cached data
+        const currentFilters = getCurrentFilters();
+        const filtersActive = hasActiveFilters(currentFilters);
+
+        if (filtersActive && allLoadedParcelsData.length > 0 && !forceReload) {
+          // Check if filters haven't changed - if they have, we need to re-fetch
+          const filtersChanged = JSON.stringify(currentActiveFilters) !== JSON.stringify(currentFilters);
+
+          if (!filtersChanged) {
+            console.log(`📦 Using client-side filtering (${allLoadedParcelsData.length} cached parcels)`);
+
+            // Clear current viewport parcels without clearing cache
+            clearViewportParcels({ clearCache: false });
+
+            // Get current viewport bounds
+            const bounds = globalMap.getBounds();
+            const viewportBounds = {
+              north: bounds.getNorth(),
+              south: bounds.getSouth(),
+              east: bounds.getEast(),
+              west: bounds.getWest()
+            };
+
+            // Filter cached parcels client-side
+            const filteredParcels = filterParcelsClientSide(allLoadedParcelsData, viewportBounds, currentFilters);
+
+            // Render the filtered parcels
+            const payload = {
+              parcels: filteredParcels,
+              count: filteredParcels.length,
+              limit: filteredParcels.length,
+              autoLienSearchEnabled: window.parcelAutoLienSearchEnabled !== false,
+              queuedBackgroundSearches: 0,
+            };
+
+            handleParcelResponse(payload, 'client-cache');
+            hideParcelLoadingOverlay(150);
+
+            return;  // Skip server request
+          }
+        }
+
         const townInput = document.querySelector('input[name="town_id"]');
         const resolvedTownId = townInput?.dataset?.resolvedTownId;
         const normalizedTownName = townInput?.dataset?.townName
@@ -4520,8 +4662,18 @@
 
           console.log(`Received ${data.count} parcels from ${sourceLabel.toUpperCase()}`);
 
+          // Cache parcel data if filters are active and this is from server (not client-cache)
+          if (sourceLabel !== 'client-cache' && filtersActive && usingTownWideBounds) {
+            allLoadedParcelsData = Array.isArray(data.parcels) ? data.parcels.slice() : [];
+            currentActiveFilters = { ...currentFilters };
+            console.log(`💾 Cached ${allLoadedParcelsData.length} parcels for client-side filtering`);
+          }
+
           // Clear existing parcels before rendering new ones to prevent overlaps
-          clearViewportParcels();
+          // Don't clear cache if we just set it
+          const shouldClearCache = sourceLabel === 'client-cache' ? false : true;
+          clearViewportParcels({ clearCache: shouldClearCache });
+
           if (!useStaticGeojson && usingTownWideBounds) {
             loadedFullTownViaLegacy = true;
           }
