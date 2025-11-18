@@ -2002,7 +2002,7 @@ def get_nh_town_choices(include_placeholder: bool = True) -> List[Tuple[str, str
     Returns:
         List of (municipality_name, display_label) tuples
     """
-    from leadcrm.data_pipeline.nh_town_registry_map import get_all_nh_towns
+    from data_pipeline.nh_town_registry_map import get_all_nh_towns
 
     choices: List[Tuple[str, str]] = []
     if include_placeholder:
@@ -2054,7 +2054,7 @@ def search_nh_parcels(
     Returns:
         Tuple of (town_info, results, total_count, metadata)
     """
-    from leadcrm.data_pipeline.sources.nh_granit import NHGRANITSource
+    from data_pipeline.sources.nh_granit import NHGRANITSource
 
     logger.info(f"Searching NH parcels for {municipality_name}")
 
@@ -5186,7 +5186,7 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
             return {"type": "FeatureCollection", "features": []}
 
         # Process features to add consistent TOWN and TOWN_ID properties
-        from leadcrm.data_pipeline.nh_town_registry_map import NH_TOWN_TO_REGISTRY
+        from data_pipeline.nh_town_registry_map import NH_TOWN_TO_REGISTRY
 
         features = []
         for idx, feature in enumerate(geojson_data["features"]):
