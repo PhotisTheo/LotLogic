@@ -192,10 +192,4 @@ urlpatterns = [
         views.search_liens_legal_actions,
         name="search_liens_legal_actions",
     ),
-    # Admin: Trigger market values computation
-    path(
-        "admin/trigger-market-values/",
-        views.trigger_market_values_compute,
-        name="trigger_market_values_compute",
-    ),
 ]
