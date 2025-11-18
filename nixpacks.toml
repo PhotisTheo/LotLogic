@@ -23,7 +23,9 @@ commands = [
 ]
 
 [phases.build]
-commands = []
+commands = [
+  "cd leadcrm && /opt/venv/bin/python manage.py collectstatic --noinput"
+]
 
 
 
