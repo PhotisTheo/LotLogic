@@ -3645,35 +3645,54 @@
       globalMap.on('dblclick', handleBoundaryDoubleClick);
       restoreBoundaryFromInputs();
 
-      // Load town boundaries
-      showTownLoadingOverlay('Retrieving town info…');
-      fetch('/api/town-boundaries/')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(geojson => {
-          L.geoJSON(geojson, {
-            style: function(feature) {
-              const townId = feature.properties?.TOWN_ID;
-              const isBoston = townId === 35 || townId === '35';
+      // Track current loaded state boundaries
+      let currentBoundariesState = null;
+      let townBoundariesLayer = null;
 
-              return {
-                color: '#94A3B8',
-                weight: 1,
-                opacity: 0.2,
-                fillColor: 'transparent',
-                fillOpacity: 0
-              };
-            },
-            onEachFeature: function(feature, layer) {
-                if (feature.properties && feature.properties.TOWN) {
-                  const townName = feature.properties.TOWN;
-                  const townId = feature.properties.TOWN_ID;
-                  const normalizedTownId = String(townId);
-                  const isBoston = townId === 35 || townId === '35';
+      // Function to load town boundaries for a specific state
+      function loadTownBoundaries(state) {
+        state = state || 'MA';
+
+        // Don't reload if already loaded for this state
+        if (currentBoundariesState === state && townBoundariesLayer) {
+          return Promise.resolve();
+        }
+
+        // Clear existing boundaries
+        if (townBoundariesLayer) {
+          globalMap.removeLayer(townBoundariesLayer);
+          townBoundariesLayer = null;
+        }
+        townLayerIndex.clear();
+
+        showTownLoadingOverlay(`Loading ${state} town boundaries…`);
+        return fetch(`/api/town-boundaries/?state=${state}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(geojson => {
+            townBoundariesLayer = L.geoJSON(geojson, {
+              style: function(feature) {
+                const townId = feature.properties?.TOWN_ID;
+                const isBoston = townId === 35 || townId === '35';
+
+                return {
+                  color: '#94A3B8',
+                  weight: 1,
+                  opacity: 0.2,
+                  fillColor: 'transparent',
+                  fillOpacity: 0
+                };
+              },
+              onEachFeature: function(feature, layer) {
+                  if (feature.properties && feature.properties.TOWN) {
+                    const townName = feature.properties.TOWN;
+                    const townId = feature.properties.TOWN_ID;
+                    const normalizedTownId = String(townId);
+                    const isBoston = townId === 35 || townId === '35';
 
                   townLayerIndex.set(normalizedTownId, layer);
                   if (pendingTownFocus && pendingTownFocus.townId === normalizedTownId) {
@@ -3739,11 +3758,13 @@
               }
             }
           }).addTo(globalMap);
-          console.log('Town boundaries loaded');
+          currentBoundariesState = state;
+          console.log(`${state} town boundaries loaded`);
           hideTownLoadingOverlay();
 
-          // Load Boston neighborhoods as clickable map boundaries
-          fetchBostonNeighborhoodsData().then(neighborhoods => {
+          // Load Boston neighborhoods if MA
+          if (state === 'MA') {
+            fetchBostonNeighborhoodsData().then(neighborhoods => {
             if (!bostonNeighborhoodGeoJSON) {
               console.warn('Boston neighborhoods GeoJSON not available');
               return;
@@ -3801,15 +3822,31 @@
 
             // Don't add to map yet - will be added when Boston is selected
             console.log('Boston neighborhoods loaded (hidden until Boston selected)');
-          }).catch(error => {
-            console.warn('Unable to load Boston neighborhoods:', error);
+            }).catch(error => {
+              console.warn('Unable to load Boston neighborhoods:', error);
+            });
+          }
+          })
+          .catch(error => {
+            console.warn('Could not load town boundaries:', error);
+            updateTownLoadingMessage('Unable to load town info');
+            hideTownLoadingOverlay(2500);
           });
-        })
-        .catch(error => {
-          console.warn('Could not load town boundaries:', error);
-          updateTownLoadingMessage('Unable to load town info');
-          hideTownLoadingOverlay(2500);
+      }
+
+      // Load initial town boundaries for default state (MA)
+      const stateSelect = document.querySelector('select[name="state"]');
+      const initialState = stateSelect ? stateSelect.value : 'MA';
+      loadTownBoundaries(initialState);
+
+      // Reload boundaries when state changes
+      if (stateSelect) {
+        stateSelect.addEventListener('change', function() {
+          const newState = this.value;
+          console.log(`State changed to ${newState}, reloading boundaries...`);
+          loadTownBoundaries(newState);
         });
+      }
 
       // Add map event listeners for viewport-based parcel loading
       globalMap.on('moveend zoomend', function() {

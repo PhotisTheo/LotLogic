@@ -6703,15 +6703,25 @@ def parcel_geometry(request, town_id, loc_id):
 
 def town_boundaries(request):
     """
-    Returns GeoJSON FeatureCollection of all Massachusetts town boundaries.
+    Returns GeoJSON FeatureCollection of town boundaries for the specified state.
     Used for rendering town boundaries on the map.
+
+    Query params:
+        state: 'MA' or 'NH' (default: 'MA')
     """
     try:
-        from .services import get_massgis_town_boundaries_geojson
-        geojson = get_massgis_town_boundaries_geojson()
+        state = request.GET.get("state", "MA").upper()
+
+        if state == "NH":
+            from .services import get_nh_town_boundaries_geojson
+            geojson = get_nh_town_boundaries_geojson()
+        else:  # Default to MA
+            from .services import get_massgis_town_boundaries_geojson
+            geojson = get_massgis_town_boundaries_geojson()
+
         return JsonResponse(geojson, safe=False)
     except Exception as e:
-        logger.exception("Error fetching town boundaries")
+        logger.exception("Error fetching town boundaries for state %s", request.GET.get("state", "MA"))
         return JsonResponse({"error": str(e)}, status=500)
 
 

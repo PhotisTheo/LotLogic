@@ -5155,6 +5155,69 @@ def get_massgis_town_boundaries_geojson() -> Dict[str, Any]:
             raise MassGISDataError(f"Failed to read town boundaries: {exc}") from exc
 
 
+def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
+    """
+    Fetch NH municipality boundaries from NH GRANIT ArcGIS REST API.
+    Returns a GeoJSON FeatureCollection with all NH town boundaries.
+
+    Uses the City/Town layer from NH GRANIT Political Boundaries MapServer.
+    """
+    import requests
+
+    # NH GRANIT Political Boundaries - City/Town layer (ID: 0)
+    base_url = "https://nhgeodata.unh.edu/nhgeodata/rest/services/Topical/CV_AdministrativeAndPoliticalBoundaries/MapServer/0"
+
+    try:
+        # Query all features - get geometry and town names
+        query_url = f"{base_url}/query"
+        params = {
+            "where": "1=1",  # Get all records
+            "outFields": "PBPLACE,NAME",  # Town name fields
+            "returnGeometry": "true",
+            "f": "geojson"
+        }
+
+        response = requests.get(query_url, params=params, timeout=60)
+        response.raise_for_status()
+        geojson_data = response.json()
+
+        if "features" not in geojson_data:
+            logger.error("No features in NH town boundaries response")
+            return {"type": "FeatureCollection", "features": []}
+
+        # Process features to add consistent TOWN and TOWN_ID properties
+        from leadcrm.data_pipeline.nh_town_registry_map import NH_TOWN_TO_REGISTRY
+
+        features = []
+        for idx, feature in enumerate(geojson_data["features"]):
+            props = feature.get("properties", {})
+            town_name = props.get("PBPLACE") or props.get("NAME", f"Unknown_{idx}")
+
+            # Create standardized properties similar to MA format
+            feature["properties"] = {
+                "TOWN": town_name,
+                "TOWN_ID": town_name,  # For NH, use town name as ID
+                "STATE": "NH",
+                "REGISTRY": NH_TOWN_TO_REGISTRY.get(town_name, "unknown")
+            }
+            features.append(feature)
+
+        payload = {
+            "type": "FeatureCollection",
+            "features": features
+        }
+
+        logger.info(f"Loaded {len(features)} NH town boundaries")
+        return payload
+
+    except requests.exceptions.RequestException as exc:
+        logger.error("Failed to fetch NH town boundaries from GRANIT: %s", exc)
+        return {"type": "FeatureCollection", "features": []}
+    except Exception as exc:
+        logger.error("Error processing NH town boundaries: %s", exc)
+        return {"type": "FeatureCollection", "features": []}
+
+
 def get_towns_in_bbox(north: float, south: float, east: float, west: float) -> List[int]:
     """
     Find town IDs that intersect with the given bounding box (WGS84 coordinates).
