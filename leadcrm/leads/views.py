@@ -7631,7 +7631,6 @@ def trigger_market_values_compute(request):
         return redirect('admin:index')
 
     # GET request - show confirmation page
-    from django.shortcuts import render
     return render(request, 'admin/confirm_market_values_compute.html', {
         'title': 'Trigger Market Values Computation',
         'site_title': 'Lead CRM Admin',
