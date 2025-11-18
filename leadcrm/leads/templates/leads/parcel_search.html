@@ -3845,7 +3845,46 @@
           const newState = this.value;
           console.log(`State changed to ${newState}, reloading boundaries...`);
           loadTownBoundaries(newState);
+          updateTownDatalist(newState);
         });
+      }
+
+      // Function to update town datalist based on state
+      function updateTownDatalist(state) {
+        const datalist = document.getElementById('parcel-town-options');
+        const townInput = document.querySelector('input[name="town_id"]');
+
+        if (!datalist) {
+          console.warn('Town datalist not found');
+          return;
+        }
+
+        // Clear current town selection
+        if (townInput) {
+          townInput.value = '';
+        }
+
+        // Fetch new town list for this state
+        fetch(`/api/towns/?state=${state}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.towns) {
+              // Clear existing options
+              datalist.innerHTML = '';
+
+              // Add new options
+              data.towns.forEach(town => {
+                const option = document.createElement('option');
+                option.value = town.label;
+                datalist.appendChild(option);
+              });
+
+              console.log(`Loaded ${data.towns.length} towns for ${state}`);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching town list:', error);
+          });
       }
 
       // Add map event listeners for viewport-based parcel loading

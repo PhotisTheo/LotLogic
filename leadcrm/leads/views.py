@@ -6725,6 +6725,34 @@ def town_boundaries(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+def get_towns_list(request):
+    """
+    Return list of towns/municipalities for a given state.
+
+    Query params:
+        state: 'MA' or 'NH' (default: 'MA')
+
+    Returns:
+        JSON array of [value, label] tuples for town autocomplete
+    """
+    try:
+        state = request.GET.get("state", "MA").upper()
+
+        if state == "NH":
+            from .services import get_nh_town_choices
+            towns = get_nh_town_choices(include_placeholder=False)
+        else:  # Default to MA
+            from .services import get_massgis_town_choices
+            towns = get_massgis_town_choices(include_placeholder=False)
+
+        # Convert to format: [{value: "...", label: "..."}]
+        towns_json = [{"value": str(value), "label": label} for value, label in towns]
+        return JsonResponse({"towns": towns_json})
+    except Exception as e:
+        logger.exception("Error fetching towns list for state %s", request.GET.get("state", "MA"))
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 def boston_neighborhoods(request):
     """Return the list of Boston neighborhoods for client-side filtering."""
     try:

@@ -141,6 +141,11 @@ urlpatterns = [
         name="town_boundaries",
     ),
     path(
+        "api/towns/",
+        views.get_towns_list,
+        name="get_towns_list",
+    ),
+    path(
         "api/boston-neighborhoods/",
         views.boston_neighborhoods,
         name="boston_neighborhoods",
