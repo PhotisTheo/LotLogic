@@ -3055,6 +3055,14 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 ("Land Value", _format_currency(attrs.get("LAND_VAL"))),
                 ("Building Value", _format_currency(attrs.get("BLDG_VAL"))),
                 ("Building Area (sqft)", attrs.get("BLD_AREA")),
+            ],
+        },
+        {
+            "title": "Sale History",
+            "items": [
+                ("Sale Date (GIS)", _format_gis_date(attrs.get("LS_DATE"))),
+                ("Sale Price", _format_currency(attrs.get("LS_PRICE"))),
+                ("Book / Page", _book_page_display()),
                 (
                     "Est. Mortgage Balance",
                     _format_currency(parcel.estimated_mortgage_balance),
@@ -3079,14 +3087,6 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                         else None
                     ),
                 ),
-            ],
-        },
-        {
-            "title": "Sale History",
-            "items": [
-                ("Sale Date (GIS)", _format_gis_date(attrs.get("LS_DATE"))),
-                ("Sale Price", _format_currency(attrs.get("LS_PRICE"))),
-                ("Book / Page", _book_page_display()),
             ],
         },
         {
