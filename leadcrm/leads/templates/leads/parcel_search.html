@@ -798,6 +798,11 @@
         <input type="hidden" name="boundary_circle_radius_miles" id="boundaryCircleRadiusInput" value="{{ boundary_shape.radius_miles|default:'' }}">
         <input type="hidden" name="boundary_polygon_coords" id="boundaryPolygonCoordsInput" value="{{ boundary_polygon_json|default:''|escape }}">
         <div class="row gy-3 gx-3 align-items-start mb-3">
+          <div class="col-12 col-xl-4">
+            <label class="form-label" for="{{ form.state.id_for_label }}">State</label>
+            {{ form.state }}
+            <div class="form-text">Select state first, then town.</div>
+          </div>
           <div class="col-12 col-xl-8">
             <label class="form-label" for="{{ form.town_id.id_for_label }}">Town</label>
             {{ form.town_id }}
