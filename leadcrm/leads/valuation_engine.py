@@ -403,11 +403,13 @@ class ParcelValuationEngine:
         if zoning_matches:
             relevant = zoning_matches
         else:
+            # IMPORTANT: Only compare properties in the same category
+            # Never mix commercial and residential comparables
             relevant = [
                 record
                 for record in candidates
                 if record.loc_id != target.loc_id and record.property_category == target.property_category
-            ] or list(candidates)
+            ]
 
         def distance(record: CleanedParcelRecord) -> float:
             area_diff = _relative_gap(record.living_area, target.living_area, 0.5)
