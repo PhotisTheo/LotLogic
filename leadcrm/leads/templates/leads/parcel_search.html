@@ -1600,6 +1600,72 @@
     }
   }
 
+  // Return towns whose centroid lies within the provided boundary meta
+  function townsWithinBoundary(boundaryMeta) {
+    if (!boundaryMeta || !townLayerIndex || townLayerIndex.size === 0 || !globalMap) {
+      return [];
+    }
+    const matches = [];
+    townLayerIndex.forEach((layer, townId) => {
+      if (!layer || typeof layer.getBounds !== 'function') {
+        return;
+      }
+      const bounds = layer.getBounds();
+      if (!bounds || typeof bounds.getCenter !== 'function') {
+        return;
+      }
+      const center = bounds.getCenter();
+      const props = (layer.feature && layer.feature.properties) || {};
+      const name = props.TOWN || props.name || '';
+      let inside = false;
+
+      if (boundaryMeta.type === 'circle' && boundaryMeta.center && boundaryMeta.radiusMiles) {
+        inside =
+          haversineMiles(
+            boundaryMeta.center.lat,
+            boundaryMeta.center.lng,
+            center.lat,
+            center.lng
+          ) <= boundaryMeta.radiusMiles;
+      } else if (boundaryMeta.type === 'polygon' && Array.isArray(boundaryMeta.coords)) {
+        inside = pointInPolygon(center.lat, center.lng, boundaryMeta.coords);
+      }
+
+      if (inside) {
+        matches.push({
+          id: String(townId),
+          name: name || `Town ${townId}`,
+        });
+      }
+    });
+    return matches;
+  }
+
+  function autoSelectTownForBoundary(boundaryMeta) {
+    const townInput = document.getElementById('id_town_id');
+    if (!townInput) {
+      return;
+    }
+    const alreadySelected = townInput.dataset && townInput.dataset.resolvedTownId;
+    if (alreadySelected) {
+      return;
+    }
+    const hits = townsWithinBoundary(boundaryMeta);
+    if (!hits.length) {
+      return;
+    }
+    const target = hits[0];
+    if (typeof window.leadsSelectTownById === 'function') {
+      window.leadsSelectTownById(target.id, { focus: false });
+    } else {
+      townInput.value = target.name;
+      townInput.dataset.resolvedTownId = target.id;
+      townInput.dataset.townName = target.name;
+      const evt = new Event('change', { bubbles: true });
+      townInput.dispatchEvent(evt);
+    }
+  }
+
   function clearBoundaryShape(triggerRefresh) {
     if (boundaryLayerGroup) {
       boundaryLayerGroup.clearLayers();
@@ -1663,6 +1729,7 @@
       radiusMiles: radiusMiles,
     };
     updateBoundaryFormInputs(activeBoundaryMeta);
+    autoSelectTownForBoundary(activeBoundaryMeta);
     renderActiveBoundaryOnMap();
     drawingMode = null;
     drawingPoints = [];
@@ -1690,6 +1757,7 @@
       coords,
     };
     updateBoundaryFormInputs(activeBoundaryMeta);
+    autoSelectTownForBoundary(activeBoundaryMeta);
     renderActiveBoundaryOnMap();
     drawingMode = null;
     drawingPoints = [];
