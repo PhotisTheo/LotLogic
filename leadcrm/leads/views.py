@@ -3845,17 +3845,30 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
             except Exception:  # noqa: BLE001
                 url = None
 
+        # Normalize address field – some payloads use different keys
+        address = (
+            comp.get("address")
+            or comp.get("site_address")
+            or comp.get("property_address")
+            or comp.get("full_address")
+            or comp.get("formatted_address")
+            or comp.get("display_address")
+            or comp.get("street_address")
+        )
+
         market_value_comps.append(
             {
                 "sale_price": comp.get("sale_price"),
                 "sale_date": comp.get("sale_date"),
                 "style": comp.get("style"),
                 "psf": comp.get("psf"),
-                "address": comp.get("address"),
+                "address": address,
                 "living_area": comp.get("living_area"),
                 "lot_size": comp.get("lot_size"),
                 "url": url,
                 "loc_id": loc_id,
+                "town_id": town_id,
+                "raw_address": comp.get("address"),
             }
         )
 

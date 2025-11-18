@@ -301,9 +301,11 @@
                       {% if comp.address %}
                         {{ comp.address }}
                       {% elif comp.url %}
-                        <a href="{{ comp.url }}" class="text-decoration-none text-dark">Property</a>
+                        <a href="{{ comp.url }}" class="text-decoration-none text-dark">
+                          {% if comp.loc_id %}Parcel {{ comp.loc_id }}{% else %}Comparable Sale{% endif %}
+                        </a>
                       {% else %}
-                        Comparable Sale
+                        {% if comp.loc_id %}Parcel {{ comp.loc_id }}{% else %}Comparable Sale{% endif %}
                       {% endif %}
                     </th>
                     <td class="fw-semibold">
