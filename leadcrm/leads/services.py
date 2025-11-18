@@ -1992,6 +1992,150 @@ def get_massgis_town_choices(include_placeholder: bool = True) -> List[Tuple[str
     return choices
 
 
+def get_nh_town_choices(include_placeholder: bool = True) -> List[Tuple[str, str]]:
+    """
+    Get list of NH municipalities for form dropdowns.
+
+    Args:
+        include_placeholder: Whether to include a placeholder option
+
+    Returns:
+        List of (municipality_name, display_label) tuples
+    """
+    from leadcrm.data_pipeline.nh_town_registry_map import get_all_nh_towns
+
+    choices: List[Tuple[str, str]] = []
+    if include_placeholder:
+        choices.append(("", "Select a town"))
+
+    # Get all NH municipalities
+    nh_towns = get_all_nh_towns()
+    for town_name in nh_towns:
+        choices.append((town_name, town_name))
+
+    return choices
+
+
+def get_town_choices_for_state(state: str, include_placeholder: bool = True) -> List[Tuple[str, str]]:
+    """
+    Get town/municipality choices for a given state.
+
+    Args:
+        state: State code ("MA" or "NH")
+        include_placeholder: Whether to include a placeholder option
+
+    Returns:
+        List of (value, label) tuples for the town dropdown
+    """
+    if state == "NH":
+        return get_nh_town_choices(include_placeholder=include_placeholder)
+    else:  # Default to MA
+        return get_massgis_town_choices(include_placeholder=include_placeholder)
+
+
+def search_nh_parcels(
+    municipality_name: str,
+    *,
+    address_contains: str = "",
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    limit: Optional[int] = None,
+) -> Tuple[Dict, List[ParcelSearchResult], int, Dict]:
+    """
+    Search NH parcels using GRANIT data.
+
+    Args:
+        municipality_name: NH town name (e.g., "Portsmouth")
+        address_contains: Filter by address
+        min_price: Minimum assessed value
+        max_price: Maximum assessed value
+        limit: Max number of results
+
+    Returns:
+        Tuple of (town_info, results, total_count, metadata)
+    """
+    from leadcrm.data_pipeline.sources.nh_granit import NHGRANITSource
+
+    logger.info(f"Searching NH parcels for {municipality_name}")
+
+    # Download parcels from GRANIT
+    source = NHGRANITSource()
+    parcel_features = source.get_parcels_for_municipality(municipality_name)
+
+    if not parcel_features:
+        town_info = {"name": municipality_name, "town_id": municipality_name}
+        return town_info, [], 0, {}
+
+    # Convert to ParcelSearchResult format
+    results = []
+    for feature in parcel_features:
+        props = feature.get("properties", {})
+
+        # Extract key fields (NH GRANIT field names)
+        loc_id = props.get("ACCT", "")  # Account number
+        site_address = props.get("LOCATION", "")
+        owner_name = props.get("OWNER", "")
+
+        # Apply filters
+        if address_contains:
+            if address_contains.lower() not in (site_address or "").lower():
+                continue
+
+        # Try to get assessed value
+        try:
+            total_value = float(props.get("TOTAL_VALUE") or props.get("ASSESSED_VALUE") or 0)
+        except (TypeError, ValueError):
+            total_value = 0
+
+        if min_price is not None and total_value < min_price:
+            continue
+        if max_price is not None and total_value > max_price:
+            continue
+
+        # Create search result (simplified for NH)
+        result = ParcelSearchResult(
+            town=MassGISTown(  # Reuse for now, we'll create NHTown later
+                town_id=0,  # NH doesn't use numeric IDs
+                name=municipality_name,
+                shapefile_url="",
+                gdb_url=None,
+                fiscal_year=None,
+                dataset_slug=municipality_name.lower().replace(" ", "_")
+            ),
+            loc_id=loc_id,
+            site_address=site_address or "Unknown",
+            site_city=municipality_name,
+            site_zip=props.get("ZIP", ""),
+            owner_name=owner_name,
+            owner_address=props.get("OWNER_ADDRESS", ""),
+            absentee=False,  # TODO: Determine from owner address
+            property_category="",
+            use_code=props.get("USE_CODE", ""),
+            property_type=None,
+            style=None,
+            total_value=total_value if total_value > 0 else None,
+            lot_size=float(props.get("ACRES", 0)) if props.get("ACRES") else None,
+            zoning=None,
+            equity_percent=None,
+            units=None,
+            attributes=props,  # Store all NH fields here
+        )
+        results.append(result)
+
+        if limit and len(results) >= limit:
+            break
+
+    town_info = {"name": municipality_name, "town_id": municipality_name}
+    metadata = {
+        "radius_requested": False,
+        "radius_center_found": False,
+        "radius_center_source": None,
+        "radius_excluded_count": 0,
+    }
+
+    return town_info, results, len(results), metadata
+
+
 def search_massgis_parcels(
     town_id: int,
     *,

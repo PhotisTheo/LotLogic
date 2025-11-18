@@ -88,6 +88,7 @@ class SavedParcelList(models.Model):
         blank=True,
     )
     name = models.CharField(max_length=200)
+    state = models.CharField(max_length=2, default="MA")  # MA, NH, etc.
     town_id = models.IntegerField()
     town_name = models.CharField(max_length=100)
     criteria = models.JSONField()
@@ -114,6 +115,7 @@ class SkipTraceRecord(models.Model):
         null=True,
         blank=True,
     )
+    state = models.CharField(max_length=2, default="MA")  # MA, NH, etc.
     town_id = models.IntegerField(null=True, blank=True)
     loc_id = models.CharField(max_length=200)
     owner_name = models.CharField(max_length=255, blank=True)
@@ -124,9 +126,9 @@ class SkipTraceRecord(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ("created_by", "town_id", "loc_id")
+        unique_together = ("created_by", "state", "town_id", "loc_id")
         indexes = [
-            models.Index(fields=["created_by", "town_id", "loc_id"]),
+            models.Index(fields=["created_by", "state", "town_id", "loc_id"]),
         ]
 
     def __str__(self):

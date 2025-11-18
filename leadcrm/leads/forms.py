@@ -18,6 +18,16 @@ class UploadFileForm(forms.Form):
 
 
 class ParcelSearchForm(forms.Form):
+    state = forms.ChoiceField(
+        label="State",
+        choices=[
+            ("MA", "Massachusetts"),
+            ("NH", "New Hampshire"),
+        ],
+        initial="MA",
+        required=True,
+        widget=forms.Select(attrs={"id": "id_state", "hx-get": "/leads/search/", "hx-trigger": "change", "hx-target": "#search-results"}),
+    )
     town_id = forms.CharField(
         label="Town",
         required=False,
@@ -93,13 +103,25 @@ class ParcelSearchForm(forms.Form):
             MassGISDataError,
             PARCEL_SEARCH_MAX_RESULTS,
             get_massgis_property_type_choices,
-            get_massgis_town_choices,
+            get_town_choices_for_state,
             preload_massgis_dataset,
         )
 
+        # Determine which state is selected
+        data = kwargs.get("data")
+        initial = kwargs.get("initial", {})
+        selected_state = None
+        if data:
+            selected_state = data.get("state", "MA")
+        elif initial:
+            selected_state = initial.get("state", "MA")
+        if not selected_state:
+            selected_state = "MA"
+
+        # Get town choices for the selected state
         try:
-            raw_choices = get_massgis_town_choices(include_placeholder=False)
-        except MassGISDataError:
+            raw_choices = get_town_choices_for_state(selected_state, include_placeholder=False)
+        except (MassGISDataError, Exception):
             raw_choices = []
 
         data = kwargs.get("data")

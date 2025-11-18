@@ -80,6 +80,7 @@ from .services import (
     massgis_stateplane_to_wgs84,
     preload_massgis_dataset,
     search_massgis_parcels,
+    search_nh_parcels,
     search_precomputed_parcels,
     skiptrace_property,
 )
@@ -2747,26 +2748,44 @@ def parcel_search_home(request):
         if not proximity_address:
             proximity_address = None
 
+        # Determine which state is being searched
+        selected_state = cleaned.get("state", "MA")
+
         try:
-            town_id = int(cleaned["town_id"])
-            town, results, total_matches, search_meta = search_massgis_parcels(
-                town_id=town_id,
-                property_category=cleaned.get("property_category") or "any",
-                commercial_subtype=cleaned.get("commercial_subtype") or "any",
-                address_contains=cleaned.get("address_contains", ""),
-                style_contains=cleaned.get("style", ""),
-                property_type=cleaned.get("property_type") or "any",
-                equity_min=equity_min,
-                absentee=cleaned.get("absentee") or "any",
-                min_price=min_price,
-                max_price=max_price,
-                min_years_owned=min_years_owned,
-                max_years_owned=max_years_owned,
-                proximity_address=proximity_address,
-                proximity_radius_miles=proximity_radius,
-                limit=limit,
-                shape_filter=boundary_shape_filter,
-            )
+            if selected_state == "NH":
+                # NH search - use municipality name
+                municipality_name = cleaned.get("town_id") or ""
+                if not municipality_name:
+                    raise ValueError("Please select a NH municipality")
+
+                town, results, total_matches, search_meta = search_nh_parcels(
+                    municipality_name=municipality_name,
+                    address_contains=cleaned.get("address_contains", ""),
+                    min_price=min_price,
+                    max_price=max_price,
+                    limit=limit,
+                )
+            else:
+                # MA search - use town_id
+                town_id = int(cleaned["town_id"])
+                town, results, total_matches, search_meta = search_massgis_parcels(
+                    town_id=town_id,
+                    property_category=cleaned.get("property_category") or "any",
+                    commercial_subtype=cleaned.get("commercial_subtype") or "any",
+                    address_contains=cleaned.get("address_contains", ""),
+                    style_contains=cleaned.get("style", ""),
+                    property_type=cleaned.get("property_type") or "any",
+                    equity_min=equity_min,
+                    absentee=cleaned.get("absentee") or "any",
+                    min_price=min_price,
+                    max_price=max_price,
+                    min_years_owned=min_years_owned,
+                    max_years_owned=max_years_owned,
+                    proximity_address=proximity_address,
+                    proximity_radius_miles=proximity_radius,
+                    limit=limit,
+                    shape_filter=boundary_shape_filter,
+                )
         except MassGISDataError as exc:
             messages.error(request, str(exc))
             context_radius_meta = default_radius_meta.copy()
@@ -3959,6 +3978,7 @@ def parcel_search_save_list(request):
 
     saved_list = SavedParcelList.objects.create(
         name=form.cleaned_data["name"],
+        state=criteria.get("state", "MA"),
         town_id=form.cleaned_data["town_id"],
         town_name=criteria.get("town_name", ""),
         criteria=criteria,
@@ -4125,11 +4145,19 @@ def parcel_add_to_list(request, town_id, loc_id):
         if not list_name:
             return JsonResponse({"success": False, "error": "List name is required."}, status=400)
 
+        # Infer state from town_id type (int = MA, string = NH)
+        try:
+            int(town_id)
+            inferred_state = "MA"
+        except (TypeError, ValueError):
+            inferred_state = "NH"
+
         saved_list = SavedParcelList.objects.create(
             name=list_name,
+            state=inferred_state,
             town_id=town_id,
             town_name=parcel.town.name,
-            criteria={"source": "single_parcel"},
+            criteria={"source": "single_parcel", "state": inferred_state},
             loc_ids=[{"town_id": town_id, "loc_id": loc_id}],
             created_by=workspace_owner,
         )
