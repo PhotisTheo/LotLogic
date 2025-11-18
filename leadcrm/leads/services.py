@@ -5172,17 +5172,18 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
         query_url = f"{base_url}/query"
         params = {
             "where": "1=1",  # Get all records
-            "outFields": "PBPLACE,NAME",  # Town name fields
+            "outFields": "NAME",  # Town name field
             "returnGeometry": "true",
-            "f": "geojson"
+            "f": "geojson",
+            "outSR": "4326"  # WGS84 spatial reference
         }
 
         response = requests.get(query_url, params=params, timeout=60)
         response.raise_for_status()
         geojson_data = response.json()
 
-        if "features" not in geojson_data:
-            logger.error("No features in NH town boundaries response")
+        if "features" not in geojson_data or not isinstance(geojson_data, dict):
+            logger.error("No features in NH town boundaries response: %s", geojson_data)
             return {"type": "FeatureCollection", "features": []}
 
         # Process features to add consistent TOWN and TOWN_ID properties
@@ -5191,7 +5192,7 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
         features = []
         for idx, feature in enumerate(geojson_data["features"]):
             props = feature.get("properties", {})
-            town_name = props.get("PBPLACE") or props.get("NAME", f"Unknown_{idx}")
+            town_name = props.get("NAME", f"Unknown_{idx}")
 
             # Create standardized properties similar to MA format
             feature["properties"] = {
