@@ -5,7 +5,6 @@
   },
   "deploy": {
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10,
-    "startCommand": "cd leadcrm && python manage.py migrate --noinput && cd .. && /opt/venv/bin/gunicorn leadcrm.leadcrm.wsgi --bind 0.0.0.0:$PORT --workers 4 --timeout 120"
+    "restartPolicyMaxRetries": 10
   }
 }
