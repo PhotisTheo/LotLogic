@@ -1848,7 +1848,7 @@
 
     if (drawingMode === 'polygon') {
       // If user clicks near the first point (within ~10 feet), close the polygon automatically
-      const closingThresholdMiles = 0.01; // ~52 feet tolerance to close loop
+      const closingThresholdMiles = 0.038; // ~200 feet tolerance to close loop
       const firstPoint = drawingPoints[0];
       const isClosingLoop =
         firstPoint &&
