@@ -7593,3 +7593,46 @@ def crm_delete_lead(request, lead_id):
     except Exception as e:
         logger.error(f"Error deleting lead: {e}")
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def trigger_market_values_compute(request):
+    """
+    Trigger market values computation for all parcels.
+    This view queues a Celery task to compute market values using the fixed
+    comp selection logic that prevents commercial/residential mixing.
+
+    Accessible from Django admin panel.
+    """
+    from .tasks import compute_market_values
+    from django.contrib import messages
+    from django.contrib.admin.views.decorators import staff_member_required
+
+    # Only allow staff members to trigger this
+    if not request.user.is_staff:
+        messages.error(request, "You don't have permission to trigger market values computation.")
+        return redirect('admin:index')
+
+    if request.method == 'POST':
+        # Queue the Celery task
+        task = compute_market_values.delay(
+            lookback_days=365,
+            target_comps=5,
+            batch_size=500
+        )
+
+        messages.success(
+            request,
+            f'Market values computation started! Task ID: {task.id}. '
+            'This will process all parcels and may take several hours. '
+            'Check the Celery worker logs for progress.'
+        )
+        logger.info(f"Market values computation triggered by {request.user.username}, task_id={task.id}")
+        return redirect('admin:index')
+
+    # GET request - show confirmation page
+    from django.shortcuts import render
+    return render(request, 'admin/confirm_market_values_compute.html', {
+        'title': 'Trigger Market Values Computation',
+        'site_title': 'Lead CRM Admin',
+    })

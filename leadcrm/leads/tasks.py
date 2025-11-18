@@ -196,3 +196,44 @@ def scrape_saved_list_parcels(saved_list_id: int):
     except Exception as exc:
         logger.error(f"Failed to scrape saved list {saved_list_id}: {exc}", exc_info=True)
         raise
+
+
+@shared_task(name='leads.compute_market_values')
+def compute_market_values(lookback_days: int = 365, target_comps: int = 5, batch_size: int = 500, town_ids: list = None):
+    """
+    Compute market values for all parcels using the hybrid valuation engine.
+
+    This task runs the market value computation with the fixed comp selection logic
+    that prevents commercial properties from being compared to residential properties.
+
+    Args:
+        lookback_days: Number of days of sale history to consider (default: 365)
+        target_comps: Target number of comparable sales per parcel (default: 5)
+        batch_size: Database write batch size (default: 500)
+        town_ids: Optional list of town IDs to limit processing (default: None = all towns)
+    """
+    logger.info(f"Starting market values computation (lookback={lookback_days}, target_comps={target_comps}, batch_size={batch_size})...")
+
+    try:
+        # Build command arguments
+        cmd_args = {
+            'lookback_days': lookback_days,
+            'target_comps': target_comps,
+            'batch_size': batch_size,
+        }
+
+        if town_ids:
+            cmd_args['town_ids'] = town_ids
+            logger.info(f"Processing towns: {town_ids}")
+        else:
+            logger.info("Processing all towns")
+
+        # Run the management command
+        call_command('compute_market_values', **cmd_args)
+
+        logger.info("Market values computation completed successfully")
+        return "Success: All market values computed"
+
+    except Exception as exc:
+        logger.error(f"Market values computation failed: {exc}", exc_info=True)
+        raise

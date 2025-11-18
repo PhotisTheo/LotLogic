@@ -500,6 +500,7 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"name": "View Site", "url": "/", "new_window": True},
+        {"name": "Compute Market Values", "url": "trigger_market_values_compute", "icon": "fas fa-calculator", "permissions": ["auth.view_user"]},
         {"model": "auth.User"},
         {"app": "leads"},
     ],

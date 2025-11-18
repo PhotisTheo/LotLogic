@@ -1,0 +1,112 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-calculator me-2"></i>
+                        Trigger Market Values Computation
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>
+                            What will this do?
+                        </h5>
+                        <p class="mb-2">This will start a background task that:</p>
+                        <ul class="mb-0">
+                            <li>Processes <strong>all towns and parcels</strong> in the database</li>
+                            <li>Computes market values using the <strong>hybrid valuation engine</strong></li>
+                            <li>Uses <strong>365 days of sale history</strong> for comparable selection</li>
+                            <li>Selects up to <strong>5 comparable properties</strong> per parcel</li>
+                            <li>Prevents <strong>commercial/residential mixing</strong> (bug fix applied)</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Important Notes
+                        </h5>
+                        <ul class="mb-0">
+                            <li>This process may take <strong>1-6 hours</strong> depending on data size</li>
+                            <li>The task runs in the background via Celery worker</li>
+                            <li>You can close this page after starting - the task will continue</li>
+                            <li>Monitor progress in the Celery worker logs</li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5>Configuration:</h5>
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th width="40%">Lookback Period:</th>
+                                    <td>365 days (1 year)</td>
+                                </tr>
+                                <tr>
+                                    <th>Target Comps:</th>
+                                    <td>5 per parcel</td>
+                                </tr>
+                                <tr>
+                                    <th>Batch Size:</th>
+                                    <td>500 records per database write</td>
+                                </tr>
+                                <tr>
+                                    <th>Scope:</th>
+                                    <td>All towns and parcels</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <form method="post" action="{% url 'trigger_market_values_compute' %}">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-play-circle me-2"></i>
+                                Start Market Values Computation
+                            </button>
+                            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card-header h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .alert-heading {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    ul {
+        padding-left: 1.5rem;
+    }
+
+    ul li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
