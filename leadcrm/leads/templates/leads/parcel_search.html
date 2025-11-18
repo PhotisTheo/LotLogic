@@ -1548,7 +1548,7 @@
     }
     if (drawingMode === 'polygon') {
       statusEl.textContent = drawingPoints.length
-        ? 'Click to add more points, double-click or press Finish Polygon when done.'
+        ? 'Click to add points, click near the first point or double-click to finish.'
         : 'Click on the map to add the first polygon point.';
       statusEl.classList.add('text-primary');
       return;
@@ -1779,6 +1779,30 @@
     }
 
     if (drawingMode === 'polygon') {
+      // If user clicks near the first point (within ~10 feet), close the polygon automatically
+      const closingThresholdMiles = 0.002; // ~10.5 feet
+      const firstPoint = drawingPoints[0];
+      const isClosingLoop =
+        firstPoint &&
+        drawingPoints.length >= 3 &&
+        haversineMiles(firstPoint.lat, firstPoint.lng, latlng.lat, latlng.lng) <= closingThresholdMiles;
+
+      if (isClosingLoop) {
+        const finalizedPoints = drawingPoints.slice();
+        // include the last click if it's meaningfully different
+        const distToLast = haversineMiles(
+          drawingPoints[drawingPoints.length - 1].lat,
+          drawingPoints[drawingPoints.length - 1].lng,
+          latlng.lat,
+          latlng.lng
+        );
+        if (distToLast > 0) {
+          finalizedPoints.push(latlng);
+        }
+        finalizePolygonBoundary(finalizedPoints);
+        return;
+      }
+
       drawingPoints.push(latlng);
       if (!drawingPreviewLayer) {
         drawingPreviewLayer = L.polyline([latlng], {
