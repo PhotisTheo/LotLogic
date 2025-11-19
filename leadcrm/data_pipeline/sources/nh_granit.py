@@ -133,6 +133,7 @@ class NHGRANITSource:
             "objectIds": ids_str,
             "outFields": fields_str,
             "returnGeometry": "true",
+            "outSR": "4326",  # Request WGS84 lat/long coordinates for web mapping
             "f": "geojson"
         }
 
