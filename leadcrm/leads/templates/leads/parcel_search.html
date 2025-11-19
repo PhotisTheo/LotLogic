@@ -3824,10 +3824,9 @@
 
             // Don't add to map yet - will be added when Boston is selected
             console.log('Boston neighborhoods loaded (hidden until Boston selected)');
-            }).catch(error => {
-              console.warn('Unable to load Boston neighborhoods:', error);
-            });
-          }
+          }).catch(error => {
+            console.warn('Unable to load Boston neighborhoods:', error);
+          });
           })
           .catch(error => {
             console.warn('Could not load town boundaries:', error);
