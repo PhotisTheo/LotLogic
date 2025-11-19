@@ -4587,13 +4587,28 @@
 
       const criteriaJson = JSON.stringify(filters);
 
+      // Helper function to escape values for use in template literals
+      const escapeForTemplate = (str) => {
+        if (!str) return '';
+        return String(str)
+          .replace(/\\/g, '\\\\')
+          .replace(/`/g, '\\`')
+          .replace(/\$/g, '\\$');
+      };
+
+      // Escape values for safe use in template literals
+      const safeCriteriaJson = escapeForTemplate(criteriaJson).replace(/"/g, '&quot;');
+      const safeLocIds = escapeForTemplate(locIds);
+      const safeCsrfToken = escapeForTemplate(csrfToken);
+      const safeResolvedTownId = escapeForTemplate(resolvedTownId || '');
+
       // Create the save form
       resultsActions.innerHTML = `
         <form method="post" action="/search/save-list/" class="d-flex gap-2" id="saveListForm">
-          <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-          <input type="hidden" name="town_id" value="${resolvedTownId || ''}">
-          <input type="hidden" name="criteria" value="${criteriaJson.replace(/"/g, '&quot;')}">
-          <input type="hidden" name="loc_ids" value="${locIds}">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${safeCsrfToken}">
+          <input type="hidden" name="town_id" value="${safeResolvedTownId}">
+          <input type="hidden" name="criteria" value="${safeCriteriaJson}">
+          <input type="hidden" name="loc_ids" value="${safeLocIds}">
           <div class="input-group input-group-sm">
             <input type="text"
                    name="name"
