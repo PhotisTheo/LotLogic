@@ -1282,6 +1282,8 @@
   var filterRefreshTimeout = null;
   var pendingViewportReload = null;
   var loadParcelsInViewportImpl = null;
+  var townBoundariesLayer = null;
+  var currentBoundariesState = null;
   var hasLoadedFullCurrentTown = false;
   window.parcelAutoLienSearchEnabled = {% if initial_auto_lien_search_enabled %}true{% else %}false{% endif %};
   var bostonNeighborhoodLayer = null;
@@ -3639,10 +3641,6 @@
       globalMap.on('mousemove', handleBoundaryMouseMove);
       globalMap.on('dblclick', handleBoundaryDoubleClick);
       restoreBoundaryFromInputs();
-
-      // Track current loaded state boundaries
-      let currentBoundariesState = null;
-      let townBoundariesLayer = null;
 
       // Function to load town boundaries for a specific state
       function loadTownBoundaries() {
