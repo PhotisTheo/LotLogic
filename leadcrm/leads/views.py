@@ -83,6 +83,7 @@ from .services import (
     search_nh_parcels,
     search_precomputed_parcels,
     skiptrace_property,
+    GISDATA_ROOT,
 )
 from .attom_service import (
     build_attom_cache_key,
@@ -2991,7 +2992,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
             cama_data = get_nh_parcel_cama_data(
                 town_name,
                 loc_id,
-                gisdata_path=settings.GISDATA_DIR + "/NH"
+                gisdata_path=str(GISDATA_ROOT / "NH"),
             )
 
             # Merge CAMA data with GRANIT properties
@@ -7043,7 +7044,7 @@ def parcels_in_viewport(request):
                 cama_loader = None
                 if county:
                     try:
-                        cama_loader = get_cama_loader(settings.GISDATA_DIR + "/NH")
+                        cama_loader = get_cama_loader(str(GISDATA_ROOT / "NH"))
                         # Pre-load county data
                         cama_loader._load_county(county)
                         logger.info(f"Loaded CAMA data for {county} County")

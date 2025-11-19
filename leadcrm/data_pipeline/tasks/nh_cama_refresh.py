@@ -49,7 +49,8 @@ def refresh_nh_cama_data(self, force: bool = False) -> dict:
         "errors": []
     }
 
-    gisdata_dir = Path(settings.GISDATA_DIR) / "NH"
+    gisdata_root = Path(getattr(settings, "GISDATA_ROOT", Path(settings.BASE_DIR) / "gisdata"))
+    gisdata_dir = gisdata_root / "NH"
     gisdata_dir.mkdir(parents=True, exist_ok=True)
 
     for county in NH_COUNTIES:
@@ -164,7 +165,8 @@ def check_for_cama_updates() -> dict:
     logger.info("Checking for NH CAMA updates...")
 
     status = {}
-    gisdata_dir = Path(settings.GISDATA_DIR) / "NH"
+    gisdata_root = Path(getattr(settings, "GISDATA_ROOT", Path(settings.BASE_DIR) / "gisdata"))
+    gisdata_dir = gisdata_root / "NH"
 
     for county in NH_COUNTIES:
         try:

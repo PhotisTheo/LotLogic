@@ -86,15 +86,15 @@ def _cai_service(town_slug: str) -> str:
 NH_OWNER_SOURCES: Dict[str, ArcGISTownSource] = {
     # Seacoast / border towns
     "Portsmouth": ArcGISTownSource(
-        endpoint="https://gis.portsmouthnh.com/arcgis/rest/services/Public/Parcels/FeatureServer/0",
+        endpoint=_cai_service("Portsmouth_TaxParcels"),
         parcel_id_field="PID",
-        owner_fields=["OWNER1", "OWNER2"],
-        mailing_address_field="MAILADDR",
-        mailing_city_field="MAILCITY",
-        mailing_state_field="MAILSTATE",
-        mailing_zip_field="MAILZIP",
-        site_address_field="SITEADDR",
-        description="City of Portsmouth parcel layer (owner + mailing fields).",
+        owner_fields=["OWN1", "OWN2"],
+        mailing_address_field="M_ADDR",
+        mailing_city_field="M_CITY",
+        mailing_state_field="M_STATE",
+        mailing_zip_field="M_ZIP",
+        site_address_field="PROP_LOC",
+        description="Portsmouth, NH parcel layer (CAI GIS).",
     ),
     "Seabrook": ArcGISTownSource(
         endpoint=_cai_service("Seabrook_TaxParcels"),
