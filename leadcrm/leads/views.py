@@ -6893,8 +6893,54 @@ def parcels_in_viewport(request):
                 "message": "Please select a Boston neighborhood to load parcels. Boston has 98,845 parcels which is too many to load without filtering."
             })
 
+        # Check state parameter to route to correct data source
+        state = request.GET.get('state', 'MA').upper()
+
         # Fetch parcels
-        logger.info(f"Fetching parcels with filters: {filters}, limit: {limit}")
+        logger.info(f"Fetching parcels for state {state} with filters: {filters}, limit: {limit}")
+
+        # NH parcel search uses GRANIT API
+        if state == 'NH':
+            town_name = filters.get('town_name')
+            if not town_name:
+                return JsonResponse({
+                    "count": 0,
+                    "parcels": [],
+                    "autoLienSearchEnabled": False,
+                    "queuedBackgroundSearches": 0,
+                    "error": "Town required for NH",
+                    "message": "Please select a New Hampshire town to load parcels."
+                })
+
+            from .services import search_nh_parcels
+            try:
+                town_info, parcels, total_count, metadata = search_nh_parcels(
+                    municipality_name=town_name,
+                    address_contains=filters.get('address_contains', ''),
+                    min_price=filters.get('min_price'),
+                    max_price=filters.get('max_price'),
+                    limit=limit
+                )
+
+                # Convert to viewport format
+                parcel_features = []
+                for parcel in parcels:
+                    parcel_features.append({
+                        "type": "Feature",
+                        "geometry": parcel.get("geometry"),
+                        "properties": parcel.get("properties", {})
+                    })
+
+                return JsonResponse({
+                    "count": len(parcel_features),
+                    "total": total_count,
+                    "parcels": parcel_features,
+                    "autoLienSearchEnabled": False,
+                    "queuedBackgroundSearches": 0
+                })
+            except Exception as exc:
+                logger.exception("NH parcel search failed")
+                return JsonResponse({"error": str(exc)}, status=500)
 
         # Check if precomputed data is available (requires migration)
         # Temporarily disabled until migrations run on production

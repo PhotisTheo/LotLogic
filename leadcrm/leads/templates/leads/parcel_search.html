@@ -4808,6 +4808,11 @@
         params.append('east', east);
         params.append('west', west);
 
+        // Add state parameter
+        const stateSelect = document.querySelector('select[name="state"]');
+        const currentState = stateSelect ? stateSelect.value : 'MA';
+        params.append('state', currentState);
+
         // Manually append each filter to ensure correct parameter names
         if (filters.address_contains) {
           params.append('address_contains', filters.address_contains);
