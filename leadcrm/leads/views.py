@@ -34,7 +34,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db.utils import NotSupportedError
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -6786,10 +6786,18 @@ def town_boundaries(request):
         state = request.GET.get("state", "MA").upper()
 
         if state == "NH":
-            from .services import get_nh_town_boundaries_geojson
+            from .services import ensure_nh_town_boundaries_file, get_nh_town_boundaries_geojson
+
+            cache_path = ensure_nh_town_boundaries_file()
+            if cache_path and cache_path.exists():
+                return FileResponse(cache_path.open("rb"), content_type="application/json")
             geojson = get_nh_town_boundaries_geojson()
         else:  # Default to MA
-            from .services import get_massgis_town_boundaries_geojson
+            from .services import ensure_massgis_town_boundaries_file, get_massgis_town_boundaries_geojson
+
+            cache_path = ensure_massgis_town_boundaries_file()
+            if cache_path and cache_path.exists():
+                return FileResponse(cache_path.open("rb"), content_type="application/json")
             geojson = get_massgis_town_boundaries_geojson()
 
         return JsonResponse(geojson, safe=False)

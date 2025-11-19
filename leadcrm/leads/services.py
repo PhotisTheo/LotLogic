@@ -239,6 +239,7 @@ MASSGIS_EXCEL_FILENAME = "MassGIS_Parcel_Download_Links.xlsx"
 MASSGIS_TOWNS_URL = "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/townssurvey_shp.zip"
 MASSGIS_TOWNS_DIR = GISDATA_ROOT / "townssurvey"
 MASSGIS_TOWN_BOUNDARIES_CACHE_PATH = MASSGIS_TOWNS_DIR / "town_boundaries.geojson"
+NH_TOWN_BOUNDARIES_CACHE_PATH = GISDATA_ROOT / "NH" / "town_boundaries.geojson"
 MASSGIS_EXCEL_PATH = GISDATA_ROOT / MASSGIS_EXCEL_FILENAME
 BOSTON_TOWN_ID = 35
 BOSTON_DATASET_SLUG = "BOSTON_TAXPAR"
@@ -275,6 +276,7 @@ BATCHDATA_TIMEOUT = 20
 
 _TOWN_BOUNDARIES_CACHE_LOCK = threading.Lock()
 _TOWN_BOUNDARIES_CACHE: Optional[Dict[str, Any]] = None
+TOWN_BOUNDARY_MEMORY_CACHE_ENABLED = getattr(settings, "TOWN_BOUNDARY_MEMORY_CACHE_ENABLED", False)
 
 DEFAULT_MORTGAGE_TERM_YEARS = 30
 DEFAULT_INITIAL_LTV = 0.80
@@ -5176,38 +5178,37 @@ def _format_attribute_rows(attributes: Dict[str, object]) -> List[Tuple[str, str
 
 
 def _load_town_boundary_cache() -> Optional[Dict[str, Any]]:
-    if not MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.exists():
-        return None
+    return _load_json_cache(MASSGIS_TOWN_BOUNDARIES_CACHE_PATH)
 
+
+def _write_town_boundary_cache(payload: Dict[str, Any]) -> None:
+    _write_json_cache(MASSGIS_TOWN_BOUNDARIES_CACHE_PATH, payload)
+
+
+def _load_json_cache(path: Path) -> Optional[Dict[str, Any]]:
+    if not path.exists():
+        return None
     try:
-        with MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.open("r", encoding="utf-8") as fp:
+        with path.open("r", encoding="utf-8") as fp:
             data = json.load(fp)
             if isinstance(data, dict):
                 return data
-    except (OSError, json.JSONDecodeError) as exc:  # noqa: PERF203 - best-effort cache read
-        logger.warning(
-            "Failed to read cached town boundaries at %s: %s",
-            MASSGIS_TOWN_BOUNDARIES_CACHE_PATH,
-            exc,
-        )
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("Failed to read cached JSON at %s: %s", path, exc)
         try:
-            MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.unlink()
+            path.unlink()
         except OSError:
             pass
     return None
 
 
-def _write_town_boundary_cache(payload: Dict[str, Any]) -> None:
+def _write_json_cache(path: Path, payload: Dict[str, Any]) -> None:
     try:
-        MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        with MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.open("w", encoding="utf-8") as fp:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as fp:
             json.dump(payload, fp)
     except OSError as exc:
-        logger.warning(
-            "Unable to write town boundaries cache to %s: %s",
-            MASSGIS_TOWN_BOUNDARIES_CACHE_PATH,
-            exc,
-        )
+        logger.warning("Unable to persist JSON cache at %s: %s", path, exc)
 
 
 def get_massgis_town_boundaries_geojson() -> Dict[str, Any]:
@@ -5219,11 +5220,12 @@ def get_massgis_town_boundaries_geojson() -> Dict[str, Any]:
 
     global _TOWN_BOUNDARIES_CACHE
     with _TOWN_BOUNDARIES_CACHE_LOCK:
-        if _TOWN_BOUNDARIES_CACHE is not None:
+        if TOWN_BOUNDARY_MEMORY_CACHE_ENABLED and _TOWN_BOUNDARIES_CACHE is not None:
             return _TOWN_BOUNDARIES_CACHE
         cache_hit = _load_town_boundary_cache()
         if cache_hit is not None:
-            _TOWN_BOUNDARIES_CACHE = cache_hit
+            if TOWN_BOUNDARY_MEMORY_CACHE_ENABLED:
+                _TOWN_BOUNDARIES_CACHE = cache_hit
             return cache_hit
 
         # Ensure town boundaries are downloaded
@@ -5295,12 +5297,31 @@ def get_massgis_town_boundaries_geojson() -> Dict[str, Any]:
                 "features": features
             }
             _write_town_boundary_cache(payload)
-            _TOWN_BOUNDARIES_CACHE = payload
+            if TOWN_BOUNDARY_MEMORY_CACHE_ENABLED:
+                _TOWN_BOUNDARIES_CACHE = payload
             return payload
 
         except Exception as exc:
             logger.error("Failed to read town boundaries shapefile: %s", exc)
             raise MassGISDataError(f"Failed to read town boundaries: {exc}") from exc
+
+
+def ensure_massgis_town_boundaries_file() -> Path:
+    """
+    Ensure the MassGIS town boundaries GeoJSON file exists on disk.
+    Returns the path that can be streamed without holding the payload in memory.
+    """
+    if not MASSGIS_TOWN_BOUNDARIES_CACHE_PATH.exists():
+        get_massgis_town_boundaries_geojson()
+    return MASSGIS_TOWN_BOUNDARIES_CACHE_PATH
+
+
+def _load_nh_town_boundary_cache() -> Optional[Dict[str, Any]]:
+    return _load_json_cache(NH_TOWN_BOUNDARIES_CACHE_PATH)
+
+
+def _write_nh_town_boundary_cache(payload: Dict[str, Any]) -> None:
+    _write_json_cache(NH_TOWN_BOUNDARIES_CACHE_PATH, payload)
 
 
 def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
@@ -5311,6 +5332,10 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
     Uses the City/Town layer from NH GRANIT Political Boundaries MapServer.
     """
     import requests
+
+    cache_hit = _load_nh_town_boundary_cache()
+    if cache_hit is not None:
+        return cache_hit
 
     # NH GRANIT Political Boundaries - City/Town layer (ID: 0)
     base_url = "https://nhgeodata.unh.edu/nhgeodata/rest/services/Topical/CV_AdministrativeAndPoliticalBoundaries/MapServer/0"
@@ -5357,6 +5382,7 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
         }
 
         logger.info(f"Loaded {len(features)} NH town boundaries")
+        _write_nh_town_boundary_cache(payload)
         return payload
 
     except requests.exceptions.RequestException as exc:
@@ -5365,6 +5391,15 @@ def get_nh_town_boundaries_geojson() -> Dict[str, Any]:
     except Exception as exc:
         logger.error("Error processing NH town boundaries: %s", exc)
         return {"type": "FeatureCollection", "features": []}
+
+
+def ensure_nh_town_boundaries_file() -> Path:
+    """
+    Ensure the NH GRANIT boundaries are cached to disk and return the file path.
+    """
+    if not NH_TOWN_BOUNDARIES_CACHE_PATH.exists():
+        get_nh_town_boundaries_geojson()
+    return NH_TOWN_BOUNDARIES_CACHE_PATH
 
 
 def get_towns_in_bbox(north: float, south: float, east: float, west: float) -> List[int]:
