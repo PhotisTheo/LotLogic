@@ -90,7 +90,7 @@ class NHGRANITSource:
         query_url = f"{self.BASE_URL}/{self.PARCELS_LAYER_ID}/query"
 
         params = {
-            "where": f"PBPLACE='{municipality_name}'",
+            "where": f"Town='{municipality_name}'",
             "returnIdsOnly": "true",
             "f": "json"
         }
@@ -183,7 +183,7 @@ class NHGRANITSource:
         params = {
             "where": "1=1",
             "returnDistinctValues": "true",
-            "outFields": "PBPLACE",
+            "outFields": "Town",
             "f": "json"
         }
 
@@ -193,7 +193,7 @@ class NHGRANITSource:
             data = response.json()
 
             if "features" in data:
-                municipalities = [f["attributes"]["PBPLACE"] for f in data["features"]]
+                municipalities = [f["attributes"]["Town"] for f in data["features"]]
                 return sorted(set(municipalities))
             else:
                 logger.warning("Could not retrieve municipality list")
