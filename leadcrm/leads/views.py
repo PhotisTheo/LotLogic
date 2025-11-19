@@ -6912,28 +6912,38 @@ def parcels_in_viewport(request):
                     "message": "Please select a New Hampshire town to load parcels."
                 })
 
-            from .services import search_nh_parcels
+            from data_pipeline.sources.nh_granit import NHGRANITSource
             try:
-                town_info, parcels, total_count, metadata = search_nh_parcels(
-                    municipality_name=town_name,
-                    address_contains=filters.get('address_contains', ''),
-                    min_price=filters.get('min_price'),
-                    max_price=filters.get('max_price'),
-                    limit=limit
-                )
+                logger.info(f"Fetching NH parcels for {town_name}")
+                source = NHGRANITSource()
+                parcel_features = source.get_parcels_for_municipality(town_name)
 
-                # Convert to viewport format
-                parcel_features = []
-                for parcel in parcels:
-                    parcel_features.append({
-                        "type": "Feature",
-                        "geometry": parcel.get("geometry"),
-                        "properties": parcel.get("properties", {})
+                if not parcel_features:
+                    logger.warning(f"No parcels found for {town_name}")
+                    return JsonResponse({
+                        "count": 0,
+                        "parcels": [],
+                        "autoLienSearchEnabled": False,
+                        "queuedBackgroundSearches": 0
                     })
+
+                # Apply filters
+                address_filter = filters.get('address_contains', '')
+                if address_filter:
+                    parcel_features = [
+                        f for f in parcel_features
+                        if address_filter.lower() in (f.get('properties', {}).get('LOCATION', '') or '').lower()
+                    ]
+
+                # Apply limit
+                if limit:
+                    parcel_features = parcel_features[:limit]
+
+                logger.info(f"Returning {len(parcel_features)} NH parcels for {town_name}")
 
                 return JsonResponse({
                     "count": len(parcel_features),
-                    "total": total_count,
+                    "total": len(parcel_features),
                     "parcels": parcel_features,
                     "autoLienSearchEnabled": False,
                     "queuedBackgroundSearches": 0
