@@ -110,6 +110,87 @@ def is_nh_town(town_id: int) -> bool:
     """Check if a town ID is for a NH town (1000-1999 range)."""
     return 1000 <= town_id < 2000
 
+# NH Town to County Mapping (for CAMA data lookup)
+NH_TOWN_TO_COUNTY = {
+    # Belknap County
+    "Alton": "Belknap", "Barnstead": "Belknap", "Belmont": "Belknap", "Center Harbor": "Belknap",
+    "Gilford": "Belknap", "Gilmanton": "Belknap", "Laconia": "Belknap", "Meredith": "Belknap",
+    "New Hampton": "Belknap", "Sanbornton": "Belknap", "Tilton": "Belknap",
+    # Carroll County
+    "Albany": "Carroll", "Bartlett": "Carroll", "Brookfield": "Carroll", "Chatham": "Carroll",
+    "Conway": "Carroll", "Eaton": "Carroll", "Effingham": "Carroll", "Freedom": "Carroll",
+    "Hart's Location": "Carroll", "Jackson": "Carroll", "Madison": "Carroll", "Moultonborough": "Carroll",
+    "Ossipee": "Carroll", "Sandwich": "Carroll", "Tamworth": "Carroll", "Tuftonboro": "Carroll",
+    "Wakefield": "Carroll", "Wolfeboro": "Carroll",
+    # Cheshire County
+    "Alstead": "Cheshire", "Chesterfield": "Cheshire", "Dublin": "Cheshire", "Fitzwilliam": "Cheshire",
+    "Gilsum": "Cheshire", "Harrisville": "Cheshire", "Hinsdale": "Cheshire", "Jaffrey": "Cheshire",
+    "Keene": "Cheshire", "Marlborough": "Cheshire", "Marlow": "Cheshire", "Nelson": "Cheshire",
+    "Richmond": "Cheshire", "Rindge": "Cheshire", "Roxbury": "Cheshire", "Stoddard": "Cheshire",
+    "Sullivan": "Cheshire", "Surry": "Cheshire", "Swanzey": "Cheshire", "Troy": "Cheshire",
+    "Walpole": "Cheshire", "Westmoreland": "Cheshire", "Winchester": "Cheshire",
+    # Coos County
+    "Berlin": "Coos", "Carroll": "Coos", "Clarksville": "Coos", "Colebrook": "Coos",
+    "Columbia": "Coos", "Dalton": "Coos", "Dummer": "Coos", "Errol": "Coos",
+    "Gorham": "Coos", "Jefferson": "Coos", "Lancaster": "Coos", "Milan": "Coos",
+    "Northumberland": "Coos", "Pittsburg": "Coos", "Randolph": "Coos", "Shelburne": "Coos",
+    "Stark": "Coos", "Stewartstown": "Coos", "Stratford": "Coos", "Whitefield": "Coos",
+    "Millsfield": "Coos",
+    # Grafton County
+    "Alexandria": "Grafton", "Ashland": "Grafton", "Bath": "Grafton", "Benton": "Grafton",
+    "Bethlehem": "Grafton", "Bridgewater": "Grafton", "Bristol": "Grafton", "Campton": "Grafton",
+    "Canaan": "Grafton", "Dorchester": "Grafton", "Easton": "Grafton", "Ellsworth": "Grafton",
+    "Enfield": "Grafton", "Franconia": "Grafton", "Grafton": "Grafton", "Groton": "Grafton",
+    "Hanover": "Grafton", "Haverhill": "Grafton", "Hebron": "Grafton", "Holderness": "Grafton",
+    "Landaff": "Grafton", "Lebanon": "Grafton", "Lincoln": "Grafton", "Lisbon": "Grafton",
+    "Littleton": "Grafton", "Lyman": "Grafton", "Lyme": "Grafton", "Monroe": "Grafton",
+    "Orange": "Grafton", "Orford": "Grafton", "Piermont": "Grafton", "Plymouth": "Grafton",
+    "Rumney": "Grafton", "Sugar Hill": "Grafton", "Thornton": "Grafton", "Warren": "Grafton",
+    "Waterville Valley": "Grafton", "Wentworth": "Grafton", "Woodstock": "Grafton",
+    # Hillsborough County
+    "Amherst": "Hillsborough", "Antrim": "Hillsborough", "Bedford": "Hillsborough", "Bennington": "Hillsborough",
+    "Brookline": "Hillsborough", "Deering": "Hillsborough", "Francestown": "Hillsborough", "Goffstown": "Hillsborough",
+    "Greenfield": "Hillsborough", "Greenville": "Hillsborough", "Hancock": "Hillsborough", "Hillsborough": "Hillsborough",
+    "Hollis": "Hillsborough", "Hudson": "Hillsborough", "Litchfield": "Hillsborough", "Lyndeborough": "Hillsborough",
+    "Manchester": "Hillsborough", "Mason": "Hillsborough", "Merrimack": "Hillsborough", "Milford": "Hillsborough",
+    "Mont Vernon": "Hillsborough", "Nashua": "Hillsborough", "New Boston": "Hillsborough", "New Ipswich": "Hillsborough",
+    "Pelham": "Hillsborough", "Peterborough": "Hillsborough", "Sharon": "Hillsborough", "Temple": "Hillsborough",
+    "Weare": "Hillsborough", "Wilton": "Hillsborough", "Windsor": "Hillsborough",
+    # Merrimack County
+    "Allenstown": "Merrimack", "Andover": "Merrimack", "Boscawen": "Merrimack", "Bow": "Merrimack",
+    "Bradford": "Merrimack", "Canterbury": "Merrimack", "Chichester": "Merrimack", "Concord": "Merrimack",
+    "Danbury": "Merrimack", "Dunbarton": "Merrimack", "Epsom": "Merrimack", "Franklin": "Merrimack",
+    "Henniker": "Merrimack", "Hill": "Merrimack", "Hooksett": "Merrimack", "Hopkinton": "Merrimack",
+    "Loudon": "Merrimack", "New London": "Merrimack", "Newbury": "Merrimack", "Northfield": "Merrimack",
+    "Pembroke": "Merrimack", "Pittsfield": "Merrimack", "Salisbury": "Merrimack", "Sutton": "Merrimack",
+    "Warner": "Merrimack", "Webster": "Merrimack", "Wilmot": "Merrimack",
+    # Rockingham County
+    "Atkinson": "Rockingham", "Auburn": "Rockingham", "Brentwood": "Rockingham", "Candia": "Rockingham",
+    "Chester": "Rockingham", "Danville": "Rockingham", "Deerfield": "Rockingham", "Derry": "Rockingham",
+    "East Kingston": "Rockingham", "Epping": "Rockingham", "Exeter": "Rockingham", "Fremont": "Rockingham",
+    "Greenland": "Rockingham", "Hampstead": "Rockingham", "Hampton": "Rockingham", "Hampton Falls": "Rockingham",
+    "Kensington": "Rockingham", "Kingston": "Rockingham", "Londonderry": "Rockingham", "New Castle": "Rockingham",
+    "Newfields": "Rockingham", "Newington": "Rockingham", "Newmarket": "Rockingham", "Newton": "Rockingham",
+    "North Hampton": "Rockingham", "Northwood": "Rockingham", "Nottingham": "Rockingham", "Plaistow": "Rockingham",
+    "Portsmouth": "Rockingham", "Raymond": "Rockingham", "Rye": "Rockingham", "Salem": "Rockingham",
+    "Sandown": "Rockingham", "Seabrook": "Rockingham", "South Hampton": "Rockingham", "Stratham": "Rockingham",
+    "Windham": "Rockingham",
+    # Strafford County
+    "Barrington": "Strafford", "Dover": "Strafford", "Durham": "Strafford", "Farmington": "Strafford",
+    "Lee": "Strafford", "Madbury": "Strafford", "Middleton": "Strafford", "Milton": "Strafford",
+    "New Durham": "Strafford", "Rochester": "Strafford", "Rollinsford": "Strafford", "Somersworth": "Strafford",
+    "Strafford": "Strafford",
+    # Sullivan County
+    "Acworth": "Sullivan", "Charlestown": "Sullivan", "Claremont": "Sullivan", "Cornish": "Sullivan",
+    "Croydon": "Sullivan", "Goshen": "Sullivan", "Grantham": "Sullivan", "Langdon": "Sullivan",
+    "Lempster": "Sullivan", "Newport": "Sullivan", "Plainfield": "Sullivan", "Springfield": "Sullivan",
+    "Sunapee": "Sullivan", "Unity": "Sullivan", "Washington": "Sullivan",
+}
+
+def get_nh_county_for_town(town_name: str) -> Optional[str]:
+    """Get NH county name for a town."""
+    return NH_TOWN_TO_COUNTY.get(town_name)
+
 
 def _env_bool(key: str, default: bool) -> bool:
     value = os.getenv(key)
