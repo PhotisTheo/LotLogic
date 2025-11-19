@@ -6927,24 +6927,52 @@ def parcels_in_viewport(request):
                         "queuedBackgroundSearches": 0
                     })
 
+                # Normalize NH field names to match MA format for frontend compatibility
+                normalized_features = []
+                for feature in parcel_features:
+                    props = feature.get('properties', {})
+
+                    # Create normalized properties
+                    normalized_props = {
+                        'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', ''),
+                        'site_address': props.get('StreetAddress', ''),
+                        'site_city': props.get('Town', town_name),
+                        'owner_name': props.get('OWNER', ''),  # May not be available in polygon layer
+                        'property_category': props.get('SLUC', ''),  # Land use code
+                        'use_code': props.get('SLU', ''),
+                        'total_value': props.get('TOTAL_VALUE') or props.get('ASSESSED_VALUE'),
+                        'lot_size': props.get('Shape_Area'),  # Area in sq ft
+                        'absentee': 'Unknown',
+                        'state': 'NH',
+                        # Keep all original NH properties for reference
+                        **props
+                    }
+
+                    normalized_feature = {
+                        'type': 'Feature',
+                        'geometry': feature.get('geometry'),
+                        'properties': normalized_props
+                    }
+                    normalized_features.append(normalized_feature)
+
                 # Apply filters
                 address_filter = filters.get('address_contains', '')
                 if address_filter:
-                    parcel_features = [
-                        f for f in parcel_features
-                        if address_filter.lower() in (f.get('properties', {}).get('LOCATION', '') or '').lower()
+                    normalized_features = [
+                        f for f in normalized_features
+                        if address_filter.lower() in (f.get('properties', {}).get('site_address', '') or '').lower()
                     ]
 
                 # Apply limit
                 if limit:
-                    parcel_features = parcel_features[:limit]
+                    normalized_features = normalized_features[:limit]
 
-                logger.info(f"Returning {len(parcel_features)} NH parcels for {town_name}")
+                logger.info(f"Returning {len(normalized_features)} NH parcels for {town_name}")
 
                 return JsonResponse({
-                    "count": len(parcel_features),
-                    "total": len(parcel_features),
-                    "parcels": parcel_features,
+                    "count": len(normalized_features),
+                    "total": len(normalized_features),
+                    "parcels": normalized_features,
                     "autoLienSearchEnabled": False,
                     "queuedBackgroundSearches": 0
                 })
