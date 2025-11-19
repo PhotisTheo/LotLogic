@@ -6775,7 +6775,7 @@ def parcels_in_viewport(request):
     - property_category, min_price, max_price, town_id, town_name: optional filters
     """
     try:
-        from .services import get_parcels_in_bbox
+        from .services import get_parcels_in_bbox, _classify_use_code
 
         logger.info(f"Viewport parcels request: {request.GET.dict()}")
 
@@ -6961,6 +6961,13 @@ def parcels_in_viewport(request):
 
                     # Create normalized parcel matching MA field structure (flat, not GeoJSON)
                     # NH GRANIT only provides geometry, parcel ID, address, and land use - no owner/value data
+
+                    # Classify NH SLUC code into standard categories (Residential, Commercial, etc.)
+                    # NH uses codes like: 11=Residential-SF, 12=Residential-MF, 13=Residential-Seasonal,
+                    # 22=Commercial, 33=Industrial, etc.
+                    nh_sluc = str(props.get('SLU') or props.get('SLUC') or '')
+                    property_category = _classify_use_code(nh_sluc) if nh_sluc else 'Unknown'
+
                     normalized_parcel = {
                         'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
                         'town_id': props.get('TownID', 'NH'),  # NH town ID for detail page URL
@@ -6968,9 +6975,9 @@ def parcels_in_viewport(request):
                         'address': props.get('StreetAddress') or 'Not Available',
                         'owner': 'Not Available',  # NH GRANIT does not include owner data
                         'owner_address': None,
-                        'property_type': props.get('SLU') or '',
-                        'property_category': props.get('SLUC') or 'Unknown',  # Land use category
-                        'use_code': props.get('SLU') or '',
+                        'property_type': nh_sluc,
+                        'property_category': property_category,  # Classified category for color coding
+                        'use_code': nh_sluc,
                         'use_description': props.get('SLUC') or 'Unknown',
                         'total_value': None,  # NH GRANIT does not include assessed values
                         'land_value': None,
