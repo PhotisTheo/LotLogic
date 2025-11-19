@@ -43,6 +43,73 @@ FEMA_VIEWER_BASE_URL = "https://msc.fema.gov/portal/home"
 ESRI_WORLD_IMAGERY_EXPORT = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export"
 USER_AGENT = "Mozilla/5.0 (LeadCRM/1.0; +https://example.com)"
 
+# NH Town ID Mapping (1000-1999 range to avoid conflicts with MA towns which are 1-351)
+# Maps NH town names to unique integer IDs for URL routing and database storage
+NH_TOWN_IDS = {
+    "Acworth": 1001, "Albany": 1002, "Alexandria": 1003, "Allenstown": 1004, "Alstead": 1005,
+    "Alton": 1006, "Amherst": 1007, "Andover": 1008, "Antrim": 1009, "Ashland": 1010,
+    "Atkinson": 1011, "Auburn": 1012, "Barnstead": 1013, "Barrington": 1014, "Bartlett": 1015,
+    "Bath": 1016, "Bedford": 1017, "Belmont": 1018, "Bennington": 1019, "Benton": 1020,
+    "Berlin": 1021, "Bethlehem": 1022, "Boscawen": 1023, "Bow": 1024, "Bradford": 1025,
+    "Brentwood": 1026, "Bridgewater": 1027, "Bristol": 1028, "Brookfield": 1029, "Brookline": 1030,
+    "Campton": 1031, "Canaan": 1032, "Candia": 1033, "Canterbury": 1034, "Carroll": 1035,
+    "Center Harbor": 1036, "Charlestown": 1037, "Chatham": 1038, "Chester": 1039, "Chesterfield": 1040,
+    "Chichester": 1041, "Claremont": 1042, "Clarksville": 1043, "Colebrook": 1044, "Columbia": 1045,
+    "Concord": 1046, "Conway": 1047, "Cornish": 1048, "Croydon": 1049, "Dalton": 1050,
+    "Danbury": 1051, "Danville": 1052, "Deerfield": 1053, "Deering": 1054, "Derry": 1055,
+    "Dorchester": 1056, "Dover": 1057, "Dublin": 1058, "Dummer": 1059, "Dunbarton": 1060,
+    "Durham": 1061, "East Kingston": 1062, "Easton": 1063, "Eaton": 1064, "Effingham": 1065,
+    "Ellsworth": 1066, "Enfield": 1067, "Epping": 1068, "Epsom": 1069, "Errol": 1070,
+    "Exeter": 1071, "Farmington": 1072, "Fitzwilliam": 1073, "Francestown": 1074, "Franconia": 1075,
+    "Franklin": 1076, "Freedom": 1077, "Fremont": 1078, "Gilford": 1079, "Gilmanton": 1080,
+    "Gilsum": 1081, "Goffstown": 1082, "Gorham": 1083, "Goshen": 1084, "Grafton": 1085,
+    "Grantham": 1086, "Greenfield": 1087, "Greenland": 1088, "Greenville": 1089, "Groton": 1090,
+    "Hampstead": 1091, "Hampton": 1092, "Hampton Falls": 1093, "Hancock": 1094, "Hanover": 1095,
+    "Harrisville": 1096, "Hart's Location": 1097, "Haverhill": 1098, "Hebron": 1099, "Henniker": 1100,
+    "Hill": 1101, "Hillsborough": 1102, "Hinsdale": 1103, "Holderness": 1104, "Hollis": 1105,
+    "Hooksett": 1106, "Hopkinton": 1107, "Hudson": 1108, "Jackson": 1109, "Jaffrey": 1110,
+    "Jefferson": 1111, "Keene": 1112, "Kensington": 1113, "Kingston": 1114, "Laconia": 1115,
+    "Lancaster": 1116, "Landaff": 1117, "Langdon": 1118, "Lebanon": 1119, "Lee": 1120,
+    "Lempster": 1121, "Lincoln": 1122, "Lisbon": 1123, "Litchfield": 1124, "Littleton": 1125,
+    "Londonderry": 1126, "Loudon": 1127, "Lyman": 1128, "Lyme": 1129, "Lyndeborough": 1130,
+    "Madbury": 1131, "Madison": 1132, "Manchester": 1133, "Marlborough": 1134, "Marlow": 1135,
+    "Mason": 1136, "Meredith": 1137, "Merrimack": 1138, "Middleton": 1139, "Milan": 1140,
+    "Milford": 1141, "Millsfield": 1142, "Milton": 1143, "Monroe": 1144, "Mont Vernon": 1145,
+    "Moultonborough": 1146, "Nashua": 1147, "Nelson": 1148, "New Boston": 1149, "New Castle": 1150,
+    "New Durham": 1151, "New Hampton": 1152, "New Ipswich": 1153, "New London": 1154, "Newbury": 1155,
+    "Newfields": 1156, "Newington": 1157, "Newmarket": 1158, "Newport": 1159, "Newton": 1160,
+    "North Hampton": 1161, "Northfield": 1162, "Northumberland": 1163, "Northwood": 1164, "Nottingham": 1165,
+    "Orange": 1166, "Orford": 1167, "Ossipee": 1168, "Pelham": 1169, "Pembroke": 1170,
+    "Peterborough": 1171, "Piermont": 1172, "Pittsburg": 1173, "Pittsfield": 1174, "Plainfield": 1175,
+    "Plaistow": 1176, "Plymouth": 1177, "Portsmouth": 1178, "Randolph": 1179, "Raymond": 1180,
+    "Richmond": 1181, "Rindge": 1182, "Rochester": 1183, "Rollinsford": 1184, "Roxbury": 1185,
+    "Rumney": 1186, "Rye": 1187, "Salem": 1188, "Salisbury": 1189, "Sanbornton": 1190,
+    "Sandown": 1191, "Sandwich": 1192, "Seabrook": 1193, "Sharon": 1194, "Shelburne": 1195,
+    "Somersworth": 1196, "South Hampton": 1197, "Springfield": 1198, "Stark": 1199, "Stewartstown": 1200,
+    "Stoddard": 1201, "Strafford": 1202, "Stratford": 1203, "Stratham": 1204, "Sugar Hill": 1205,
+    "Sullivan": 1206, "Sunapee": 1207, "Surry": 1208, "Sutton": 1209, "Swanzey": 1210,
+    "Tamworth": 1211, "Temple": 1212, "Thornton": 1213, "Tilton": 1214, "Troy": 1215,
+    "Tuftonboro": 1216, "Unity": 1217, "Wakefield": 1218, "Walpole": 1219, "Warner": 1220,
+    "Warren": 1221, "Washington": 1222, "Waterville Valley": 1223, "Weare": 1224, "Webster": 1225,
+    "Wentworth": 1226, "Westmoreland": 1227, "Whitefield": 1228, "Wilmot": 1229, "Wilton": 1230,
+    "Winchester": 1231, "Windham": 1232, "Windsor": 1233, "Wolfeboro": 1234, "Woodstock": 1235,
+}
+
+# Reverse mapping: ID -> Town name
+NH_TOWN_NAMES = {v: k for k, v in NH_TOWN_IDS.items()}
+
+def get_nh_town_id(town_name: str) -> Optional[int]:
+    """Get NH town ID from town name (case-insensitive)."""
+    return NH_TOWN_IDS.get(town_name) or NH_TOWN_IDS.get(town_name.title())
+
+def get_nh_town_name(town_id: int) -> Optional[str]:
+    """Get NH town name from town ID."""
+    return NH_TOWN_NAMES.get(town_id)
+
+def is_nh_town(town_id: int) -> bool:
+    """Check if a town ID is for a NH town (1000-1999 range)."""
+    return 1000 <= town_id < 2000
+
 
 def _env_bool(key: str, default: bool) -> bool:
     value = os.getenv(key)

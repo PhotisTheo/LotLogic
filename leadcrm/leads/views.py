@@ -2954,6 +2954,52 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
             # If we can't load the list, just proceed without navigation
             pass
 
+    # Check if this is a NH parcel (town_id in 1000-1999 range)
+    from .services import is_nh_town, get_nh_town_name
+    if is_nh_town(town_id):
+        # Handle NH parcel detail view
+        from data_pipeline.sources.nh_granit import NHGRANITSource
+
+        town_name = get_nh_town_name(town_id)
+        if not town_name:
+            messages.error(request, f"Invalid NH town ID: {town_id}")
+            return redirect("parcel_search")
+
+        try:
+            # Fetch all parcels for the town (cached by NH GRANIT)
+            source = NHGRANITSource()
+            all_parcels = source.get_parcels_for_municipality(town_name)
+
+            # Find the specific parcel by PID
+            parcel_data = None
+            for feature in all_parcels:
+                props = feature.get('properties', {})
+                pid = props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID')
+                if pid == loc_id:
+                    parcel_data = feature
+                    break
+
+            if not parcel_data:
+                messages.error(request, f"Parcel {loc_id} not found in {town_name}, NH")
+                return redirect("parcel_search")
+
+            # Render NH parcel detail template with limited data
+            import json
+            return render(request, "leads/nh_parcel_detail.html", {
+                "parcel_data": json.dumps(parcel_data),  # Convert to JSON for JavaScript
+                "parcel_props": parcel_data.get('properties', {}),  # Raw properties for template
+                "town_name": town_name,
+                "town_id": town_id,
+                "loc_id": loc_id,
+                "nav_context": nav_context,
+            })
+
+        except Exception as exc:
+            logger.exception(f"Error loading NH parcel detail: {exc}")
+            messages.error(request, f"Error loading NH parcel: {str(exc)}")
+            return redirect("parcel_search")
+
+    # Handle MA parcel (existing logic)
     try:
         parcel = get_massgis_parcel_detail(town_id, loc_id)
     except MassGISDataError as exc:
@@ -6775,7 +6821,7 @@ def parcels_in_viewport(request):
     - property_category, min_price, max_price, town_id, town_name: optional filters
     """
     try:
-        from .services import get_parcels_in_bbox, _classify_use_code
+        from .services import get_parcels_in_bbox, _classify_use_code, get_nh_town_id
 
         logger.info(f"Viewport parcels request: {request.GET.dict()}")
 
@@ -6968,10 +7014,17 @@ def parcels_in_viewport(request):
                     nh_sluc = str(props.get('SLU') or props.get('SLUC') or '')
                     property_category = _classify_use_code(nh_sluc) if nh_sluc else 'Unknown'
 
+                    # Get NH town ID from mapping (1000-1999 range)
+                    parcel_town_name = props.get('Town', town_name)
+                    nh_town_id = get_nh_town_id(parcel_town_name)
+                    if not nh_town_id:
+                        logger.warning(f"Unknown NH town: {parcel_town_name}")
+                        nh_town_id = 1999  # Fallback ID for unmapped towns
+
                     normalized_parcel = {
                         'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
-                        'town_id': props.get('TownID', 'NH'),  # NH town ID for detail page URL
-                        'town_name': props.get('Town', town_name),
+                        'town_id': nh_town_id,  # Integer town ID for URL routing
+                        'town_name': parcel_town_name,
                         'address': props.get('StreetAddress') or 'Not Available',
                         'owner': 'Not Available',  # NH GRANIT does not include owner data
                         'owner_address': None,
