@@ -6929,8 +6929,13 @@ def parcels_in_viewport(request):
 
                 # Normalize NH field names to match MA format for frontend compatibility
                 normalized_features = []
-                for feature in parcel_features:
+                for i, feature in enumerate(parcel_features):
                     props = feature.get('properties', {})
+
+                    # Debug: Log first parcel's raw fields
+                    if i == 0:
+                        logger.info(f"First NH parcel raw fields: {list(props.keys())}")
+                        logger.info(f"First NH parcel sample values: PID={props.get('PID')}, StreetAddress={props.get('StreetAddress')}, Town={props.get('Town')}, OWNER={props.get('OWNER')}")
 
                     # Create normalized properties
                     normalized_props = {
@@ -6947,6 +6952,10 @@ def parcels_in_viewport(request):
                         # Keep all original NH properties for reference
                         **props
                     }
+
+                    # Debug: Log first parcel's normalized fields
+                    if i == 0:
+                        logger.info(f"First NH parcel normalized: loc_id={normalized_props.get('loc_id')}, site_address={normalized_props.get('site_address')}, site_city={normalized_props.get('site_city')}")
 
                     normalized_feature = {
                         'type': 'Feature',
