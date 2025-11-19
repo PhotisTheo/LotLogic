@@ -3010,7 +3010,6 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                     parcel_props['StreetAddress'] = cama_data.get('StreetAddr')
 
             # Render NH parcel detail template with CAMA data
-            import json
             return render(request, "leads/nh_parcel_detail.html", {
                 "parcel_data": json.dumps(parcel_data),  # Convert to JSON for JavaScript
                 "parcel_props": parcel_props,  # Merged GRANIT + CAMA properties
