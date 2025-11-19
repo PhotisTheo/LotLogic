@@ -22,7 +22,7 @@ class NHGRANITSource:
     """
 
     BASE_URL = "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer"
-    PARCELS_LAYER_ID = 0
+    PARCELS_LAYER_ID = 1  # Layer 1 = Parcel Polygons, Layer 0 = Parcel Points
     MAX_RECORDS_PER_REQUEST = 1000  # ArcGIS server limit
 
     def __init__(self, throttle_delay: float = 0.5):
