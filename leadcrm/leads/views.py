@@ -2983,11 +2983,38 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 messages.error(request, f"Parcel {loc_id} not found in {town_name}, NH")
                 return redirect("parcel_search")
 
-            # Render NH parcel detail template with limited data
+            # Load CAMA assessment data
+            from data_pipeline.sources.nh_cama import get_nh_parcel_cama_data
+            from django.conf import settings
+
+            cama_data = get_nh_parcel_cama_data(
+                town_name,
+                loc_id,
+                gisdata_path=settings.GISDATA_DIR + "/NH"
+            )
+
+            # Merge CAMA data with GRANIT properties
+            parcel_props = parcel_data.get('properties', {}).copy()
+            if cama_data:
+                # Add CAMA fields to properties
+                parcel_props['TaxTotal'] = cama_data.get('TaxTotal')
+                parcel_props['TaxLand'] = cama_data.get('TaxLand')
+                parcel_props['TaxBldg'] = cama_data.get('TaxBldg')
+                parcel_props['PrevTaxTot'] = cama_data.get('PrevTaxTot')
+                parcel_props['PrevTaxLan'] = cama_data.get('PrevTaxLan')
+                parcel_props['PrevTaxBld'] = cama_data.get('PrevTaxBld')
+                parcel_props['SLUC_desc'] = cama_data.get('SLUC_desc')
+                parcel_props['CamaYear'] = cama_data.get('CamaYear')
+                # Use CAMA address if more complete
+                if cama_data.get('StreetAddr'):
+                    parcel_props['StreetAddress'] = cama_data.get('StreetAddr')
+
+            # Render NH parcel detail template with CAMA data
             import json
             return render(request, "leads/nh_parcel_detail.html", {
                 "parcel_data": json.dumps(parcel_data),  # Convert to JSON for JavaScript
-                "parcel_props": parcel_data.get('properties', {}),  # Raw properties for template
+                "parcel_props": parcel_props,  # Merged GRANIT + CAMA properties
+                "cama_data": cama_data,  # Full CAMA record
                 "town_name": town_name,
                 "town_id": town_id,
                 "loc_id": loc_id,
@@ -6959,6 +6986,9 @@ def parcels_in_viewport(request):
                 })
 
             from data_pipeline.sources.nh_granit import NHGRANITSource
+            from data_pipeline.sources.nh_cama import get_cama_loader
+            from .services import get_nh_county_for_town
+
             try:
                 logger.info(f"Fetching NH parcels for {town_name}")
                 source = NHGRANITSource()
@@ -6973,8 +7003,19 @@ def parcels_in_viewport(request):
                         "queuedBackgroundSearches": 0
                     })
 
+                # Load CAMA assessment data for this county
+                county = get_nh_county_for_town(town_name)
+                cama_loader = None
+                if county:
+                    try:
+                        cama_loader = get_cama_loader(settings.GISDATA_DIR + "/NH")
+                        # Pre-load county data
+                        cama_loader._load_county(county)
+                        logger.info(f"Loaded CAMA data for {county} County")
+                    except Exception as e:
+                        logger.warning(f"Could not load CAMA data for {county}: {e}")
+
                 # Normalize NH field names to match MA format for frontend compatibility
-                # NOTE: NH GRANIT ParcelMosaic does not include owner or assessed value data
                 normalized_features = []
                 for i, feature in enumerate(parcel_features):
                     props = feature.get('properties', {})
@@ -7021,20 +7062,44 @@ def parcels_in_viewport(request):
                         logger.warning(f"Unknown NH town: {parcel_town_name}")
                         nh_town_id = 1999  # Fallback ID for unmapped towns
 
+                    # Merge CAMA assessment data if available
+                    cama_data = None
+                    pid = props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID')
+                    if cama_loader and county and pid:
+                        cama_data = cama_loader.get_cama_data_for_parcel(county, pid)
+
+                    # Extract CAMA fields
+                    if cama_data:
+                        tax_total = cama_data.get('TaxTotal', 0)
+                        tax_land = cama_data.get('TaxLand', 0)
+                        tax_bldg = cama_data.get('TaxBldg', 0)
+                        cama_address = cama_data.get('StreetAddr', '').strip()
+                        use_desc = cama_data.get('SLUC_desc', '').strip()
+                    else:
+                        tax_total = None
+                        tax_land = None
+                        tax_bldg = None
+                        cama_address = ''
+                        use_desc = ''
+
+                    # Use CAMA address if available and more complete than GRANIT address
+                    parcel_address = cama_address if cama_address else (props.get('StreetAddress') or 'Not Available')
+
                     normalized_parcel = {
-                        'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
+                        'loc_id': pid or 'N/A',
                         'town_id': nh_town_id,  # Integer town ID for URL routing
                         'town_name': parcel_town_name,
-                        'address': props.get('StreetAddress') or 'Not Available',
-                        'owner': 'Not Available',  # NH GRANIT does not include owner data
+                        'address': parcel_address,
+                        'owner': 'Not Available',  # NH data does not include owner names
                         'owner_address': None,
                         'property_type': nh_sluc,
                         'property_category': property_category,  # Classified category for color coding
                         'use_code': nh_sluc,
-                        'use_description': props.get('SLUC') or 'Unknown',
-                        'total_value': None,  # NH GRANIT does not include assessed values
-                        'land_value': None,
-                        'building_value': None,
+                        'use_description': use_desc if use_desc else (props.get('SLUC') or 'Unknown'),
+                        'total_value': tax_total,  # From CAMA
+                        'land_value': tax_land,  # From CAMA
+                        'building_value': tax_bldg,  # From CAMA
+                        'value_display': f"${tax_total:,.0f}" if tax_total else None,
                         'lot_size': props.get('Shape_Area'),  # Area in square feet
                         'lot_units': 'SF',
                         'absentee': 'Unknown',  # Not available in NH data
@@ -7047,7 +7112,8 @@ def parcels_in_viewport(request):
                         'has_legal_action': False,
                         # Keep some original NH properties for reference
                         'nh_gis_id': props.get('NH_GIS_ID'),
-                        'nh_pid': props.get('PID'),
+                        'nh_pid': pid,
+                        'cama_data': cama_data,  # Include full CAMA record for detail view
                     }
                     normalized_features.append(normalized_parcel)
 
