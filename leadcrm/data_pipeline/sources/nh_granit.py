@@ -21,7 +21,7 @@ class NHGRANITSource:
     that can be queried by municipality name.
     """
 
-    BASE_URL = "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosiac/MapServer"
+    BASE_URL = "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer"
     PARCELS_LAYER_ID = 0
     MAX_RECORDS_PER_REQUEST = 1000  # ArcGIS server limit
 
