@@ -3734,6 +3734,9 @@
                       console.log(`Town filter set to: ${townName} (double-click)`);
                       const event = new Event('change', { bubbles: true });
                       townInput.dispatchEvent(event);
+
+                      // Zoom to the town after setting filter
+                      focusMapOnTown(normalizedTownId);
                     } else {
                       focusMapOnTown(townId);
                     }
