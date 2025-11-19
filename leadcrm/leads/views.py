@@ -6942,6 +6942,7 @@ def parcels_in_viewport(request):
                     # NH GRANIT only provides geometry, parcel ID, address, and land use - no owner/value data
                     normalized_props = {
                         'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
+                        'town_id': props.get('TownID', 'NH'),  # NH town ID for detail page URL
                         'site_address': props.get('StreetAddress') or 'Not Available',
                         'site_city': props.get('Town', town_name),
                         'owner_name': 'Not Available',  # NH GRANIT does not include owner data
