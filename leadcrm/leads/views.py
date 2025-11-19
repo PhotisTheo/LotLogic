@@ -6928,34 +6928,32 @@ def parcels_in_viewport(request):
                     })
 
                 # Normalize NH field names to match MA format for frontend compatibility
+                # NOTE: NH GRANIT ParcelMosaic does not include owner or assessed value data
                 normalized_features = []
                 for i, feature in enumerate(parcel_features):
                     props = feature.get('properties', {})
 
-                    # Debug: Log first parcel's raw fields
+                    # Debug: Log first parcel's raw fields to verify API response
                     if i == 0:
-                        logger.info(f"First NH parcel raw fields: {list(props.keys())}")
-                        logger.info(f"First NH parcel sample values: PID={props.get('PID')}, StreetAddress={props.get('StreetAddress')}, Town={props.get('Town')}, OWNER={props.get('OWNER')}")
+                        logger.info(f"First NH parcel raw fields: {list(props.keys())[:10]}")  # First 10 fields
+                        logger.info(f"First NH parcel sample: PID={props.get('PID')}, Address={props.get('StreetAddress')}, Town={props.get('Town')}")
 
-                    # Create normalized properties
+                    # Create normalized properties matching MA field structure
+                    # NH GRANIT only provides geometry, parcel ID, address, and land use - no owner/value data
                     normalized_props = {
-                        'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', ''),
-                        'site_address': props.get('StreetAddress', ''),
+                        'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
+                        'site_address': props.get('StreetAddress') or 'Not Available',
                         'site_city': props.get('Town', town_name),
-                        'owner_name': props.get('OWNER', ''),  # May not be available in polygon layer
-                        'property_category': props.get('SLUC', ''),  # Land use code
-                        'use_code': props.get('SLU', ''),
-                        'total_value': props.get('TOTAL_VALUE') or props.get('ASSESSED_VALUE'),
-                        'lot_size': props.get('Shape_Area'),  # Area in sq ft
-                        'absentee': 'Unknown',
+                        'owner_name': 'Not Available',  # NH GRANIT does not include owner data
+                        'property_category': props.get('SLUC') or 'Unknown',  # Land use category
+                        'use_code': props.get('SLU') or '',
+                        'total_value': None,  # NH GRANIT does not include assessed values
+                        'lot_size': props.get('Shape_Area'),  # Area in square feet
+                        'absentee': 'Unknown',  # Not available in NH data
                         'state': 'NH',
                         # Keep all original NH properties for reference
                         **props
                     }
-
-                    # Debug: Log first parcel's normalized fields
-                    if i == 0:
-                        logger.info(f"First NH parcel normalized: loc_id={normalized_props.get('loc_id')}, site_address={normalized_props.get('site_address')}, site_city={normalized_props.get('site_city')}")
 
                     normalized_feature = {
                         'type': 'Feature',
