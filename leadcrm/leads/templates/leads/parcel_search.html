@@ -3215,6 +3215,21 @@
       }
     }
 
+    function inferStateFromTownIdentifier(townIdValue) {
+      if (townIdValue === undefined || townIdValue === null || townIdValue === "") {
+        return "";
+      }
+      const numericId = Number(townIdValue);
+      if (!Number.isNaN(numericId)) {
+        // NH synthetic IDs live in the 1000+ range to avoid colliding with MA IDs
+        if (numericId >= 1000) {
+          return "NH";
+        }
+        return "MA";
+      }
+      return "NH";
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
       const townInput = document.getElementById("id_town_id");
       const propertyTypeSelect = document.getElementById("id_property_type");
@@ -3336,21 +3351,6 @@
         }
         propertyTypeSelect.disabled = false;
         propertyTypeSelect.dataset.initial = propertyTypeSelect.value;
-      }
-
-      function inferStateFromTownIdentifier(townIdValue) {
-        if (townIdValue === undefined || townIdValue === null || townIdValue === "") {
-          return "";
-        }
-        const numericId = Number(townIdValue);
-        if (!Number.isNaN(numericId)) {
-          // NH synthetic IDs live in the 1000+ range to avoid colliding with MA IDs
-          if (numericId >= 1000) {
-            return "NH";
-          }
-          return "MA";
-        }
-        return "NH";
       }
 
       function resolveTownId(rawValue) {
