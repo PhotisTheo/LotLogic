@@ -798,12 +798,7 @@
         <input type="hidden" name="boundary_circle_radius_miles" id="boundaryCircleRadiusInput" value="{{ boundary_shape.radius_miles|default:'' }}">
         <input type="hidden" name="boundary_polygon_coords" id="boundaryPolygonCoordsInput" value="{{ boundary_polygon_json|default:''|escape }}">
         <div class="row gy-3 gx-3 align-items-start mb-3">
-          <div class="col-12 col-xl-4">
-            <label class="form-label" for="{{ form.state.id_for_label }}">State</label>
-            {{ form.state }}
-            <div class="form-text">Select state first, then town.</div>
-          </div>
-          <div class="col-12 col-xl-8">
+          <div class="col-12">
             <label class="form-label" for="{{ form.town_id.id_for_label }}">Town</label>
             {{ form.town_id }}
             {% if form.town_datalist %}
@@ -3650,31 +3645,36 @@
       let townBoundariesLayer = null;
 
       // Function to load town boundaries for a specific state
-      function loadTownBoundaries(state) {
-        state = state || 'MA';
-
-        // Don't reload if already loaded for this state
-        if (currentBoundariesState === state && townBoundariesLayer) {
+      function loadTownBoundaries() {
+        // Don't reload if already loaded
+        if (townBoundariesLayer) {
           return Promise.resolve();
         }
 
-        // Clear existing boundaries
-        if (townBoundariesLayer) {
-          globalMap.removeLayer(townBoundariesLayer);
-          townBoundariesLayer = null;
-        }
         townLayerIndex.clear();
 
-        showTownLoadingOverlay(`Loading ${state} town boundaries…`);
-        return fetch(`/api/town-boundaries/?state=${state}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(geojson => {
-            townBoundariesLayer = L.geoJSON(geojson, {
+        showTownLoadingOverlay('Loading MA and NH town boundaries…');
+
+        // Fetch both MA and NH boundaries in parallel
+        return Promise.all([
+          fetch('/api/town-boundaries/?state=MA').then(r => r.ok ? r.json() : { features: [] }),
+          fetch('/api/town-boundaries/?state=NH').then(r => r.ok ? r.json() : { features: [] })
+        ])
+          .then(([maGeoJSON, nhGeoJSON]) => {
+            // Merge both GeoJSON feature collections and tag with state
+            const allFeatures = [
+              ...maGeoJSON.features.map(f => ({ ...f, properties: { ...f.properties, STATE: 'MA' }})),
+              ...nhGeoJSON.features.map(f => ({ ...f, properties: { ...f.properties, STATE: 'NH' }}))
+            ];
+
+            const mergedGeoJSON = {
+              type: 'FeatureCollection',
+              features: allFeatures
+            };
+
+            console.log(`Loaded ${maGeoJSON.features.length} MA towns and ${nhGeoJSON.features.length} NH towns`);
+
+            townBoundariesLayer = L.geoJSON(mergedGeoJSON, {
               style: function(feature) {
                 const townId = feature.properties?.TOWN_ID;
                 const isBoston = townId === 35 || townId === '35';
@@ -3761,13 +3761,12 @@
               }
             }
           }).addTo(globalMap);
-          currentBoundariesState = state;
-          console.log(`${state} town boundaries loaded`);
+          currentBoundariesState = 'ALL';
+          console.log('MA and NH town boundaries loaded');
           hideTownLoadingOverlay();
 
-          // Load Boston neighborhoods if MA
-          if (state === 'MA') {
-            fetchBostonNeighborhoodsData().then(neighborhoods => {
+          // Load Boston neighborhoods
+          fetchBostonNeighborhoodsData().then(neighborhoods => {
             if (!bostonNeighborhoodGeoJSON) {
               console.warn('Boston neighborhoods GeoJSON not available');
               return;
@@ -3837,20 +3836,8 @@
           });
       }
 
-      // Load initial town boundaries for default state (MA)
-      const stateSelect = document.querySelector('select[name="state"]');
-      const initialState = stateSelect ? stateSelect.value : 'MA';
-      loadTownBoundaries(initialState);
-
-      // Reload boundaries when state changes
-      if (stateSelect) {
-        stateSelect.addEventListener('change', function() {
-          const newState = this.value;
-          console.log(`State changed to ${newState}, reloading boundaries...`);
-          loadTownBoundaries(newState);
-          updateTownDatalist(newState);
-        });
-      }
+      // Load town boundaries for both MA and NH
+      loadTownBoundaries();
 
       // Function to update town datalist based on state
       function updateTownDatalist(state) {
@@ -4823,10 +4810,25 @@
         params.append('east', east);
         params.append('west', west);
 
-        // Add state parameter
-        const stateSelect = document.querySelector('select[name="state"]');
-        const currentState = stateSelect ? stateSelect.value : 'MA';
+        // Auto-detect state from town name
+        const townName = filters.town_name;
+        let currentState = 'MA';  // Default to MA
+
+        // Check if this town is in NH by searching the town boundaries layer
+        if (townName && townBoundariesLayer) {
+          townBoundariesLayer.eachLayer(function(layer) {
+            if (layer.feature && layer.feature.properties) {
+              const layerTownName = layer.feature.properties.TOWN;
+              const layerState = layer.feature.properties.STATE;
+              if (layerTownName === townName && layerState) {
+                currentState = layerState;
+              }
+            }
+          });
+        }
+
         params.append('state', currentState);
+        console.log(`Fetching parcels for ${townName} in ${currentState}`);
 
         // Manually append each filter to ensure correct parameter names
         if (filters.address_contains) {
