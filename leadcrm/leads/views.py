@@ -6938,37 +6938,65 @@ def parcels_in_viewport(request):
                         logger.info(f"First NH parcel raw fields: {list(props.keys())[:10]}")  # First 10 fields
                         logger.info(f"First NH parcel sample: PID={props.get('PID')}, Address={props.get('StreetAddress')}, Town={props.get('Town')}")
 
-                    # Create normalized properties matching MA field structure
+                    # Convert GeoJSON geometry to Leaflet format
+                    # GeoJSON uses [lng, lat] while Leaflet uses [lat, lng]
+                    geometry = feature.get('geometry', {})
+                    leaflet_geometry = []
+                    centroid_lat, centroid_lng = None, None
+
+                    if geometry and geometry.get('type') == 'Polygon':
+                        coordinates = geometry.get('coordinates', [])
+                        if coordinates and len(coordinates) > 0:
+                            # Get the outer ring (first ring)
+                            outer_ring = coordinates[0]
+                            # Convert from GeoJSON [lng, lat] to Leaflet [lat, lng]
+                            leaflet_geometry = [[coord[1], coord[0]] for coord in outer_ring]
+
+                            # Calculate centroid
+                            if leaflet_geometry:
+                                sum_lat = sum(coord[0] for coord in leaflet_geometry)
+                                sum_lng = sum(coord[1] for coord in leaflet_geometry)
+                                centroid_lat = sum_lat / len(leaflet_geometry)
+                                centroid_lng = sum_lng / len(leaflet_geometry)
+
+                    # Create normalized parcel matching MA field structure (flat, not GeoJSON)
                     # NH GRANIT only provides geometry, parcel ID, address, and land use - no owner/value data
-                    normalized_props = {
+                    normalized_parcel = {
                         'loc_id': props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID', 'N/A'),
                         'town_id': props.get('TownID', 'NH'),  # NH town ID for detail page URL
-                        'site_address': props.get('StreetAddress') or 'Not Available',
-                        'site_city': props.get('Town', town_name),
-                        'owner_name': 'Not Available',  # NH GRANIT does not include owner data
+                        'town_name': props.get('Town', town_name),
+                        'address': props.get('StreetAddress') or 'Not Available',
+                        'owner': 'Not Available',  # NH GRANIT does not include owner data
+                        'owner_address': None,
+                        'property_type': props.get('SLU') or '',
                         'property_category': props.get('SLUC') or 'Unknown',  # Land use category
                         'use_code': props.get('SLU') or '',
+                        'use_description': props.get('SLUC') or 'Unknown',
                         'total_value': None,  # NH GRANIT does not include assessed values
+                        'land_value': None,
+                        'building_value': None,
                         'lot_size': props.get('Shape_Area'),  # Area in square feet
+                        'lot_units': 'SF',
                         'absentee': 'Unknown',  # Not available in NH data
+                        'site_city': props.get('Town', town_name),
+                        'site_zip': None,
                         'state': 'NH',
-                        # Keep all original NH properties for reference
-                        **props
+                        'centroid': {'lat': centroid_lat, 'lng': centroid_lng} if centroid_lat and centroid_lng else None,
+                        'geometry': leaflet_geometry,
+                        'has_lien': False,
+                        'has_legal_action': False,
+                        # Keep some original NH properties for reference
+                        'nh_gis_id': props.get('NH_GIS_ID'),
+                        'nh_pid': props.get('PID'),
                     }
-
-                    normalized_feature = {
-                        'type': 'Feature',
-                        'geometry': feature.get('geometry'),
-                        'properties': normalized_props
-                    }
-                    normalized_features.append(normalized_feature)
+                    normalized_features.append(normalized_parcel)
 
                 # Apply filters
                 address_filter = filters.get('address_contains', '')
                 if address_filter:
                     normalized_features = [
                         f for f in normalized_features
-                        if address_filter.lower() in (f.get('properties', {}).get('site_address', '') or '').lower()
+                        if address_filter.lower() in (f.get('address', '') or '').lower()
                     ]
 
                 # Apply limit
