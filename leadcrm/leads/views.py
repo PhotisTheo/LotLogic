@@ -95,6 +95,7 @@ from .background_lien_search import (
     search_parcel_background,
     should_search_parcel,
 )
+from .nh_owner_sources import bulk_fetch_nh_owner_info, fetch_nh_owner_info
 
 
 logger = logging.getLogger(__name__)
@@ -3009,6 +3010,16 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 if cama_data.get('StreetAddr'):
                     parcel_props['StreetAddress'] = cama_data.get('StreetAddr')
 
+            owner_details = None
+            detail_pid = parcel_props.get('PID') or parcel_props.get('DisplayId') or loc_id
+            try:
+                owner_details = fetch_nh_owner_info(town_name, detail_pid)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("NH owner lookup failed for %s %s: %s", town_name, detail_pid, exc)
+            if owner_details:
+                parcel_props['OwnerName'] = owner_details.get('owner_name')
+                parcel_props['OwnerMailing'] = owner_details.get('mailing_full')
+
             # Render NH parcel detail template with CAMA data
             return render(request, "leads/nh_parcel_detail.html", {
                 "parcel_data": json.dumps(parcel_data),  # Convert to JSON for JavaScript
@@ -3018,6 +3029,7 @@ def parcel_search_detail(request, town_id, loc_id, list_id=None):
                 "town_id": town_id,
                 "loc_id": loc_id,
                 "nav_context": nav_context,
+                "owner_details": owner_details,
             })
 
         except Exception as exc:
@@ -7001,6 +7013,22 @@ def parcels_in_viewport(request):
                 source = NHGRANITSource()
                 parcel_features = source.get_parcels_for_municipality(town_name)
 
+                owner_requests: Dict[str, set[str]] = defaultdict(set)
+                for feature in parcel_features:
+                    raw_props = feature.get("properties", {}) or {}
+                    pid = raw_props.get("PID") or raw_props.get("DisplayId") or raw_props.get("NH_GIS_ID")
+                    parcel_town = raw_props.get("Town", town_name)
+                    if pid:
+                        owner_requests[parcel_town].add(str(pid).strip())
+
+                owner_lookup: Dict[str, Dict[str, Dict[str, object]]] = {}
+                for owner_town, pid_set in owner_requests.items():
+                    try:
+                        owner_lookup[owner_town] = bulk_fetch_nh_owner_info(owner_town, list(pid_set))
+                    except Exception as exc:  # noqa: BLE001
+                        logger.warning("Unable to enrich NH owners for %s: %s", owner_town, exc)
+                        owner_lookup[owner_town] = {}
+
                 if not parcel_features:
                     logger.warning(f"No parcels found for {town_name}")
                     return JsonResponse({
@@ -7072,6 +7100,9 @@ def parcels_in_viewport(request):
                     # Merge CAMA assessment data if available
                     cama_data = None
                     pid = props.get('PID') or props.get('DisplayId') or props.get('NH_GIS_ID')
+                    owner_info = None
+                    if pid:
+                        owner_info = (owner_lookup.get(parcel_town_name) or {}).get(str(pid).strip())
                     if cama_loader and county and pid:
                         cama_data = cama_loader.get_cama_data_for_parcel(county, pid)
 
@@ -7092,13 +7123,17 @@ def parcels_in_viewport(request):
                     # Use CAMA address if available and more complete than GRANIT address
                     parcel_address = cama_address if cama_address else (props.get('StreetAddress') or 'Not Available')
 
+                    owner_name = owner_info.get('owner_name') if owner_info else None
+                    owner_address = owner_info.get('mailing_full') if owner_info else None
+                    is_absentee = owner_info.get('is_absentee') if owner_info is not None else None
+
                     normalized_parcel = {
                         'loc_id': pid or 'N/A',
                         'town_id': nh_town_id,  # Integer town ID for URL routing
                         'town_name': parcel_town_name,
                         'address': parcel_address,
-                        'owner': 'Not Available',  # NH data does not include owner names
-                        'owner_address': None,
+                        'owner': owner_name or 'Not Available',
+                        'owner_address': owner_address,
                         'property_type': nh_sluc,
                         'property_category': property_category,  # Classified category for color coding
                         'use_code': nh_sluc,
@@ -7109,7 +7144,7 @@ def parcels_in_viewport(request):
                         'value_display': f"${tax_total:,.0f}" if tax_total else None,
                         'lot_size': props.get('Shape_Area'),  # Area in square feet
                         'lot_units': 'SF',
-                        'absentee': 'Unknown',  # Not available in NH data
+                        'absentee': is_absentee,
                         'site_city': props.get('Town', town_name),
                         'site_zip': None,
                         'state': 'NH',
@@ -7121,6 +7156,7 @@ def parcels_in_viewport(request):
                         'nh_gis_id': props.get('NH_GIS_ID'),
                         'nh_pid': pid,
                         'cama_data': cama_data,  # Include full CAMA record for detail view
+                        'owner_details': owner_info,
                     }
                     normalized_features.append(normalized_parcel)
 

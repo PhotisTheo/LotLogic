@@ -81,6 +81,45 @@
                 </div>
             </div>
 
+            {% if owner_details %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Ownership & Mailing</h5>
+                    {% if owner_details.is_absentee %}
+                    <span class="badge bg-warning text-dark">Absentee Owner</span>
+                    {% elif owner_details.is_absentee is not None %}
+                    <span class="badge bg-success">Owner Occupied</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Owner Name:</strong><br>
+                            <span class="text-muted">{{ owner_details.owner_name|default:"Not Available" }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Mailing Address:</strong><br>
+                            <span class="text-muted">
+                                {% if owner_details.mailing_street %}
+                                    {{ owner_details.mailing_street }}<br>
+                                {% endif %}
+                                {% if owner_details.mailing_city or owner_details.mailing_state %}
+                                    {{ owner_details.mailing_city|default:"" }}{% if owner_details.mailing_city and owner_details.mailing_state %}, {% endif %}{{ owner_details.mailing_state|default:"" }}
+                                {% endif %}
+                                {% if owner_details.mailing_zip %}
+                                    {{ owner_details.mailing_zip }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Data Source:</strong><br>
+                            <span class="text-muted">{{ owner_details.source|default:"Municipal GIS" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Tax Assessment Card (CAMA Data) -->
             {% if cama_data %}
             <div class="card mb-4">
@@ -168,8 +207,13 @@
                     <p class="mb-2">
                         <strong>Data Provided:</strong> Parcel boundaries, addresses, and land use classifications
                     </p>
+                    {% if owner_details %}
+                    <p class="mb-2">
+                        <strong>Owner & Mailing Data:</strong> {{ owner_details.source|default:"Municipal GIS (ArcGIS)" }}
+                    </p>
+                    {% endif %}
                     <p class="mb-0">
-                        <strong>Not Included:</strong> Owner information, assessed values, building details, sale history
+                        <strong>Not Included:</strong> Sale history, deed images, and detailed building characteristics
                     </p>
                     <p class="mt-3 mb-0 text-muted small">
                         For complete property information including owner names and assessed values,
