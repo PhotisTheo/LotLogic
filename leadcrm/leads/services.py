@@ -5716,44 +5716,43 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
         if limit is not None and len(parcels) >= limit:
             break
 
-        town = _get_massgis_town(town_id)
+        try:
+            town = _get_massgis_town(town_id)
 
-        # Retry once with a clean download if the shapefile fails to load
-        town_attempts = 0
-        while town_attempts < 2:
-            town_attempts += 1
-            try:
-                dataset_dir = _ensure_massgis_dataset(town)
-                tax_par_path = _find_taxpar_shapefile(Path(dataset_dir))
+            dataset_dir: Optional[Path] = None
+            assess_records: List[Dict[str, object]] = []
 
-                logger.info(f"📍 Loading parcels for town {town_id} ({town.name}) from {tax_par_path}")
-
-                sf = shapefile.Reader(str(tax_par_path))
-                field_names = [field[0] for field in sf.fields[1:]]
-
-                num_shapes = len(sf.shapes())
-                logger.info(f"Found {num_shapes} parcel shapes in {town.name} shapefile")
-
-                # Load assessment records with address data
-                assess_records = _load_assess_records(str(dataset_dir))
-                logger.info(f"Loaded {len(assess_records) if assess_records else 0} assessment records for {town.name}")
-                break
-            except Exception as exc:  # noqa: BLE001
-                logger.warning(
-                    "Error loading parcels for town %s (attempt %s/2): %s",
-                    town_id,
-                    town_attempts,
-                    exc,
-                )
-                if town_attempts >= 2:
-                    # Give up and continue to next town
-                    continue
-                # Nuke cached dataset/zip and retry from source
+            # Retry once with a clean download if the shapefile fails to load
+            for attempt in range(2):
                 try:
-                    _delete_local_dataset(town.dataset_slug.upper())
-                except Exception as cleanup_exc:  # noqa: BLE001
-                    logger.warning("Failed to delete cached dataset for %s: %s", town.dataset_slug, cleanup_exc)
-                continue
+                    dataset_dir = Path(_ensure_massgis_dataset(town))
+                    tax_par_path = _find_taxpar_shapefile(dataset_dir)
+
+                    logger.info(f"📍 Loading parcels for town {town_id} ({town.name}) from {tax_par_path}")
+
+                    sf = shapefile.Reader(str(tax_par_path))
+                    field_names = [field[0] for field in sf.fields[1:]]
+
+                    num_shapes = len(sf.shapes())
+                    logger.info(f"Found {num_shapes} parcel shapes in {town.name} shapefile")
+
+                    # Load assessment records with address data
+                    assess_records = _load_assess_records(str(dataset_dir))
+                    logger.info(f"Loaded {len(assess_records) if assess_records else 0} assessment records for {town.name}")
+                    break
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning(
+                        "Error loading parcels for town %s (attempt %s/2): %s",
+                        town_id,
+                        attempt + 1,
+                        exc,
+                    )
+                    if attempt >= 1:
+                        raise
+                    try:
+                        _delete_local_dataset(town.dataset_slug.upper())
+                    except Exception as cleanup_exc:  # noqa: BLE001
+                        logger.warning("Failed to delete cached dataset for %s: %s", town.dataset_slug, cleanup_exc)
 
             if radius_limit_miles is not None and reference_point is None and center_address:
                 derived_point = _find_reference_point_from_records(assess_records, center_address)
@@ -5938,9 +5937,6 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                 use_code = attributes.get('USE_CODE', '')
                 property_category = _classify_use_code(use_code)
 
-                # Get use description from town-specific USE_DESC column
-                # The column name varies by town (e.g., M007UC_LUT_CY24_FY24_USE_DESC for town 007)
-
                 # Get use description from USE_CODE lookup table
                 use_desc = _get_use_description(use_code, usecode_lookup)
 
@@ -5986,7 +5982,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
                     'site_zip': _clean_string(attributes.get('SITE_ZIP')) or _clean_string(attributes.get('ZIP')),
                     'city': _clean_string(attributes.get('SITE_CITY')) or _clean_string(attributes.get('CITY')) or town.name.title(),
                     'zip': _clean_string(attributes.get('SITE_ZIP')) or _clean_string(attributes.get('ZIP')),
-                    'value_display': f"${total_value:,.0f}" if total_value else None,
+                    'value_display': f"${{total_value:,.0f}}" if total_value else None,
                     'centroid': centroid_point,
                     'geometry': leaflet_geometry,
                     'units_detail': _summarize_unit_records(unit_records) if unit_records else None,
@@ -5994,7 +5990,7 @@ def get_parcels_in_bbox(north: float, south: float, east: float, west: float,
 
                 parcels.append(parcel)
 
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.warning(f"Error loading parcels from town {town_id}: {exc}")
             continue
 
