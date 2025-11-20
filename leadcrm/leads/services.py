@@ -3481,6 +3481,26 @@ def _find_existing_dataset_dir(slug: str) -> Optional[Path]:
     return None
 
 
+def _validate_taxpar_dataset(dataset_dir: Path) -> bool:
+    """Best-effort sanity check that the TaxPar shapefile is readable."""
+    shapefiles = sorted(dataset_dir.glob("*TaxPar*.shp"))
+    if not shapefiles:
+        return False
+    shp_path = shapefiles[0]
+    try:
+        reader = shapefile.Reader(str(shp_path))
+        # Touch the header/records to surface corruption errors early
+        _ = reader.numRecords
+        _ = reader.fields
+        # Minimal iteration to shake out buffer errors
+        next(reader.iterShapeRecords(), None)
+        reader.close()
+        return True
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("TaxPar shapefile validation failed for %s: %s", shp_path, exc)
+        return False
+
+
 def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime] = None) -> Path:
     # Keep downloads extracted to a subdirectory matching the ZIP slug to avoid
     # collisions while still allowing case-insensitive access. MassGIS slugs are
@@ -3518,6 +3538,7 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
     now = datetime.now(timezone.utc)
     index = _load_dataset_index()
     entry = index.get(slug)
+    use_s3_cache = True
 
     if base_dir.exists():
         logger.info("Dataset dir exists: %s (entry: %s)", base_dir, entry)
@@ -3547,90 +3568,92 @@ def _ensure_massgis_dataset(town: MassGISTown, last_modified: Optional[datetime]
 
     zip_path = MASSGIS_DOWNLOAD_DIR / f"{slug}.zip"
 
-    # Try to get from S3 cache first
-    s3_last_modified = _check_s3_dataset_exists(slug)
-    if s3_last_modified and not _is_s3_dataset_stale(s3_last_modified):
-        logger.info("Found %s in S3 cache (age: %s days)", slug, (now - s3_last_modified).days)
+    while True:
+        # Try to get from S3 cache first unless we've already retried without it
+        s3_last_modified = _check_s3_dataset_exists(slug) if use_s3_cache else None
+        if s3_last_modified and not _is_s3_dataset_stale(s3_last_modified):
+            logger.info("Found %s in S3 cache (age: %s days)", slug, (now - s3_last_modified).days)
+            if not zip_path.exists():
+                if _download_from_s3(slug, zip_path):
+                    logger.info("Successfully retrieved %s from S3 cache", slug)
+                else:
+                    logger.warning("Failed to download from S3, will fetch from source")
+        elif s3_last_modified:
+            logger.info("S3 cache for %s is stale (age: %s days), will refresh", slug, (now - s3_last_modified).days)
+
+        # Validate existing zip file or download new one
+        if zip_path.exists():
+            try:
+                with zipfile.ZipFile(zip_path, "r") as archive:
+                    if archive.testzip() is not None:
+                        logger.warning("Corrupted zip file detected: %s - deleting and re-downloading", zip_path)
+                        zip_path.unlink()
+            except zipfile.BadZipFile:
+                logger.warning("Invalid zip file detected: %s - deleting and re-downloading", zip_path)
+                zip_path.unlink()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Error validating zip file %s: %s - deleting and re-downloading", zip_path, exc)
+                zip_path.unlink()
+
         if not zip_path.exists():
-            if _download_from_s3(slug, zip_path):
-                logger.info("Successfully retrieved %s from S3 cache", slug)
-            else:
-                logger.warning("Failed to download from S3, will fetch from source")
-    elif s3_last_modified:
-        logger.info("S3 cache for %s is stale (age: %s days), will refresh", slug, (now - s3_last_modified).days)
+            try:
+                if boston_dataset_id and shapefile_url and "opendata.arcgis.com" in shapefile_url:
+                    logger.info("Starting Boston dataset download via Open Data API (%s).", boston_dataset_id)
+                    _download_boston_dataset(boston_dataset_id, zip_path)
+                else:
+                    _download_file(shapefile_url, zip_path)
 
-    # Validate existing zip file or download new one
-    if zip_path.exists():
+                if zip_path.exists():
+                    _upload_to_s3(slug, zip_path)
+            except Exception as exc:  # noqa: BLE001
+                raise MassGISDownloadError(
+                    f"Unable to download MassGIS shapefile for {town.name}."
+                ) from exc
+
+        if not zip_path.exists():
+            raise MassGISDownloadError(f"Zip file does not exist after download: {zip_path}")
+
         try:
-            # Test if zip file is valid
             with zipfile.ZipFile(zip_path, "r") as archive:
-                # Test the zip file integrity
                 if archive.testzip() is not None:
-                    logger.warning("Corrupted zip file detected: %s - deleting and re-downloading", zip_path)
-                    zip_path.unlink()
-        except zipfile.BadZipFile:
-            logger.warning("Invalid zip file detected: %s - deleting and re-downloading", zip_path)
-            zip_path.unlink()
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Error validating zip file %s: %s - deleting and re-downloading", zip_path, exc)
-            zip_path.unlink()
+                    raise zipfile.BadZipFile("Zip file integrity check failed")
+                logger.info(f"Extracting {slug} to {base_dir}")
+                archive.extractall(base_dir)
 
-    if not zip_path.exists():
-        try:
-            if boston_dataset_id and shapefile_url and "opendata.arcgis.com" in shapefile_url:
-                logger.info("Starting Boston dataset download via Open Data API (%s).", boston_dataset_id)
-                _download_boston_dataset(boston_dataset_id, zip_path)
-            else:
-                _download_file(shapefile_url, zip_path)
-
-            # Upload to S3 cache after successful download
-            if zip_path.exists():
-                _upload_to_s3(slug, zip_path)
-        except Exception as exc:  # noqa: BLE001
+                if base_dir.exists():
+                    extracted_files = list(base_dir.rglob("*"))
+                    logger.info(f"Extracted {len(extracted_files)} files/dirs for {slug}")
+                    sample_files = [str(f.relative_to(base_dir)) for f in extracted_files[:10]]
+                    logger.info(f"Sample extracted files: {sample_files}")
+                else:
+                    logger.error(f"Base directory {base_dir} doesn't exist after extraction!")
+        except zipfile.BadZipFile as exc:
+            logger.error("Failed to extract %s - removing corrupted files", zip_path)
+            zip_path.unlink(missing_ok=True)
+            if base_dir.exists():
+                shutil.rmtree(base_dir, ignore_errors=True)
             raise MassGISDownloadError(
-                f"Unable to download MassGIS shapefile for {town.name}."
+                f"Corrupted zip file for {town.name}. Please retry."
             ) from exc
 
-    # Verify zip file exists and is valid before extraction
-    if not zip_path.exists():
-        raise MassGISDownloadError(
-            f"Zip file does not exist after download: {zip_path}"
-        )
+        dataset_dir = _resolve_dataset_directory(base_dir)
+        logger.info(f"Resolved dataset directory for {slug}: {dataset_dir}")
 
-    # Extract with error handling
-    try:
-        with zipfile.ZipFile(zip_path, "r") as archive:
-            # Validate zip integrity before extraction
-            if archive.testzip() is not None:
-                raise zipfile.BadZipFile("Zip file integrity check failed")
-            logger.info(f"Extracting {slug} to {base_dir}")
-            archive.extractall(base_dir)
+        if not _validate_taxpar_dataset(dataset_dir):
+            logger.warning(
+                "MassGIS dataset %s failed validation; removing and re-downloading %s",
+                slug,
+                "without S3 cache" if use_s3_cache else "from source",
+            )
+            _delete_local_dataset(slug)
+            zip_path.unlink(missing_ok=True)
+            if not use_s3_cache:
+                raise MassGISDataError(f"MassGIS dataset {slug} appears corrupted after re-download.")
+            use_s3_cache = False
+            continue
 
-            # Log what was extracted
-            if base_dir.exists():
-                extracted_files = list(base_dir.rglob("*"))
-                logger.info(f"Extracted {len(extracted_files)} files/dirs for {slug}")
-                # Log first few files for debugging
-                sample_files = [str(f.relative_to(base_dir)) for f in extracted_files[:10]]
-                logger.info(f"Sample extracted files: {sample_files}")
-            else:
-                logger.error(f"Base directory {base_dir} doesn't exist after extraction!")
-    except zipfile.BadZipFile as exc:
-        # Clean up corrupted files
-        logger.error("Failed to extract %s - removing corrupted files", zip_path)
-        if zip_path.exists():
-            zip_path.unlink()
-        if base_dir.exists():
-            import shutil
-            shutil.rmtree(base_dir)
-        raise MassGISDownloadError(
-            f"Corrupted zip file for {town.name}. Please retry."
-        ) from exc
-
-    dataset_dir = _resolve_dataset_directory(base_dir)
-    logger.info(f"Resolved dataset directory for {slug}: {dataset_dir}")
-    _record_dataset_download(slug, shapefile_url, last_modified)
-    return dataset_dir
+        _record_dataset_download(slug, shapefile_url, last_modified)
+        return dataset_dir
 
 
 def _download_file(url: str, path: Path, *, timeout: int = 30) -> None:
