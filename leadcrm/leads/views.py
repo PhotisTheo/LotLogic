@@ -4589,11 +4589,14 @@ def lead_skiptrace(request, pk):
 # --- Saved list detail: loads parcels, skip-trace status, bulk actions.
 @login_required
 def saved_parcel_list_detail(request, pk):
+    from .forms import SavedListFilterForm
+    from decimal import Decimal
+
     saved_list = get_object_or_404(_saved_list_queryset_for_user(request.user), pk=pk)
     parcels, skiptrace_records, pending_parcels = _pending_parcels_for_saved_list(
         saved_list, user=request.user
     )
-    total = len(parcels)
+    total_parcels = len(parcels)
 
     loc_ids = [parcel.loc_id for parcel in parcels if parcel.loc_id]
     lead_lookup: dict[str, int] = {}
@@ -4613,7 +4616,110 @@ def saved_parcel_list_detail(request, pk):
         for parcel in parcels
     ]
 
-    pending_skiptrace_count = len(pending_parcels)
+    # Initialize filter form
+    filter_form = SavedListFilterForm(request.GET if request.GET else None)
+
+    # Apply filters if form is valid
+    filtered_count = None
+    if request.GET and filter_form.is_valid():
+        filtered_rows = []
+        for row in parcel_rows:
+            parcel = row["parcel"]
+
+            # Property category filter
+            category = filter_form.cleaned_data.get("property_category", "any")
+            if category and category != "any":
+                parcel_category = (parcel.property_category or "").lower()
+                if parcel_category != category:
+                    continue
+
+            # Commercial subtype filter
+            if category == "commercial":
+                subtype = filter_form.cleaned_data.get("commercial_subtype", "any")
+                if subtype and subtype != "any":
+                    # This would need the USE_CODE classification logic from services.py
+                    # For now, skip if we don't have this data
+                    pass
+
+            # Address filter
+            address_contains = filter_form.cleaned_data.get("address_contains", "")
+            if address_contains:
+                address = (parcel.site_address or "").lower()
+                if address_contains.lower() not in address:
+                    continue
+
+            # Style filter
+            style = filter_form.cleaned_data.get("style", "")
+            if style:
+                parcel_style = (parcel.style or "").lower()
+                if style.lower() not in parcel_style:
+                    continue
+
+            # Absentee filter
+            absentee = filter_form.cleaned_data.get("absentee", "any")
+            if absentee and absentee != "any":
+                if absentee == "absentee" and not parcel.absentee:
+                    continue
+                if absentee == "owner" and parcel.absentee:
+                    continue
+
+            # Price range filters
+            min_price = filter_form.cleaned_data.get("min_price")
+            if min_price is not None and parcel.total_value is not None:
+                if parcel.total_value < min_price:
+                    continue
+
+            max_price = filter_form.cleaned_data.get("max_price")
+            if max_price is not None and parcel.total_value is not None:
+                if parcel.total_value > max_price:
+                    continue
+
+            # Equity filter
+            equity_min = filter_form.cleaned_data.get("equity_min")
+            if equity_min is not None and parcel.equity_percent is not None:
+                if parcel.equity_percent < equity_min:
+                    continue
+
+            # Years owned filters
+            min_years = filter_form.cleaned_data.get("min_years_owned")
+            if min_years is not None and parcel.years_owned is not None:
+                if parcel.years_owned < min_years:
+                    continue
+
+            max_years = filter_form.cleaned_data.get("max_years_owned")
+            if max_years is not None and parcel.years_owned is not None:
+                if parcel.years_owned > max_years:
+                    continue
+
+            # Skip trace filter
+            skiptraced_filter = filter_form.cleaned_data.get("skiptraced", "any")
+            if skiptraced_filter and skiptraced_filter != "any":
+                is_skiptraced = row["skiptraced"]
+                if skiptraced_filter == "traced" and not is_skiptraced:
+                    continue
+                if skiptraced_filter == "not_traced" and is_skiptraced:
+                    continue
+
+            # Legal info filter
+            has_legal = filter_form.cleaned_data.get("has_legal_info", "any")
+            if has_legal and has_legal != "any":
+                has_issues = bool(
+                    getattr(parcel.attom_data, "pre_foreclosure", False) or
+                    getattr(parcel.attom_data, "mortgage_default", False) or
+                    getattr(parcel.attom_data, "tax_default", False)
+                )
+                if has_legal == "yes" and not has_issues:
+                    continue
+                if has_legal == "no" and has_issues:
+                    continue
+
+            filtered_rows.append(row)
+
+        parcel_rows = filtered_rows
+        filtered_count = len(filtered_rows)
+
+    total = len(parcel_rows)
+    pending_skiptrace_count = len([row for row in parcel_rows if not row["skiptraced"]])
     pricing = _build_skiptrace_pricing(pending_skiptrace_count)
 
     criteria_qs = None
@@ -4707,6 +4813,9 @@ def saved_parcel_list_detail(request, pk):
             "saved_list": saved_list,
             "parcel_rows": parcel_rows,
             "total": total,
+            "total_parcels": total_parcels,
+            "filtered_count": filtered_count,
+            "filter_form": filter_form,
             "criteria_qs": criteria_qs,
             "bulk_skiptrace_pending_count": pending_skiptrace_count,
             "bulk_skiptrace_pricing": pricing,
@@ -4764,6 +4873,278 @@ def saved_parcel_list_detail(request, pk):
             "saved_list_mailer_endpoint": saved_list_mailer_endpoint,
         },
     )
+
+
+@login_required
+@require_POST
+# --- Save filtered results from a saved list as a new list.
+def save_filtered_list(request, pk):
+    from .forms import SavedListFilterForm
+    from urllib.parse import parse_qs
+
+    saved_list = get_object_or_404(_saved_list_queryset_for_user(request.user), pk=pk)
+
+    # Get the new list name
+    list_name = request.POST.get("list_name", "").strip()
+    if not list_name:
+        return JsonResponse({"error": "List name is required."}, status=400)
+
+    # Parse filter parameters
+    filters_qs = request.POST.get("filters", "")
+    filter_params = {}
+    if filters_qs:
+        parsed = parse_qs(filters_qs)
+        for key, values in parsed.items():
+            filter_params[key] = values[0] if values else ""
+
+    # Load original parcels
+    parcels, skiptrace_records, _ = _pending_parcels_for_saved_list(
+        saved_list, user=request.user
+    )
+
+    if not parcels:
+        return JsonResponse({"error": "No parcels found in the original list."}, status=400)
+
+    # Apply filters using the same logic as saved_parcel_list_detail
+    filter_form = SavedListFilterForm(filter_params)
+    filtered_parcels = []
+
+    if filter_form.is_valid():
+        for parcel in parcels:
+            # Property category filter
+            category = filter_form.cleaned_data.get("property_category", "any")
+            if category and category != "any":
+                parcel_category = (parcel.property_category or "").lower()
+                if parcel_category != category:
+                    continue
+
+            # Address filter
+            address_contains = filter_form.cleaned_data.get("address_contains", "")
+            if address_contains:
+                address = (parcel.site_address or "").lower()
+                if address_contains.lower() not in address:
+                    continue
+
+            # Style filter
+            style = filter_form.cleaned_data.get("style", "")
+            if style:
+                parcel_style = (parcel.style or "").lower()
+                if style.lower() not in parcel_style:
+                    continue
+
+            # Absentee filter
+            absentee = filter_form.cleaned_data.get("absentee", "any")
+            if absentee and absentee != "any":
+                if absentee == "absentee" and not parcel.absentee:
+                    continue
+                if absentee == "owner" and parcel.absentee:
+                    continue
+
+            # Price range filters
+            min_price = filter_form.cleaned_data.get("min_price")
+            if min_price is not None and parcel.total_value is not None:
+                if parcel.total_value < min_price:
+                    continue
+
+            max_price = filter_form.cleaned_data.get("max_price")
+            if max_price is not None and parcel.total_value is not None:
+                if parcel.total_value > max_price:
+                    continue
+
+            # Equity filter
+            equity_min = filter_form.cleaned_data.get("equity_min")
+            if equity_min is not None and parcel.equity_percent is not None:
+                if parcel.equity_percent < equity_min:
+                    continue
+
+            # Years owned filters
+            min_years = filter_form.cleaned_data.get("min_years_owned")
+            if min_years is not None and parcel.years_owned is not None:
+                if parcel.years_owned < min_years:
+                    continue
+
+            max_years = filter_form.cleaned_data.get("max_years_owned")
+            if max_years is not None and parcel.years_owned is not None:
+                if parcel.years_owned > max_years:
+                    continue
+
+            # Skip trace filter
+            skiptraced_filter = filter_form.cleaned_data.get("skiptraced", "any")
+            if skiptraced_filter and skiptraced_filter != "any":
+                is_skiptraced = bool(skiptrace_records.get(_normalize_loc_id(parcel.loc_id)))
+                if skiptraced_filter == "traced" and not is_skiptraced:
+                    continue
+                if skiptraced_filter == "not_traced" and is_skiptraced:
+                    continue
+
+            # Legal info filter
+            has_legal = filter_form.cleaned_data.get("has_legal_info", "any")
+            if has_legal and has_legal != "any":
+                has_issues = bool(
+                    getattr(parcel.attom_data, "pre_foreclosure", False) or
+                    getattr(parcel.attom_data, "mortgage_default", False) or
+                    getattr(parcel.attom_data, "tax_default", False)
+                )
+                if has_legal == "yes" and not has_issues:
+                    continue
+                if has_legal == "no" and has_issues:
+                    continue
+
+            filtered_parcels.append(parcel)
+    else:
+        # If form is invalid, use all parcels
+        filtered_parcels = parcels
+
+    if not filtered_parcels:
+        return JsonResponse({"error": "No parcels match the filter criteria."}, status=400)
+
+    # Extract loc_ids from filtered parcels
+    filtered_loc_ids = [parcel.loc_id for parcel in filtered_parcels if parcel.loc_id]
+    filtered_loc_ids_set = set(filtered_loc_ids)
+
+    # Create new saved list
+    workspace_owner = get_workspace_owner(request.user)
+    if workspace_owner is None:
+        return JsonResponse({"error": "Unable to determine workspace owner."}, status=400)
+
+    # Build criteria dict (copy from original and add filter info)
+    new_criteria = dict(saved_list.criteria) if isinstance(saved_list.criteria, dict) else {}
+    new_criteria["extracted_from_list_id"] = saved_list.pk
+    new_criteria["filter_params"] = filter_params
+
+    new_list = SavedParcelList.objects.create(
+        name=list_name,
+        state=saved_list.state,
+        town_id=saved_list.town_id,
+        town_name=saved_list.town_name,
+        criteria=new_criteria,
+        loc_ids=filtered_loc_ids,
+        created_by=workspace_owner,
+    )
+
+    # Remove filtered parcels from the original list
+    original_loc_ids = saved_list.loc_ids if isinstance(saved_list.loc_ids, list) else []
+    remaining_loc_ids = [loc_id for loc_id in original_loc_ids if loc_id not in filtered_loc_ids_set]
+
+    saved_list.loc_ids = remaining_loc_ids
+    saved_list.save(update_fields=["loc_ids"])
+
+    return JsonResponse({
+        "success": True,
+        "list_id": new_list.pk,
+        "new_list_name": list_name,
+        "extracted_count": len(filtered_loc_ids),
+        "remaining_count": len(remaining_loc_ids),
+        "redirect_url": reverse("saved_parcel_list_detail", args=[saved_list.pk]),
+        "message": f"Extracted {len(filtered_loc_ids)} parcels to '{list_name}'. {len(remaining_loc_ids)} parcels remaining in original list."
+    })
+
+
+@login_required
+@require_GET
+# --- Get available lists for moving parcels (excludes current list).
+def get_lists_for_move(request):
+    current_list_id = request.GET.get('current_list_id')
+
+    lists_query = _saved_list_queryset_for_user(request.user).filter(archived_at__isnull=True)
+
+    if current_list_id:
+        try:
+            lists_query = lists_query.exclude(pk=int(current_list_id))
+        except (ValueError, TypeError):
+            pass
+
+    lists_data = []
+    for saved_list in lists_query.order_by('-created_at')[:50]:  # Limit to 50 most recent
+        parcel_count = len(saved_list.loc_ids) if isinstance(saved_list.loc_ids, list) else 0
+        lists_data.append({
+            'id': saved_list.pk,
+            'name': saved_list.name,
+            'town_name': saved_list.town_name,
+            'parcel_count': parcel_count,
+        })
+
+    return JsonResponse(lists_data, safe=False)
+
+
+@login_required
+@require_POST
+# --- Move selected parcels from one list to another (or create new list).
+def move_parcels_to_list(request, pk):
+    import json
+
+    source_list = get_object_or_404(_saved_list_queryset_for_user(request.user), pk=pk)
+
+    # Parse selected parcel data
+    try:
+        parcel_ids_json = request.POST.get('parcel_ids', '[]')
+        parcel_data = json.loads(parcel_ids_json)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid parcel data."}, status=400)
+
+    if not parcel_data:
+        return JsonResponse({"error": "No parcels selected."}, status=400)
+
+    # Extract loc_ids from parcel data
+    selected_loc_ids = [item['loc_id'] for item in parcel_data if 'loc_id' in item]
+    selected_loc_ids_set = set(selected_loc_ids)
+
+    # Get or create destination list
+    destination_list_id = request.POST.get('destination_list_id')
+    new_list_name = request.POST.get('new_list_name', '').strip()
+
+    workspace_owner = get_workspace_owner(request.user)
+    if workspace_owner is None:
+        return JsonResponse({"error": "Unable to determine workspace owner."}, status=400)
+
+    if destination_list_id == '_new_':
+        # Create new list
+        if not new_list_name:
+            return JsonResponse({"error": "New list name is required."}, status=400)
+
+        destination_list = SavedParcelList.objects.create(
+            name=new_list_name,
+            state=source_list.state,
+            town_id=source_list.town_id,
+            town_name=source_list.town_name,
+            criteria={'created_from_move': True, 'source_list_id': source_list.pk},
+            loc_ids=selected_loc_ids,
+            created_by=workspace_owner,
+        )
+    else:
+        # Add to existing list
+        try:
+            destination_list = SavedParcelList.objects.get(
+                pk=destination_list_id,
+                created_by=workspace_owner
+            )
+        except SavedParcelList.DoesNotExist:
+            return JsonResponse({"error": "Destination list not found."}, status=404)
+
+        # Merge loc_ids (avoid duplicates)
+        existing_loc_ids = destination_list.loc_ids if isinstance(destination_list.loc_ids, list) else []
+        existing_loc_ids_set = set(existing_loc_ids)
+
+        # Add new loc_ids that aren't already in the destination list
+        new_loc_ids = [loc_id for loc_id in selected_loc_ids if loc_id not in existing_loc_ids_set]
+        destination_list.loc_ids = existing_loc_ids + new_loc_ids
+        destination_list.save(update_fields=['loc_ids'])
+
+    # Remove moved parcels from source list
+    source_loc_ids = source_list.loc_ids if isinstance(source_list.loc_ids, list) else []
+    remaining_loc_ids = [loc_id for loc_id in source_loc_ids if loc_id not in selected_loc_ids_set]
+
+    source_list.loc_ids = remaining_loc_ids
+    source_list.save(update_fields=['loc_ids'])
+
+    return JsonResponse({
+        "success": True,
+        "moved_count": len(selected_loc_ids),
+        "remaining_count": len(remaining_loc_ids),
+        "destination_list_id": destination_list.pk,
+        "destination_list_name": destination_list.name,
+        "message": f"Moved {len(selected_loc_ids)} parcels to '{destination_list.name}'. {len(remaining_loc_ids)} parcels remaining."
+    })
 
 
 @login_required

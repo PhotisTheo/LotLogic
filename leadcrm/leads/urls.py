@@ -131,6 +131,21 @@ urlpatterns = [
         name="bulk_legal_search",
     ),
     path(
+        "saved-lists/<int:pk>/save-filtered/",
+        views.save_filtered_list,
+        name="save_filtered_list",
+    ),
+    path(
+        "saved-lists-for-move/",
+        views.get_lists_for_move,
+        name="get_lists_for_move",
+    ),
+    path(
+        "saved-lists/<int:pk>/move-parcels/",
+        views.move_parcels_to_list,
+        name="move_parcels_to_list",
+    ),
+    path(
         "api/parcel/<int:town_id>/<str:loc_id>/geometry/",
         views.parcel_geometry,
         name="parcel_geometry",

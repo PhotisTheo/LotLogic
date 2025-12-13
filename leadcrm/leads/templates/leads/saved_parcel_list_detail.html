@@ -46,9 +46,202 @@
   {% endif %}
 
   {% if parcel_rows %}
+    <!-- Filter Section -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+        <div class="d-flex align-items-center gap-2">
+          <span class="fw-semibold">🔍 Filter Properties</span>
+          <span class="badge bg-secondary" id="activeFilterCount" style="display: none;">0 active</span>
+        </div>
+        <button class="btn btn-sm btn-link text-decoration-none" type="button">
+          <span class="collapse-toggle-icon">▼</span>
+        </button>
+      </div>
+      <div class="collapse" id="filterCollapse">
+        <div class="card-body">
+          <form method="get" action="" id="filterForm">
+            <div class="row g-3">
+              <!-- Property Filters -->
+              <div class="col-md-6 col-lg-4">
+                <label for="id_property_category" class="form-label small fw-semibold">Property Category</label>
+                {{ filter_form.property_category }}
+              </div>
+              <div class="col-md-6 col-lg-4" id="commercialSubtypeWrapper" style="display: none;">
+                <label for="id_commercial_subtype" class="form-label small fw-semibold">Commercial Type</label>
+                {{ filter_form.commercial_subtype }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_absentee" class="form-label small fw-semibold">Occupancy</label>
+                {{ filter_form.absentee }}
+              </div>
+
+              <!-- Address & Style -->
+              <div class="col-md-6 col-lg-4">
+                <label for="id_address_contains" class="form-label small fw-semibold">Address Contains</label>
+                {{ filter_form.address_contains }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_style" class="form-label small fw-semibold">Style Contains</label>
+                {{ filter_form.style }}
+              </div>
+
+              <!-- Value Filters -->
+              <div class="col-md-6 col-lg-4">
+                <label for="id_equity_min" class="form-label small fw-semibold">Min. Equity %</label>
+                {{ filter_form.equity_min }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_min_price" class="form-label small fw-semibold">Min. Assessed Value</label>
+                {{ filter_form.min_price }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_max_price" class="form-label small fw-semibold">Max. Assessed Value</label>
+                {{ filter_form.max_price }}
+              </div>
+
+              <!-- Ownership Filters -->
+              <div class="col-md-6 col-lg-4">
+                <label for="id_min_years_owned" class="form-label small fw-semibold">Min. Years Owned</label>
+                {{ filter_form.min_years_owned }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_max_years_owned" class="form-label small fw-semibold">Max. Years Owned</label>
+                {{ filter_form.max_years_owned }}
+              </div>
+
+              <!-- Skip Trace & Legal Filters -->
+              <div class="col-md-6 col-lg-4">
+                <label for="id_skiptraced" class="form-label small fw-semibold">Skip Trace Status</label>
+                {{ filter_form.skiptraced }}
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <label for="id_has_legal_info" class="form-label small fw-semibold">Legal Info</label>
+                {{ filter_form.has_legal_info }}
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+              <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+              <a href="{% url 'saved_parcel_list_detail' saved_list.pk %}" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+              {% if filtered_count is not None and filtered_count != total_parcels %}
+                <button type="button" class="btn btn-success btn-sm ms-auto" data-bs-toggle="modal" data-bs-target="#saveFilteredListModal">
+                  📤 Extract Filtered Results ({{ filtered_count }}) to New List
+                </button>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Filtered List Modal -->
+    <div class="modal fade" id="saveFilteredListModal" tabindex="-1" aria-labelledby="saveFilteredListModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-semibold" id="saveFilteredListModalLabel">Extract Filtered Results to New List</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-3">
+              This will <strong class="text-warning">move</strong> <strong>{{ filtered_count }}</strong>
+              filtered propert{{ filtered_count|pluralize:"y,ies" }} from "{{ saved_list.name }}" to a new list.
+            </p>
+            <div class="alert alert-info py-2 mb-3">
+              <small><strong>Note:</strong> These properties will be removed from the original list and saved to the new list.</small>
+            </div>
+            <form id="saveFilteredListForm" method="post" action="{% url 'save_filtered_list' saved_list.pk %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="newListName" class="form-label fw-semibold">New List Name</label>
+                <input type="text"
+                       class="form-control"
+                       id="newListName"
+                       name="list_name"
+                       placeholder="e.g., {{ saved_list.name }} - Filtered"
+                       required>
+                <div class="form-text">Choose a descriptive name for your filtered list.</div>
+              </div>
+              <!-- Hidden fields to pass filter parameters -->
+              <input type="hidden" name="filters" id="filterParamsInput">
+            </form>
+            <div class="d-flex align-items-center gap-2 mt-3">
+              <div class="spinner-border spinner-border-sm text-primary d-none" data-role="save-list-spinner" role="status">
+                <span class="visually-hidden">Saving…</span>
+              </div>
+              <div class="small d-none" data-role="save-list-status"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" data-role="save-filtered-list-confirm">
+              Extract to New List
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Move to List Modal -->
+    <div class="modal fade" id="moveToListModal" tabindex="-1" aria-labelledby="moveToListModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-semibold" id="moveToListModalLabel">Move Properties to Another List</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-3">
+              Move <strong id="movePropertiesCount">0</strong> selected propert<span id="movePropertiesPlural">ies</span>
+              from "{{ saved_list.name }}" to:
+            </p>
+            <form id="moveToListForm">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="destinationListSelect" class="form-label fw-semibold">Destination List</label>
+                <select class="form-select" id="destinationListSelect" name="destination_list_id" required>
+                  <option value="">Select a list...</option>
+                  <option value="_new_">+ Create New List</option>
+                </select>
+                <div class="form-text">Choose an existing list or create a new one.</div>
+              </div>
+              <div class="mb-3 d-none" id="newListNameWrapper">
+                <label for="newDestinationListName" class="form-label fw-semibold">New List Name</label>
+                <input type="text"
+                       class="form-control"
+                       id="newDestinationListName"
+                       name="new_list_name"
+                       placeholder="e.g., High Priority Properties">
+              </div>
+              <input type="hidden" name="parcel_ids" id="moveParcelIds">
+            </form>
+            <div class="d-flex align-items-center gap-2 mt-3">
+              <div class="spinner-border spinner-border-sm text-primary d-none" data-role="move-parcels-spinner" role="status">
+                <span class="visually-hidden">Moving…</span>
+              </div>
+              <div class="small d-none" data-role="move-parcels-status"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" data-role="move-parcels-confirm">
+              Move Properties
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card shadow-sm">
       <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span class="fw-semibold">{{ total }} parcel{% if total != 1 %}s{% endif %} saved</span>
+        <span class="fw-semibold">
+          {% if filtered_count is not None and filtered_count != total_parcels %}
+            {{ filtered_count }} of {{ total_parcels }} parcel{% if total_parcels != 1 %}s{% endif %}
+            <span class="badge bg-primary">filtered</span>
+          {% else %}
+            {{ total }} parcel{% if total != 1 %}s{% endif %} saved
+          {% endif %}
+        </span>
         <div class="d-flex gap-2">
           {% if list_is_archived %}
             <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Archived</button>
@@ -71,11 +264,26 @@
             </button>
           {% endif %}
         </div>
+        <!-- Bulk Action Toolbar -->
+        <div class="alert alert-primary d-none align-items-center justify-content-between" id="bulkActionToolbar" style="margin: 0; border-radius: 0; border-left: 0; border-right: 0;">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fw-semibold" id="selectedCount">0 selected</span>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#moveToListModal">
+              🔀 Move to Another List
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearSelection">
+              Clear Selection
+            </button>
+          </div>
+        </div>
       </div>
       <div class="table-responsive">
         <table class="table table-striped align-middle mb-0">
           <thead class="table-light">
             <tr>
+              <th style="width: 40px;">
+                <input type="checkbox" class="form-check-input" id="selectAllParcels">
+              </th>
               <th>Address</th>
               <th>Owner</th>
               <th>Category / Property Type</th>
@@ -93,6 +301,12 @@
             {% for row in parcel_rows %}
               {% with parcel=row.parcel %}
               <tr>
+                <td>
+                  <input type="checkbox"
+                         class="form-check-input parcel-checkbox"
+                         data-loc-id="{{ parcel.loc_id }}"
+                         data-town-id="{{ parcel.town.town_id }}">
+                </td>
                 <td class="fw-semibold">
                   {{ parcel.site_address|default:"—" }}
                   <div class="text-muted small">{{ parcel.site_city|default:saved_list.town_name }}{% if parcel.site_zip %} {{ parcel.site_zip }}{% endif %}</div>
@@ -328,6 +542,396 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+      // Filter interactions
+      const propertyCategorySelect = document.getElementById('id_property_category');
+      const commercialSubtypeWrapper = document.getElementById('commercialSubtypeWrapper');
+      const filterCollapse = document.getElementById('filterCollapse');
+      const activeFilterCount = document.getElementById('activeFilterCount');
+
+      // Show/hide commercial subtype based on category
+      function updateCommercialSubtypeVisibility() {
+        if (propertyCategorySelect && commercialSubtypeWrapper) {
+          if (propertyCategorySelect.value === 'commercial') {
+            commercialSubtypeWrapper.style.display = 'block';
+          } else {
+            commercialSubtypeWrapper.style.display = 'none';
+          }
+        }
+      }
+
+      // Count active filters
+      function countActiveFilters() {
+        let count = 0;
+        const formInputs = document.querySelectorAll('#filterForm input, #filterForm select');
+
+        formInputs.forEach(input => {
+          if (input.type === 'submit' || input.type === 'button') return;
+
+          if (input.tagName === 'SELECT') {
+            if (input.value && input.value !== 'any') {
+              count++;
+            }
+          } else if (input.type === 'text' || input.type === 'number') {
+            if (input.value && input.value.trim() !== '') {
+              count++;
+            }
+          }
+        });
+
+        if (activeFilterCount) {
+          if (count > 0) {
+            activeFilterCount.textContent = count + ' active';
+            activeFilterCount.style.display = 'inline-block';
+          } else {
+            activeFilterCount.style.display = 'none';
+          }
+        }
+
+        return count;
+      }
+
+      // Toggle collapse icon
+      const collapseToggle = document.querySelector('[data-bs-toggle="collapse"][data-bs-target="#filterCollapse"]');
+      if (collapseToggle && filterCollapse) {
+        filterCollapse.addEventListener('show.bs.collapse', function () {
+          const icon = collapseToggle.querySelector('.collapse-toggle-icon');
+          if (icon) icon.textContent = '▲';
+        });
+        filterCollapse.addEventListener('hide.bs.collapse', function () {
+          const icon = collapseToggle.querySelector('.collapse-toggle-icon');
+          if (icon) icon.textContent = '▼';
+        });
+      }
+
+      // Initialize
+      if (propertyCategorySelect) {
+        updateCommercialSubtypeVisibility();
+        propertyCategorySelect.addEventListener('change', updateCommercialSubtypeVisibility);
+      }
+
+      // Count filters on page load and auto-expand if any are active
+      const activeCount = countActiveFilters();
+      if (activeCount > 0 && filterCollapse) {
+        const bsCollapse = new bootstrap.Collapse(filterCollapse, { show: true });
+      }
+
+      // Update count when form inputs change
+      const filterForm = document.getElementById('filterForm');
+      if (filterForm) {
+        filterForm.addEventListener('input', countActiveFilters);
+        filterForm.addEventListener('change', countActiveFilters);
+      }
+
+      // Parcel selection and bulk move functionality
+      const selectAllCheckbox = document.getElementById('selectAllParcels');
+      const parcelCheckboxes = document.querySelectorAll('.parcel-checkbox');
+      const bulkActionToolbar = document.getElementById('bulkActionToolbar');
+      const selectedCountSpan = document.getElementById('selectedCount');
+      const clearSelectionBtn = document.getElementById('clearSelection');
+
+      function updateSelectionUI() {
+        const checkedBoxes = document.querySelectorAll('.parcel-checkbox:checked');
+        const count = checkedBoxes.length;
+
+        if (selectedCountSpan) {
+          selectedCountSpan.textContent = count + ' selected';
+        }
+
+        if (bulkActionToolbar) {
+          if (count > 0) {
+            bulkActionToolbar.classList.remove('d-none');
+            bulkActionToolbar.classList.add('d-flex');
+          } else {
+            bulkActionToolbar.classList.add('d-none');
+            bulkActionToolbar.classList.remove('d-flex');
+          }
+        }
+
+        // Update select all checkbox state
+        if (selectAllCheckbox) {
+          if (count === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+          } else if (count === parcelCheckboxes.length) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+          } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+          }
+        }
+      }
+
+      // Select all handler
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+          parcelCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+          });
+          updateSelectionUI();
+        });
+      }
+
+      // Individual checkbox handlers
+      parcelCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectionUI);
+      });
+
+      // Clear selection handler
+      if (clearSelectionBtn) {
+        clearSelectionBtn.addEventListener('click', function () {
+          parcelCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+          });
+          updateSelectionUI();
+        });
+      }
+
+      // Move to list modal handler
+      const moveToListModal = document.getElementById('moveToListModal');
+      if (moveToListModal) {
+        const confirmButton = moveToListModal.querySelector('[data-role="move-parcels-confirm"]');
+        const spinner = moveToListModal.querySelector('[data-role="move-parcels-spinner"]');
+        const status = moveToListModal.querySelector('[data-role="move-parcels-status"]');
+        const destinationSelect = document.getElementById('destinationListSelect');
+        const newListNameWrapper = document.getElementById('newListNameWrapper');
+        const newListNameInput = document.getElementById('newDestinationListName');
+        const movePropertiesCount = document.getElementById('movePropertiesCount');
+        const movePropertiesPlural = document.getElementById('movePropertiesPlural');
+        const moveParcelIds = document.getElementById('moveParcelIds');
+
+        const setStatus = (message, tone) => {
+          if (!status) return;
+          status.textContent = message || '';
+          status.classList.remove('d-none', 'text-danger', 'text-success', 'text-muted');
+          if (!message) {
+            status.classList.add('d-none');
+            return;
+          }
+          if (tone === 'error') {
+            status.classList.add('text-danger');
+          } else if (tone === 'success') {
+            status.classList.add('text-success');
+          } else {
+            status.classList.add('text-muted');
+          }
+        };
+
+        // Show/hide new list name input
+        if (destinationSelect) {
+          destinationSelect.addEventListener('change', function () {
+            if (this.value === '_new_' && newListNameWrapper) {
+              newListNameWrapper.classList.remove('d-none');
+              if (newListNameInput) newListNameInput.required = true;
+            } else if (newListNameWrapper) {
+              newListNameWrapper.classList.add('d-none');
+              if (newListNameInput) newListNameInput.required = false;
+            }
+          });
+        }
+
+        // Populate modal when opened
+        moveToListModal.addEventListener('show.bs.modal', async function () {
+          setStatus('', null);
+          if (spinner) spinner.classList.add('d-none');
+          if (confirmButton) confirmButton.disabled = false;
+
+          // Get selected parcels
+          const checkedBoxes = document.querySelectorAll('.parcel-checkbox:checked');
+          const count = checkedBoxes.length;
+          const parcelData = Array.from(checkedBoxes).map(cb => ({
+            loc_id: cb.dataset.locId,
+            town_id: cb.dataset.townId
+          }));
+
+          if (movePropertiesCount) {
+            movePropertiesCount.textContent = count;
+          }
+          if (movePropertiesPlural) {
+            movePropertiesPlural.textContent = count === 1 ? 'y' : 'ies';
+          }
+          if (moveParcelIds) {
+            moveParcelIds.value = JSON.stringify(parcelData);
+          }
+
+          // Fetch available lists
+          try {
+            const response = await fetch('/saved-lists-for-move/?current_list_id={{ saved_list.pk }}');
+            const lists = await response.json();
+
+            if (destinationSelect) {
+              // Keep the existing options
+              const existingOptions = destinationSelect.innerHTML;
+              destinationSelect.innerHTML = '<option value="">Select a list...</option><option value="_new_">+ Create New List</option>';
+
+              if (lists && lists.length > 0) {
+                lists.forEach(list => {
+                  const option = document.createElement('option');
+                  option.value = list.id;
+                  option.textContent = `${list.name} (${list.parcel_count} parcels)`;
+                  destinationSelect.appendChild(option);
+                });
+              }
+            }
+          } catch (error) {
+            console.error('Failed to load lists:', error);
+          }
+        });
+
+        if (confirmButton) {
+          confirmButton.addEventListener('click', async function () {
+            const destinationListId = destinationSelect ? destinationSelect.value : '';
+            const newListName = newListNameInput ? newListNameInput.value.trim() : '';
+
+            if (!destinationListId) {
+              setStatus('Please select a destination list.', 'error');
+              return;
+            }
+
+            if (destinationListId === '_new_' && !newListName) {
+              setStatus('Please enter a name for the new list.', 'error');
+              return;
+            }
+
+            confirmButton.disabled = true;
+            if (spinner) spinner.classList.remove('d-none');
+            setStatus('Moving properties...', 'pending');
+
+            try {
+              const formData = new FormData();
+              formData.append('parcel_ids', moveParcelIds.value);
+              formData.append('destination_list_id', destinationListId);
+              if (destinationListId === '_new_') {
+                formData.append('new_list_name', newListName);
+              }
+
+              const response = await fetch('{% url "move_parcels_to_list" saved_list.pk %}', {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': getCookie('csrftoken') || ''
+                },
+                body: formData
+              });
+
+              let payload = {};
+              try {
+                payload = await response.json();
+              } catch (error) {
+                payload = {};
+              }
+
+              if (!response.ok || (payload && payload.error)) {
+                throw new Error((payload && payload.error) || 'Failed to move properties.');
+              }
+
+              setStatus('Properties moved successfully! Reloading...', 'success');
+
+              setTimeout(() => {
+                window.location.reload();
+              }, 800);
+
+            } catch (error) {
+              setStatus(error.message || 'Unable to move properties.', 'error');
+              confirmButton.disabled = false;
+            } finally {
+              if (spinner) spinner.classList.add('d-none');
+            }
+          });
+        }
+      }
+
+      // Save filtered list modal handler
+      const saveFilteredListModal = document.getElementById('saveFilteredListModal');
+      if (saveFilteredListModal) {
+        const confirmButton = saveFilteredListModal.querySelector('[data-role="save-filtered-list-confirm"]');
+        const spinner = saveFilteredListModal.querySelector('[data-role="save-list-spinner"]');
+        const status = saveFilteredListModal.querySelector('[data-role="save-list-status"]');
+        const newListNameInput = document.getElementById('newListName');
+        const filterParamsInput = document.getElementById('filterParamsInput');
+
+        const setStatus = (message, tone) => {
+          if (!status) return;
+          status.textContent = message || '';
+          status.classList.remove('d-none', 'text-danger', 'text-success', 'text-muted');
+          if (!message) {
+            status.classList.add('d-none');
+            return;
+          }
+          if (tone === 'error') {
+            status.classList.add('text-danger');
+          } else if (tone === 'success') {
+            status.classList.add('text-success');
+          } else {
+            status.classList.add('text-muted');
+          }
+        };
+
+        // Populate filter parameters when modal opens
+        saveFilteredListModal.addEventListener('show.bs.modal', function () {
+          setStatus('', null);
+          if (spinner) spinner.classList.add('d-none');
+          if (confirmButton) confirmButton.disabled = false;
+
+          // Capture current filter parameters
+          const filterParams = new URLSearchParams(window.location.search);
+          if (filterParamsInput) {
+            filterParamsInput.value = filterParams.toString();
+          }
+        });
+
+        if (confirmButton) {
+          confirmButton.addEventListener('click', async function () {
+            const listName = newListNameInput ? newListNameInput.value.trim() : '';
+            if (!listName) {
+              setStatus('Please enter a name for the new list.', 'error');
+              return;
+            }
+
+            confirmButton.disabled = true;
+            if (spinner) spinner.classList.remove('d-none');
+            setStatus('Creating new list...', 'pending');
+
+            try {
+              const form = document.getElementById('saveFilteredListForm');
+              const formData = new FormData(form);
+
+              const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': getCookie('csrftoken') || ''
+                },
+                body: formData
+              });
+
+              let payload = {};
+              try {
+                payload = await response.json();
+              } catch (error) {
+                payload = {};
+              }
+
+              if (!response.ok || (payload && payload.error)) {
+                throw new Error((payload && payload.error) || 'Failed to create new list.');
+              }
+
+              setStatus('Extracted successfully! Reloading...', 'success');
+
+              // Redirect back to the original list to see the remaining parcels
+              setTimeout(() => {
+                window.location.reload();
+              }, 800);
+
+            } catch (error) {
+              setStatus(error.message || 'Unable to create new list.', 'error');
+              confirmButton.disabled = false;
+            } finally {
+              if (spinner) spinner.classList.add('d-none');
+            }
+          });
+        }
+      }
+
+      // Rest of existing JavaScript below...
       const skiptraceModalEl = document.getElementById('bulkSkiptraceModal');
       if (skiptraceModalEl) {
         const confirmButton = skiptraceModalEl.querySelector('[data-role="bulk-skiptrace-confirm"]');

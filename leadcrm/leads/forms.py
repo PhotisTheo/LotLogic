@@ -316,6 +316,119 @@ class ParcelSearchForm(forms.Form):
         return town_id
 
 
+class SavedListFilterForm(forms.Form):
+    """
+    Form for filtering parcels within a saved list.
+    Simpler than ParcelSearchForm since town is already determined.
+    """
+    property_category = forms.ChoiceField(
+        label="Category",
+        choices=[
+            ("any", "Any"),
+            ("residential", "Residential"),
+            ("commercial", "Commercial"),
+            ("industrial", "Industrial"),
+        ],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    commercial_subtype = forms.ChoiceField(
+        label="Commercial Type",
+        choices=[
+            ("any", "Any Commercial Type"),
+            ("retail", "Retail"),
+            ("office", "Office"),
+            ("mixed_use", "Mixed Use"),
+            ("service", "Service"),
+        ],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    property_type = forms.ChoiceField(
+        label="Property Type",
+        choices=[("any", "Any property type")],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    address_contains = forms.CharField(
+        label="Address contains",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Street, number, etc.", "class": "form-control"}),
+    )
+    style = forms.CharField(
+        label="Style contains",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "e.g. Colonial, Condo", "class": "form-control"}),
+    )
+    absentee = forms.ChoiceField(
+        label="Occupancy",
+        choices=[
+            ("any", "Any"),
+            ("owner", "Owner Occupied"),
+            ("absentee", "Absentee"),
+        ],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    min_price = forms.DecimalField(
+        label="Min. Assessed Value",
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "0"}),
+    )
+    max_price = forms.DecimalField(
+        label="Max. Assessed Value",
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "No limit"}),
+    )
+    equity_min = forms.DecimalField(
+        label="Min. Equity %",
+        min_value=0,
+        max_value=100,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "0"}),
+    )
+    min_years_owned = forms.IntegerField(
+        label="Min. Years Owned",
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "0"}),
+    )
+    max_years_owned = forms.IntegerField(
+        label="Max. Years Owned",
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "No limit"}),
+    )
+    skiptraced = forms.ChoiceField(
+        label="Skip Trace Status",
+        choices=[
+            ("any", "Any"),
+            ("traced", "Skip Traced"),
+            ("not_traced", "Not Skip Traced"),
+        ],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    has_legal_info = forms.ChoiceField(
+        label="Legal Info",
+        choices=[
+            ("any", "Any"),
+            ("yes", "Has Legal Issues"),
+            ("no", "No Legal Issues"),
+        ],
+        initial="any",
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+
+
 class ScheduleCallRequestForm(forms.ModelForm):
     preferred_call_time = forms.DateTimeField(
         required=False,
