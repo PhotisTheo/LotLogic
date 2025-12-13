@@ -4621,6 +4621,10 @@ def saved_parcel_list_detail(request, pk):
 
     # Apply filters if form is valid
     filtered_count = None
+    logger.info(f"Filter form GET params: {dict(request.GET)}")
+    logger.info(f"Filter form is_valid: {filter_form.is_valid()}")
+    if not filter_form.is_valid():
+        logger.info(f"Filter form errors: {filter_form.errors}")
     if request.GET and filter_form.is_valid():
         filtered_rows = []
         for row in parcel_rows:
@@ -4719,6 +4723,7 @@ def saved_parcel_list_detail(request, pk):
 
         parcel_rows = filtered_rows
         filtered_count = len(filtered_rows)
+        logger.info(f"Filtering complete: {filtered_count} parcels matched out of {total_parcels} total")
 
     total = len(parcel_rows)
     pending_skiptrace_count = len([row for row in parcel_rows if not row["skiptraced"]])
