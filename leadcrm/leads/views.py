@@ -4676,19 +4676,21 @@ def saved_parcel_list_detail(request, pk):
 
             # Equity filter
             equity_min = filter_form.cleaned_data.get("equity_min")
-            if equity_min is not None and parcel.equity_percent is not None:
-                if parcel.equity_percent < equity_min:
+            equity_percent = getattr(parcel, 'equity_percent', None)
+            if equity_min is not None and equity_percent is not None:
+                if equity_percent < equity_min:
                     continue
 
             # Years owned filters
             min_years = filter_form.cleaned_data.get("min_years_owned")
-            if min_years is not None and parcel.years_owned is not None:
-                if parcel.years_owned < min_years:
+            years_owned = getattr(parcel, 'years_owned', None)
+            if min_years is not None and years_owned is not None:
+                if years_owned < min_years:
                     continue
 
             max_years = filter_form.cleaned_data.get("max_years_owned")
-            if max_years is not None and parcel.years_owned is not None:
-                if parcel.years_owned > max_years:
+            if max_years is not None and years_owned is not None:
+                if years_owned > max_years:
                     continue
 
             # Skip trace filter
@@ -4953,19 +4955,21 @@ def save_filtered_list(request, pk):
 
             # Equity filter
             equity_min = filter_form.cleaned_data.get("equity_min")
-            if equity_min is not None and parcel.equity_percent is not None:
-                if parcel.equity_percent < equity_min:
+            equity_percent = getattr(parcel, 'equity_percent', None)
+            if equity_min is not None and equity_percent is not None:
+                if equity_percent < equity_min:
                     continue
 
             # Years owned filters
             min_years = filter_form.cleaned_data.get("min_years_owned")
-            if min_years is not None and parcel.years_owned is not None:
-                if parcel.years_owned < min_years:
+            years_owned = getattr(parcel, 'years_owned', None)
+            if min_years is not None and years_owned is not None:
+                if years_owned < min_years:
                     continue
 
             max_years = filter_form.cleaned_data.get("max_years_owned")
-            if max_years is not None and parcel.years_owned is not None:
-                if parcel.years_owned > max_years:
+            if max_years is not None and years_owned is not None:
+                if years_owned > max_years:
                     continue
 
             # Skip trace filter
