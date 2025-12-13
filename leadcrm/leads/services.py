@@ -1750,7 +1750,6 @@ class ParcelSearchResult:
     lot_size: Optional[float]
     zoning: Optional[str]
     equity_percent: Optional[float]
-    years_owned: Optional[float] = None
     units: Optional[int]
     attributes: Dict[str, object]
     estimated_mortgage_balance: Optional[float] = None
@@ -1758,6 +1757,7 @@ class ParcelSearchResult:
     estimated_roi_percent: Optional[float] = None
     estimated_mortgage_rate_percent: Optional[float] = None
     estimated_monthly_payment: Optional[float] = None
+    years_owned: Optional[float] = None
     attom_data: Optional[AttomData] = None
     units_detail: Optional[List[Dict[str, object]]] = None
     market_value: Optional[float] = None
