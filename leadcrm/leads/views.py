@@ -4687,15 +4687,21 @@ def saved_parcel_list_detail(request, pk):
 
             # Years owned filters
             min_years = filter_form.cleaned_data.get("min_years_owned")
-            years_owned = getattr(parcel, 'years_owned', None)
-            if min_years is not None and years_owned is not None:
-                if years_owned < min_years:
-                    continue
-
             max_years = filter_form.cleaned_data.get("max_years_owned")
-            if max_years is not None and years_owned is not None:
-                if years_owned > max_years:
-                    continue
+
+            if min_years is not None or max_years is not None:
+                years_owned = getattr(parcel, 'years_owned', None)
+
+                # Fallback: calculate from SALE_DATE in attributes if not cached
+                if years_owned is None and hasattr(parcel, 'attributes'):
+                    from .services import _calculate_years_owned
+                    years_owned = _calculate_years_owned(parcel.attributes)
+
+                if years_owned is not None:
+                    if min_years is not None and years_owned < min_years:
+                        continue
+                    if max_years is not None and years_owned > max_years:
+                        continue
 
             # Skip trace filter
             skiptraced_filter = filter_form.cleaned_data.get("skiptraced", "any")
@@ -4967,15 +4973,21 @@ def save_filtered_list(request, pk):
 
             # Years owned filters
             min_years = filter_form.cleaned_data.get("min_years_owned")
-            years_owned = getattr(parcel, 'years_owned', None)
-            if min_years is not None and years_owned is not None:
-                if years_owned < min_years:
-                    continue
-
             max_years = filter_form.cleaned_data.get("max_years_owned")
-            if max_years is not None and years_owned is not None:
-                if years_owned > max_years:
-                    continue
+
+            if min_years is not None or max_years is not None:
+                years_owned = getattr(parcel, 'years_owned', None)
+
+                # Fallback: calculate from SALE_DATE in attributes if not cached
+                if years_owned is None and hasattr(parcel, 'attributes'):
+                    from .services import _calculate_years_owned
+                    years_owned = _calculate_years_owned(parcel.attributes)
+
+                if years_owned is not None:
+                    if min_years is not None and years_owned < min_years:
+                        continue
+                    if max_years is not None and years_owned > max_years:
+                        continue
 
             # Skip trace filter
             skiptraced_filter = filter_form.cleaned_data.get("skiptraced", "any")
