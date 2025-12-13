@@ -1750,6 +1750,7 @@ class ParcelSearchResult:
     lot_size: Optional[float]
     zoning: Optional[str]
     equity_percent: Optional[float]
+    years_owned: Optional[float] = None
     units: Optional[int]
     attributes: Dict[str, object]
     estimated_mortgage_balance: Optional[float] = None
@@ -2798,6 +2799,7 @@ def _parcel_data_to_dict(parcel: ParcelSearchResult, record: Dict) -> Dict:
         'lot_size': parcel.lot_size,
         'zoning': parcel.zoning,
         'equity_percent': parcel.equity_percent,
+        'years_owned': parcel.years_owned,
         'units': parcel.units,
         'estimated_mortgage_balance': parcel.estimated_mortgage_balance,
         'estimated_equity_value': parcel.estimated_equity_value,
@@ -2864,6 +2866,7 @@ def _dict_to_parcel_data(data: Dict) -> ParcelSearchResult:
         lot_size=data.get('lot_size'),
         zoning=data.get('zoning'),
         equity_percent=data.get('equity_percent'),
+        years_owned=data.get('years_owned'),
         units=data.get('units'),
         attributes=data.get('attributes', {}),
         estimated_mortgage_balance=data.get('estimated_mortgage_balance'),
@@ -3142,6 +3145,7 @@ def load_massgis_parcels_by_ids(town_id: int, loc_ids: Iterable[str], *, saved_l
             )
 
             market_value_context = _build_market_value_context(town_id, key, record)
+            years_owned_value = _calculate_years_owned(record)
 
             parcel_result = ParcelSearchResult(
                 town=town,
@@ -3160,6 +3164,7 @@ def load_massgis_parcels_by_ids(town_id: int, loc_ids: Iterable[str], *, saved_l
                 lot_size=_to_number(record.get("LOT_SIZE")),
                 zoning=_clean_string(record.get("ZONING")),
                 equity_percent=equity_percent,
+                years_owned=years_owned_value,
                 units=_to_int(record.get("UNITS")),
                 attributes=record,
                 estimated_mortgage_balance=estimated_balance,
@@ -4629,6 +4634,41 @@ def _to_int(value: Optional[object]) -> Optional[int]:
     if number is None:
         return None
     return int(round(number))
+
+
+def _calculate_years_owned(record: Dict[str, object]) -> Optional[float]:
+    """Calculate years owned since last sale."""
+    from datetime import date
+
+    sale_date_raw = record.get("SALE_DATE") or record.get("LS_DATE")
+    if not sale_date_raw:
+        return None
+
+    # Try to parse the date
+    sale_date = None
+    if isinstance(sale_date_raw, date):
+        sale_date = sale_date_raw
+    elif isinstance(sale_date_raw, str):
+        # Try common date formats
+        sale_date_str = sale_date_raw.strip()
+        if not sale_date_str or sale_date_str == "0":
+            return None
+
+        # Try parsing different formats
+        for fmt in ["%Y-%m-%d", "%m/%d/%Y", "%Y%m%d", "%m-%d-%Y"]:
+            try:
+                from datetime import datetime
+                sale_date = datetime.strptime(sale_date_str, fmt).date()
+                break
+            except (ValueError, TypeError):
+                continue
+
+    if not sale_date:
+        return None
+
+    today = date.today()
+    delta = today - sale_date
+    return round(delta.days / 365.25, 2)
 
 
 def calculate_equity_metrics(
